@@ -9,20 +9,49 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-	<script src="js/angular.min.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
+    
   </head>
   <body>
 
     <p>welcome to developer's website </p>
     <p>download resume of mohit rathod <a href="resume/MohitRathod_Tech_Consultant.pdf">here</a></p>
 	
-	<div ng-app="">
+	<div ng-app="mohitRathodApp">
 		 
 		<!--<p>Input something in the input box:</p>
 		<p>Name: <input type="text" ng-model="name"></p>
 		<p ng-bind="name"></p>-->
 
 	</div>
+	
+	<div ng-view></div>
   
   </body>
+  
+  <script>
+    var module = angular.module("sampleApp", ['ngRoute']);
+
+    module.config(['$routeProvider',
+        function($routeProvider) {
+            $routeProvider.
+                when('/route1', {
+                    templateUrl: 'angular-route-template-1.jsp',
+                    controller: 'RouteController'
+                }).
+                when('/route2', {
+                    templateUrl: 'angular-route-template-2.jsp',
+                    controller: 'RouteController'
+                }).
+                otherwise({
+                    redirectTo: '/'
+                });
+        }]);
+
+    module.controller("RouteController", function($scope) {
+
+    })
+</script>
+  
 </html>
