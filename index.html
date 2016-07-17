@@ -4,57 +4,56 @@
   <head>
     <meta charset="UTF-8">
     <title>Mohit Rathod</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <script src="js/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
     
   </head>
-  <body>
+  <body ng-app="mohitrathodApp">
 
     <p>welcome to developer's website </p>
-    <p>download resume of mohit rathod <a href="resume/MohitRathod_Tech_Consultant.pdf">here</a></p>
+    <p>download resume of mohit rathod <a href="mohitrathod.com/#resume"> mohitrathod.com/#resume</a></p>
 	
 	<p> connect with me at er.mohit.rathod {@} gmail.com </p>
 	
-	<p><a href = "https://in.linkedin.com/in/rathodmohit">https://in.linkedin.com/in/rathodmohit </a> </p>
+	<p><a href = "mohitrathod.com/#linkedIn">mohitrathod.com/#linkedIn </a> </p>
 	
-	
-	<div ng-app="mohitRathodApp">
-		 
-		<!--<p>Input something in the input box:</p>
-		<p>Name: <input type="text" ng-model="name"></p>
-		<p ng-bind="name"></p>-->
-
-	</div>
+	<div ng-view></div>
 	
   </body>
   
   <script>
-    var module = angular.module("mohitRathodApp", ['ngRoute']);
+    
+	var module = angular.module("mohitrathodApp", ['ngRoute']);
 
     module.config(['$routeProvider',
         function($routeProvider) {
             $routeProvider.
-                when('/linkedIn', {
-                    template: 'route 1',
-                    controller: 'RouteController'
+                when('/resume', {
+                    template: 'loading..',
+                    controller: 'resumeController'
                 }).
-                when('/route2', {
-                    templateUrl: 'angular-route-template-2.jsp',
-                    controller: 'RouteController'
+                when('/linkedIn', {
+                    template: 'loading..',
+                    controller: 'linkedInController'
                 }).
                 otherwise({
                     redirectTo: '/'
                 });
         }]);
 
-    module.controller("RouteController", function($scope) {
-			console.log("controller called")
+    module.controller("linkedInController", function($scope) {
+		window.location = "https://in.linkedin.com/in/rathodmohit";
     })
+	
+	module.controller("resumeController", function($scope) {
+		window.location = "resumeFiles/MohitRathod_Tech_Consultant.pdf";
+    })
+	
   </script>
   
 </html>
