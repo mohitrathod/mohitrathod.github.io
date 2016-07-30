@@ -38,6 +38,14 @@
                     template: 'loading..',
                     controller: 'routerController'
                 }).
+				when('/science', {
+                    templateUrl: 'templates/science/science.html',
+                    controller: 'mainController'
+                }).
+				when('/dataScience', {
+                    templateUrl: 'templates/dataScience/dataScience.html',
+                    controller: 'mainController'
+                }).
                 otherwise({
                     templateUrl: 'templates/main/main.html',
 					controller: 'mainController'
