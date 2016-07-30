@@ -15,20 +15,7 @@
   </head>
   <body ng-app="mohitrathodApp">
 
-    	<h2>Mohit Rathod</h2>
-    	
-	<p>welcome to Developer's website</p>
-		
-	<p>download resume at <a href="/#resume"> mohitrathod.com/#resume</a></p>
-
-	<p> connect with me at er.mohit.rathod {@} gmail.com </p>
-
-	<p><a href = "/#linkedIn">mohitrathod.com/#linkedIn </a> </p>
-	
-	<p>Hands on consultation with Java, Andriod and AngularJS apps. Also performance assessment of Application.</p>
-	
 	<div ng-view></div>
-	
 	
   </body>
   
@@ -52,7 +39,8 @@
                     controller: 'routerController'
                 }).
                 otherwise({
-                    redirectTo: '/'
+                    templateUrl: 'templates/main/main.html',
+					controller: 'mainController'
                 });
         }]);
 
@@ -65,6 +53,10 @@
     })
 	module.controller("routerController", function($scope) {
 		window.location = "https://netgear.opendns.com/account.php?device_id=0000582C487217DD&profile=2658728"
+    })
+	
+	module.controller("mainController", function($scope) {
+		
     })
 	
 	
