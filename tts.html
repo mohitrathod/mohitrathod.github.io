@@ -1,0 +1,17 @@
+<html>
+<head>
+<script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+</head>
+
+<textarea id="text1" rows="50" cols="200" name="comment" > Enter text here...</textarea>
+
+
+<input onclick='responsiveVoice.speak(getText());' type='button' value='Play' />
+
+<script>
+function getText() {
+    return document.getElementById("text1").value;
+}
+</script>
+
+</html>
