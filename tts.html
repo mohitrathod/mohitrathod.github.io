@@ -10,11 +10,27 @@
 
 
 <input onclick='responsiveVoice.speak(getText());' type='button' value='Play' />
+<input onclick='pause();' type='button' value='Pause' />
+<input onclick='resume();' type='button' value='Resume' />
+<input onclick='canclePlaying();' type='button' value='Stop' />
 
 <script>
 function getText() {
     return document.getElementById("text1").value;
 }
+
+function canclePlaying() {
+	responsiveVoice.cancel();
+}
+
+function pause () {
+	responsiveVoice.pause();
+}
+ 
+function resume () {
+	responsiveVoice.resume();
+} 
+
 </script>
 
 <script>
