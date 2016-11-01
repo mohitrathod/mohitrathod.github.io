@@ -4,8 +4,17 @@
   <head>
     <meta charset="UTF-8">
     <title>Mohit Rathod</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+	<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script>
+	<script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.1/angular-material.js"></script>
+	<link href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.1/angular-material.css" rel='stylesheet' type='text/css' ></link>
+	<link href="https://material.angularjs.org/1.1.1/docs.css" rel='stylesheet' type='text/css' ></link>
+	
+	
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -16,13 +25,14 @@
   </head>
   <body ng-app="mohitrathodApp">
 
+	<div ng-include="'/templates/navigation/nav.html'" ng-controller="navController" ></div>
 	<div style="padding-left: 2%; padding-right: 2%;" ng-view></div>
 	
   </body>
   
   <script>
     
-	var module = angular.module("mohitrathodApp", ['ngRoute']);
+	var module = angular.module("mohitrathodApp", ['ngRoute', 'ngMaterial']);
 
     module.config(['$routeProvider',
         function($routeProvider) {
@@ -72,8 +82,12 @@
 		window.location = "https://netgear.opendns.com/account.php?device_id=0000582C487217DD&profile=2658728"
     })
 	
+	module.controller("navController", function($scope) {
+		 $scope.currentNavItem = 'mohitRathodPg';		 
+    })
+	
 	module.controller("mainController", function($scope) {
-		
+		 
     })
 	
 	
