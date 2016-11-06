@@ -65,6 +65,10 @@
                     templateUrl: 'templates/science/ai.html',
                     controller: 'mainController'
                 }).
+				when('/blog', {
+                    templateUrl: 'templates/blog/blogIndex.html',
+                    controller: 'mainController'
+                }).
                 otherwise({
                     templateUrl: 'templates/main/main.html',
 					controller: 'mainController'
