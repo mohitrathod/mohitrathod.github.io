@@ -69,6 +69,10 @@
                     templateUrl: 'templates/blog/blogIndex.html',
                     controller: 'mainController'
                 }).
+				when('/pythonBlog', {
+                    templateUrl: 'templates/programming/python.html',
+                    controller: 'mainController'
+                }).
                 otherwise({
                     templateUrl: 'templates/main/main.html',
 					controller: 'mainController'
