@@ -13,10 +13,10 @@ public class ShortestPathMatrix {
 	
 	public void createMatrix () {
 		
-	  /*1	2	3
+	  /*	1	2	3
 		4	5	6	
 		7	8	9
-		10	11	13*/
+		10	11	13	*/
 
 
 		String matrix = "(0,0)1 \n " +
