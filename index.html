@@ -34,8 +34,11 @@
     
 	var module = angular.module("mohitrathodApp", ['ngRoute', 'ngMaterial']);
 
-    module.config(['$routeProvider',
-        function($routeProvider) {
+    module.config(['$mdThemingProvider','$routeProvider',
+        function($mdThemingProvider, $routeProvider) {
+		
+			$mdThemingProvider.disableTheming();
+		
             $routeProvider.
                 when('/resume', {
                     template: 'loading..',
