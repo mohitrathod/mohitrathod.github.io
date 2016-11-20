@@ -1,0 +1,22 @@
+<h1 align="center" > Misc. Utilities </h1>	
+
+<h5 align="left"  > published on 11 Oct. 2016 </h5>
+
+
+<hr>
+
+</br>
+<p>
+
+1) Do tail -f to latest file of your directory 
+
+<pre>
+
+	tail -f $(find . -maxdepth 1 -type f -printf "%T@ %p\n" | sort -n | tail -n 1 | cut -d' ' -f 2-)
+
+</pre>
+
+</p>
+
+<hr style="border-top: 1px;" />
+

@@ -81,6 +81,14 @@
                     templateUrl: 'templates/programming/java.html',
                     controller: 'mainController'
                 }).
+				when('/sqlBlog', {
+                    templateUrl: 'templates/programming/sql.html',
+                    controller: 'mainController'
+                }).
+				when('/utilities', {
+                    templateUrl: 'templates/programming/utilities.html',
+                    controller: 'mainController'
+                }).
                 otherwise({
                     templateUrl: 'templates/main/main.html',
 					controller: 'mainController'

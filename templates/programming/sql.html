@@ -1,0 +1,42 @@
+<h1 align="center" > SQL Notes </h1>	
+
+<h5 align="left"  > published on 11 Oct. 2016 </h5>
+
+
+<hr>
+
+</br>
+<p>
+
+1) Optimized Java Sql Insert or Update statments 
+
+<pre>
+
+private static final String INSERT_UPDATE_TABLE = "INSERT INTO "
+  + TableName.TABLE_NAME
+  + " (" + TableName.LINE_ID
+  + " ," + TableName.PERIOD
+  + " ," + TableName.CALLS
+  + " ," + TableName.ANSWERED
+  + " ," + TableName.UNANSWERED
+  + " ," + TableName.UNIQUE
+  + " ," + TableName.CUSTOMER_ID + ") VALUES "
+  + "({0},{1},{2},{3},{4},{5},{6}) ON DUPLICATE KEY UPDATE "
+  + TableName.CALLS + "=" + TableName.CALLS + "+{2}, "
+  + TableName.ANSWERED + "=" + TableName.ANSWERED + "+{3}, "
+  + TableName.UNANSWERED + "=" + TableName.UNANSWERED + "+{4} ";
+
+
+
+and then
+
+Object[] args = {"'"+lineNumber+"'",period+"",(ansCalls + unAnsCalls)+"",ansCalls+"",unAnsCalls+"",0};
+
+linesMeteredLineCalls.add(MessageFormat.format(INSERT_UPDATE_TABLE, args));
+
+</pre>
+
+</p>
+
+<hr style="border-top: 1px;" />
+
