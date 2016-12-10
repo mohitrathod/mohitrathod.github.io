@@ -6,11 +6,10 @@
 
 </br>
 
-<p>
 
 <pre>
 
-				<span align="center"  > <b>		Java Fork and Join using ForkJoinPool		</b></span>
+<b>Java Fork and Join using ForkJoinPool</b>
 				
 The ForkJoinPool was added to Java in Java 7. The ForkJoinPool is similar to the Java ExecutorService but with one difference. The ForkJoinPool makes it easy for tasks to split their work up into smaller tasks which are then submitted to the ForkJoinPool too. Tasks can keep splitting their work into smaller subtasks for as long as it makes to split up the task. It may sound a bit abstract, so in this fork and join tutorial I will explain how the ForkJoinPool works, and how splitting tasks up work. 
 
@@ -67,6 +66,55 @@ A RecursiveAction may still need to break up its work into smaller chunks which 
 
 You implement a RecursiveAction by subclassing it. Here is a RecursiveAction example: 
 
+<div class="code_container">
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.RecursiveAction;
+
+public class MyRecursiveAction extends RecursiveAction {
+
+    private long workLoad = 0;
+
+    public MyRecursiveAction(long workLoad) {
+        this.workLoad = workLoad;
+    }
+
+    @Override
+    protected void compute() {
+
+        //if work is above threshold, break tasks up into smaller tasks
+        if(this.workLoad > 16) {
+            System.out.println("Splitting workLoad : " + this.workLoad);
+
+            List<MyRecursiveAction> subtasks =
+                new ArrayList<MyRecursiveAction>();
+
+            subtasks.addAll(createSubtasks());
+
+            for(RecursiveAction subtask : subtasks){
+                subtask.fork();
+            }
+
+        } else {
+            System.out.println("Doing workLoad myself: " + this.workLoad);
+        }
+    }
+
+    private List<MyRecursiveAction> createSubtasks() {
+        List<MyRecursiveAction> subtasks =
+            new ArrayList<MyRecursiveAction>();
+
+        MyRecursiveAction subtask1 = new MyRecursiveAction(this.workLoad / 2);
+        MyRecursiveAction subtask2 = new MyRecursiveAction(this.workLoad / 2);
+
+        subtasks.add(subtask1);
+        subtasks.add(subtask2);
+
+        return subtasks;
+    }
+
+}
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +163,10 @@ public class MyRecursiveAction extends RecursiveAction {
     }
 
 }
+
+</div>
+
+
 
 This example is very simplified. The MyRecursiveAction simply takes a fictive workLoad as parameter to its constructor. If the workLoad is above a certain threshold, the work is split into subtasks which are also scheduled for execution (via the .fork() method of the subtasks. If the workLoad is below a certain threshold then the work is carried out by the MyRecursiveAction itself.
 
@@ -206,11 +258,10 @@ It seems not everyone is equally happy with the new ForkJoinPool in Java 7. Whil
 
 It is well worth a read before you plan to use the ForkJoinPool in your own projects. 
 
+<hr style="border-top: 1px;" />
+
 </pre>
 
-</p>
-
-<hr style="border-top: 1px;" />
 
 
 <pre> 
@@ -431,37 +482,7 @@ from your command line by closing eclipse and open eclipse again and refresh pro
 
 </pre>
 <hr style="border-top: 1px;" />
-<pre>
 
- Optimized Java Sql Insert/Update statments
-
-
-
-private static final String INSERT_UPDATE_TABLE = "INSERT INTO "
-  + TableName.TABLE_NAME
-  + " (" + TableName.LINE_ID
-  + " ," + TableName.PERIOD
-  + " ," + TableName.CALLS
-  + " ," + TableName.ANSWERED
-  + " ," + TableName.UNANSWERED
-  + " ," + TableName.UNIQUE
-  + " ," + TableName.CUSTOMER_ID + ") VALUES "
-  + "({0},{1},{2},{3},{4},{5},{6}) ON DUPLICATE KEY UPDATE "
-  + TableName.CALLS + "=" + TableName.CALLS + "+{2}, "
-  + TableName.ANSWERED + "=" + TableName.ANSWERED + "+{3}, "
-  + TableName.UNANSWERED + "=" + TableName.UNANSWERED + "+{4} ";
-
-
-
-and then
-
-Object[] args = {"'"+lineNumber+"'",period+"",(ansCalls + unAnsCalls)+"",ansCalls+"",unAnsCalls+"",0};
-
-linesMeteredLineCalls.add(MessageFormat.format(INSERT_UPDATE_TABLE, args));
-
-
-</pre>
-<hr style="border-top: 1px;" />
 <pre>
 
  Java 7's new features
