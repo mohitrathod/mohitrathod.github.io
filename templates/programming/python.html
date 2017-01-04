@@ -313,5 +313,54 @@ If you wish to change the port that's used start the program via:
 	arr.reverse()
 	print (re.sub(",|\[|\]", "", str(arr)))
 
+<hr style="border-top: 1px;" />
+
+"""
+ Get Node data of the Nth Node from the end.
+ head could be None as well for empty list
+ Node is defined as
+""" 
+class Node(object):
+ 
+    def __init__(self, data=None, next_node=None):
+       self.data = data
+       self.next = next_node
+
+'''return back the node data of the linked list in the below method.'''
+
+
+def GetNode(head, position):
+    
+    if head is None or position is None:
+        return
+    
+    pointer = head
+    arr = []
+    while pointer is not None and pointer.data is not None:
+        #print (pointer.data) 
+        arr.append(pointer.data)
+        if pointer.next is not None:
+            pointer = pointer.next
+        else :
+            pointer = None
+    
+    arr.append(None)
+    
+    arr.reverse()
+     
+    if (len (arr) > position):
+        print (arr [position])
+
+
+n5 = Node ()
+n4 = Node (4, n5)
+n3 = Node (3, n4)
+n2 = Node (2, n3)
+n1 = Node (1, n2)
+
+GetNode(n1, 1)
+
+# output 4
+
 
 </pre>
