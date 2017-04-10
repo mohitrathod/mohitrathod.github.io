@@ -466,4 +466,34 @@ Given the words in the magazine and the words in the ransom note, print Yes if h
 	    print("No")
 
 <hr style="border-top: 1px;" />
+
+
+Program to print column names of excel eg. a, b ... ab, ac ... az, ba ... azz, caa
+
+
+	val = chr (ord('a') - 1)
+
+	def incrementString (str1) :
+	    arr = list(str1)
+	    arr.reverse()
+
+	    if ord(arr[0])-ord('a')+1 == 26:
+		arr[0] = 'a'
+		if str1[:-1] is not '':
+		    str1 = incrementString(str1[:-1])
+		else :
+		    str1 = 'a'
+		str1 = str1 + ''.join(arr[0])
+	    else:
+		arr[0] = chr(ord(arr[0]) + 1)
+		str1 = str1[:-1] + ''.join(arr[0])
+
+	    return str1
+
+	while True :
+	    val = incrementString(val)
+	    print(val)
+
+<hr style="border-top: 1px;" />
+
 </pre>
