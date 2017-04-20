@@ -498,4 +498,23 @@ Program to print column names of excel eg. a, b ... ab, ac ... az, ba ... azz, c
 
 <hr style="border-top: 1px;" />
 
+<a name="nthMax" href="#/problemPractice#nthMax" > Find Nth Max or Largest element of unsorted array </a>
+
+	arr = [7,2,1,3,10,4,5,8,9,6]
+	nthMax = 2 #specify max element here
+	maxArr = arr
+
+	for i in range (0, len(maxArr)):
+	    for j in range (i, len(maxArr)):
+		if (maxArr[i] < maxArr[j]):
+		    maxArr[i],maxArr[j] = maxArr[j],maxArr[i]
+		    if i == nthMax:
+			break
+
+	print(maxArr)
+	print(maxArr[nthMax-1])
+
+
+<hr style="border-top: 1px;" />
+
 </pre>
