@@ -1,1 +1,17 @@
 
+
+
+gwt interview practice
+
+Event Handler Interfaces
+
+
+Create Custom Widget with Composite Class
+
+ implements EntryPoint
+ 
+ https://www.tutorialspoint.com/gwt/gwt_custom_widget.htm
+ 
+ private static class OptionalTextBox extends Composite implements ClickHandler
+ 
+ 
