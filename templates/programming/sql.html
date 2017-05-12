@@ -34,9 +34,44 @@ Object[] args = {"'"+lineNumber+"'",period+"",(ansCalls + unAnsCalls)+"",ansCall
 
 linesMeteredLineCalls.add(MessageFormat.format(INSERT_UPDATE_TABLE, args));
 
+
+
+
+
 </pre>
 
 </p>
 
 <hr style="border-top: 1px;" />
 
+<pre>
+
+<a name="sqlInternalJoinFindManagerResources" href="#/sqlBlog#sqlInternalJoinFindManagerResources" >Given table employee with employee id, name and manager_id, find the managers and how much employee he/she is managing with sql query. </a>
+
+
+
+create table employee (emp_id int, emp_name varchar(225), mrg_id int);
+
+insert into employee values (1, "A", null)
+insert into employee values (2, "B", null)
+insert into employee values (3, "C", null);
+insert into employee values (4, "D", null);
+insert into employee values (5, "E", null);
+insert into employee values (6, "F", 13);
+insert into employee values (7, "G", 13);
+insert into employee values (8, "H", 13);
+insert into employee values (9, "I", null);
+insert into employee values (10, "J", 1);
+insert into employee values (11, "K", 1);
+insert into employee values (12, "L", 3);
+insert into employee values (13, "M", 14);
+insert into employee values (14, "N", null);
+insert into employee values (15, "O", 14);
+insert into employee values (16, "P", 16);
+
+select e.emp_name, (select count(*) from employee where mrg_id = e.emp_id) as emp_manage from employee e where e.emp_id in (select emp.mrg_id from employee emp where emp.mrg_id is not null group by mrg_id);
+
+<hr style="border-top: 1px;" />
+
+
+</pre>
