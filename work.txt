@@ -11,30 +11,57 @@ Create Custom Widget with Composite Class
  implements EntryPoint
  
  https://www.tutorialspoint.com/gwt/gwt_custom_widget.htm
- 
- private static class OptionalTextBox extends Composite implements ClickHandler
- 
- 
- def removeAdjoints(ipx, start, end):
-    print(ipx)
-    if len(ipx) > 0 and end < len(ipx):
-        if ipx[start] == ipx[end]:
-            if end + 1 < len(ipx):
-                removeAdjoints(ipx, start, end + 1)
-            elif start < end:
-                ipx = ipx[0:start]
-                removeAdjoints(ipx, 0, 1)
-        elif start + 1 < end:
-            ipx = ipx[0:start] + ipx[end:len(ipx)]
-            removeAdjoints(ipx, 0, 1)
-        else:
-            if end + 1 < len(ipx):
-                removeAdjoints(ipx, start + 1, end + 1)
 
 
-# removeAdjoints("azxxzy", 0, 1)
-# removeAdjoints("geeksforgeeg", 0, 1)
-removeAdjoints("gksforgg", 0, 1)
+
+
+class Node:
+    pass
+
+
+root = Node()
+root.data = 1
+root.left = Node()
+root.right = Node()
+
+root.left.data = 2
+root.left.left = Node()
+root.left.right = Node()
+
+root.right.data = 3
+root.right.left = Node()
+root.right.right = Node()
+
+node2 = root.left
+node2.left.data = 4
+node2.right.data = 5
+
+node3 = root.right
+node3.left.data = 6
+node3.right.data = 7
+
+queue = []
+
+def printTree(rootNode, queue):
+    if rootNode.data is not None:
+        print(rootNode.data)
+
+    if len(queue) > 0:
+        t = queue[len(queue)-1]
+        queue.remove([len(queue)-1])
+        printTree(t, queue)
+
+    if rootNode is not None and hasattr(rootNode, "left"):
+        queue.append(rootNode.right)
+        printTree(rootNode.left, queue)
+
+
+
+
+
+printTree(root)
+
+# print(root.data)
 
 
 
