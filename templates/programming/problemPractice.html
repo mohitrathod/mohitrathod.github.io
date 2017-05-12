@@ -517,4 +517,53 @@ Program to print column names of excel eg. a, b ... ab, ac ... az, ba ... azz, c
 
 <hr style="border-top: 1px;" />
 
+
+<a name="removeAllAdjacentDuplicates" href="#/problemPractice#removeAllAdjacentDuplicates" > Recursively remove all adjacent duplicates </a>
+
+problem url http://www.geeksforgeeks.org/recursively-remove-adjacent-duplicates-given-string/
+
+
+def removeAdjoints(ipx, start, end):
+    if(len(ipx) == 0):
+        print("blank")
+    else:
+        print(ipx)
+
+    if len(ipx) > 0 and end < len(ipx):
+        if ipx[start] == ipx[end]:
+            if end + 1 < len(ipx):
+                removeAdjoints(ipx, start, end + 1)
+            elif start < end:
+                ipx = ipx[0:start]
+                if len(ipx) > 0:
+                    removeAdjoints(ipx, 0, 1)
+        elif start + 1 < end:
+            ipx = ipx[0:start] + ipx[end:len(ipx)]
+            removeAdjoints(ipx, 0, 1)
+        else:
+            if end + 1 < len(ipx):
+                removeAdjoints(ipx, start + 1, end + 1)
+
+
+removeAdjoints("azxxzy", 0, 1)
+print("----")
+removeAdjoints("geeksforgeeg", 0, 1)
+print("----")
+removeAdjoints("gksforgg", 0, 1)
+print("----")
+removeAdjoints("caaabbbaacdddd", 0, 1)
+print("----")
+removeAdjoints("dddd", 0, 1)
+print("----")	
+
+
+
+<hr style="border-top: 1px;" />
+
+
+
 </pre>
+
+
+
+http://www.geeksforgeeks.org/recursively-remove-adjacent-duplicates-given-string/
