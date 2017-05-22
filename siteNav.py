@@ -4,11 +4,10 @@ import re
 
 mypath = dirname(realpath(__file__))
 
-
 redirectPageTemplate = open(mypath + '/nav/static/' + "templateP.html", 'r').read()
 
-def processFiles(currentPath , inputFiles):
 
+def processFiles(currentPath, inputFiles):
     for file in inputFiles:
         with open(currentPath + '/' + file, 'r') as content_file:
             if not content_file.name.endswith('html'):
@@ -20,12 +19,12 @@ def processFiles(currentPath , inputFiles):
 
                 for ngUrl in ngUrlMatches:
                     print(ngUrl)
-                    if ngUrl.startswith('http') or '.' in  ngUrl:
+                    if ngUrl.startswith('http') or '.' in ngUrl:
                         continue
                     outTemplate = redirectPageTemplate % (ngUrl, ngUrl)
                     # print(outTemplate)
                     print("--------------------------------")
-                    fileName = mypath + '/nav/' + ngUrl.replace('#', '/').replace('//','/') + '.html'
+                    fileName = mypath + '/nav/' + ngUrl.replace('#', '/').replace('//', '/') + '.html'
                     makedirs(dirname(fileName), exist_ok=True)
                     with open(fileName, "w") as file:
                         file.write(outTemplate)
@@ -36,14 +35,16 @@ def processFiles(currentPath , inputFiles):
 
 
 def getFilesOfDirs(currentDir, inputDirs):
-
     for dir in inputDirs:
         if dir == 'nav' or dir == '.git':
             continue
         filesT = [f for f in listdir(currentDir + '\\' + dir) if isfile(join(currentDir + '\\' + dir, f))]
         processFiles(currentDir + '\\' + dir, filesT)
-        getFilesOfDirs(currentDir + '\\' + dir, [f for f in listdir(currentDir + '\\' + dir) if not isfile(join(currentDir + '\\' + dir, f))])
+        getFilesOfDirs(currentDir + '\\' + dir,
+                       [f for f in listdir(currentDir + '\\' + dir) if not isfile(join(currentDir + '\\' + dir, f))])
+
 
 # processFiles(mypath, files)
 
-getFilesOfDirs(mypath+ '\\templates', [f for f in listdir(mypath+ '\\templates') if not isfile(join(mypath+ '\\templates', f))])
+getFilesOfDirs(mypath + '\\templates',
+               [f for f in listdir(mypath + '\\templates') if not isfile(join(mypath + '\\templates', f))])
