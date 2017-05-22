@@ -1,16 +1,11 @@
 from os import listdir, makedirs
-from os.path import isfile, join, dirname
+from os.path import isfile, join, dirname, realpath
 import re
 
-mypath = "C:/Users/rathomoh/temp/site"
-files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-dirs = [f for f in listdir(mypath) if not isfile(join(mypath, f))]
-
-print(files)
-print(dirs)
+mypath = dirname(realpath(__file__))
 
 
-redirectPageTemplate = open(mypath + '/' + "templateSitemap.html", 'r').read()
+redirectPageTemplate = open(mypath + '/nav/static/' + "templateP.html", 'r').read()
 
 def processFiles(currentPath , inputFiles):
 
@@ -43,12 +38,12 @@ def processFiles(currentPath , inputFiles):
 def getFilesOfDirs(currentDir, inputDirs):
 
     for dir in inputDirs:
-        if dir == 'nav':
+        if dir == 'nav' or dir == '.git':
             continue
-        files = [f for f in listdir(currentDir + '/' + dir) if isfile(join(currentDir + '/' + dir, f))]
-        processFiles(currentDir + '/' + dir, files)
-        # getFilesOfDirs()
+        filesT = [f for f in listdir(currentDir + '\\' + dir) if isfile(join(currentDir + '\\' + dir, f))]
+        processFiles(currentDir + '\\' + dir, filesT)
+        getFilesOfDirs(currentDir + '\\' + dir, [f for f in listdir(currentDir + '\\' + dir) if not isfile(join(currentDir + '\\' + dir, f))])
 
-processFiles(mypath, files)
+# processFiles(mypath, files)
 
-getFilesOfDirs(mypath, dirs)
+getFilesOfDirs(mypath+ '\\templates', [f for f in listdir(mypath+ '\\templates') if not isfile(join(mypath+ '\\templates', f))])
