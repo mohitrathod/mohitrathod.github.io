@@ -64,6 +64,7 @@ printTree(root)
 # print(root.data)
 
 
+
 from os import listdir
 from os.path import isfile, join
 import re
@@ -75,15 +76,26 @@ dirs = [f for f in listdir(mypath) if not isfile(join(mypath, f))]
 print(files)
 print(dirs)
 
+
+redirectPageTemplate = open(mypath + '/' + "templateSitemap.html", 'r').read()
+
+print(redirectPageTemplate % ("blog1", "blog1"))
+
 for file in files:
     with open(mypath + '/' + file, 'r') as content_file:
-        content = content_file.read()
-        # print(content)
-        pattern = '/#(*.)'
-        m = re.findall(pattern, content)
-        # print()
+
+        try:
+            content = content_file.read()
+            # print(content)
+            pattern = '\/#(.*)"'
+            # print(content)
+            m = re.findall(pattern, content)
+            print(m)
 
 
+
+        except:
+            print("can not read file ", file)
 
 
 
