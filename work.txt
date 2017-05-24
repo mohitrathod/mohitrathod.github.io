@@ -1,4 +1,3 @@
-
 class Object:
     name = None
     value = None
@@ -27,18 +26,19 @@ l1.name = 'lamp_1'
 l1.value = 1
 
 m1 = Object()
-m1.name = "meetingRoom_1"
+m1.name = 'meetingRoom_1'
 m1.value = 10
 m1.containsObject = [l1, t1]
 
 f1 = Object()
-f1.name = "floor_1"
+f1.name = 'floor_1'
 f1.value = 50
 f1.containsObject = [m1]
 
 b1 = Object()
-b1.name = "building_1"
-b1.containsObject = f1
+b1.name = 'building_1'
+b1.value = 100
+b1.containsObject = [f1]
 
 print('t1', getCost(t1))
 print('m1', getCost(m1))
