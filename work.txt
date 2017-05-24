@@ -1,1 +1,48 @@
 
+class Object:
+    name = None
+    value = None
+    containsObject = []
+    partOfObject = None
+    pass
+
+def getCostOfMultipleObjects(manyObjectOfBuilding):
+    totalCost = 0
+    for obj in manyObjectOfBuilding:
+        totalCost += getCost(obj)
+    return totalCost
+
+def getCost(anyObjectOfBuilding):
+    if hasattr(anyObjectOfBuilding, 'containsObject') and len(anyObjectOfBuilding.containsObject) > 0:
+        return anyObjectOfBuilding.value + getCostOfMultipleObjects(anyObjectOfBuilding.containsObject)
+    else:
+        return anyObjectOfBuilding.value
+
+t1 = Object()
+t1.name = 'table_1'
+t1.value = 5
+
+l1 = Object()
+l1.name = 'lamp_1'
+l1.value = 1
+
+m1 = Object()
+m1.name = "meetingRoom_1"
+m1.value = 10
+m1.containsObject = [l1, t1]
+
+f1 = Object()
+f1.name = "floor_1"
+f1.value = 50
+f1.containsObject = [m1]
+
+b1 = Object()
+b1.name = "building_1"
+b1.containsObject = f1
+
+print('t1', getCost(t1))
+print('m1', getCost(m1))
+print('f1', getCost(f1))
+print('b1', getCost(b1))
+
+
