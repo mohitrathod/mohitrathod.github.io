@@ -24,6 +24,10 @@ l1 = Object()
 l1.name = 'lamp_1'
 l1.value = 1
 
+t1 = Object()
+t1.name = 'tv_1'
+t1.value = 3
+
 m1 = Object()
 m1.name = 'meetingRoom_1'
 m1.value = 10
@@ -31,12 +35,12 @@ m1.containsObject = [l1, t1]
 
 m2 = Object()
 m2.name = 'meetingRoom_2'
-m2.value = 10
+m2.value = 20
 m2.containsObject = [l1, t1]
 
 f1 = Object()
 f1.name = 'floor_1'
-f1.value = 50
+f1.value = 20
 f1.containsObject = [m1, m2]
 
 b1 = Object()
@@ -46,6 +50,7 @@ b1.containsObject = [f1]
 
 print('t1', getCost(t1))
 print('m1', getCost(m1))
+print('m2', getCost(m2))
 print('f1', getCost(f1))
 print('b1', getCost(b1))
 
