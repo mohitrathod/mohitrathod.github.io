@@ -9,7 +9,7 @@ redirectPageTemplate = open(mypath + '/nav/static/' + "templateP.html", 'r').rea
 
 def processFiles(currentPath, inputFiles):
     for file in inputFiles:
-        with open(currentPath + '/' + file, 'r') as content_file:
+        with open(currentPath + '/' + file, 'r', encoding="utf8") as content_file:
             if not content_file.name.endswith('html'):
                 continue
             try:
