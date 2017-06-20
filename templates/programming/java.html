@@ -1097,5 +1097,157 @@ This is the state when the thread is still alive, but is currently not eligible 
 A thread is in terminated or dead state when its run() method exits.
 
 
+<hr style="border-top: 1px;" />
+
+<a name="yieldMethod" href="#/javaBlog#yieldMethod" >Java.lang.Thread.yield() Method</a>
+
+Description
+The java.lang.Thread.yield() method causes the currently executing thread object to temporarily pause and allow other threads to execute.
+
+Declaration
+Following is the declaration for java.lang.Thread.yield() method
+
+public static void yield()
+Parameters
+NA
+
+Return Value
+This method does not return any value.
+
+Exception
+
+Example
+
+import java.lang.*;
+
+public class ThreadDemo implements Runnable {
+
+   Thread t;
+
+   ThreadDemo(String str) {
+
+      t = new Thread(this, str);
+      // this will call run() function
+      t.start();
+   }
+
+   public void run() {
+
+      for (int i = 0; i < 5; i++) {
+         // yields control to another thread every 5 iterations
+         if ((i % 5) == 0) {
+            System.out.println(Thread.currentThread().getName() + "
+            yielding control...");
+
+            /* causes the currently executing thread object to temporarily 
+            pause and allow other threads to execute */
+            Thread.yield();
+         }
+      }
+
+      System.out.println(Thread.currentThread().getName() + " has finished executing.");
+   }
+
+   public static void main(String[] args) {
+      new ThreadDemo("Thread 1");
+      new ThreadDemo("Thread 2");
+      new ThreadDemo("Thread 3");
+   }
+}
+
+output-- 
+
+Thread 1 is yielding control...
+Thread 2 is yielding control...
+Thread 3 is yielding control...
+Thread 1 has finished executing.
+Thread 2 has finished executing.
+Thread 3 has finished executing.
+
+
+<hr style="border-top: 1px;" />
+
+<a name="joinMethod" href="#/javaBlog#joinMethod" >Java.lang.Thread.join() Method</a>
+
+Description
+The java.lang.Thread.join() method waits for this thread to die.
+
+Declaration
+Following is the declaration for java.lang.Thread.join() method
+
+public final void join() throws InterruptedException
+
+Parameters
+NA
+
+Return Value
+This method does not return any value.
+
+Exception
+InterruptedException − if any thread has interrupted the current thread. The interrupted status of the current thread is cleared when this exception is thrown.
+
+Example
+
+import java.lang.*;
+
+public class ThreadDemo implements Runnable {
+
+   public void run() {
+   
+      Thread t = Thread.currentThread();
+      System.out.print(t.getName());
+      
+      //checks if this thread is alive
+      System.out.println(", status = " + t.isAlive());
+   }
+
+   public static void main(String args[]) throws Exception {
+   
+      Thread t = new Thread(new ThreadDemo());
+      
+      // this will call run() function
+      t.start();
+      
+      // waits for this thread to die
+      t.join();
+      System.out.print(t.getName());
+      
+      //checks if this thread is alive
+      System.out.println(", status = " + t.isAlive());
+   }
+} 
+
+Output -
+
+Thread-0, status = true
+Thread-0, status = false
+
+join method with time arguments
+
+    /**
+     * Waits at most {@code millis} milliseconds for this thread to
+     * die. A timeout of {@code 0} means to wait forever.
+     *
+     * <p> This implementation uses a loop of {@code this.wait} calls
+     * conditioned on {@code this.isAlive}. As a thread terminates the
+     * {@code this.notifyAll} method is invoked. It is recommended that
+     * applications not use {@code wait}, {@code notify}, or
+     * {@code notifyAll} on {@code Thread} instances.
+     *
+     * @param  millis
+     *         the time to wait in milliseconds
+     *
+     * @throws  IllegalArgumentException
+     *          if the value of {@code millis} is negative
+     *
+     * @throws  InterruptedException
+     *          if any thread has interrupted the current thread. The
+     *          <i>interrupted status</i> of the current thread is
+     *          cleared when this exception is thrown.
+     */
+    public final synchronized void join(long millis)
+
+
+
 <pre>
 
