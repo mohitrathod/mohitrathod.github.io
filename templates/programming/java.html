@@ -1228,7 +1228,7 @@ join method with time arguments
      * Waits at most {@code millis} milliseconds for this thread to
      * die. A timeout of {@code 0} means to wait forever.
      *
-     * <p> This implementation uses a loop of {@code this.wait} calls
+     * This implementation uses a loop of {@code this.wait} calls
      * conditioned on {@code this.isAlive}. As a thread terminates the
      * {@code this.notifyAll} method is invoked. It is recommended that
      * applications not use {@code wait}, {@code notify}, or
