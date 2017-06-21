@@ -1125,6 +1125,67 @@ http://www.geeksforgeeks.org/print-binary-tree-vertical-order-set-2/
 
 <hr style="border-top: 1px;" />
 
+<a name="findCostOfObjectNestedApproch" href="#/problemPractice#findCostOfObjectNestedApproch" >Find The Cost (Nested Approch)</a>
+
+Let's say the building has 'n' floors, each fllor has meeting rooms & work-stations, each room has several objects (table, chairs, tv..).
+Find the cost of perticular room, complete floor or a building.
+
+
+class Object:
+    name = None
+    value = None
+    containsObject = None
+    pass
+
+def getCostOfMultipleObjects(manyObjectOfBuilding):
+    totalCost = 0
+    for obj in manyObjectOfBuilding:
+        totalCost += getCost(obj)
+    return totalCost
+
+def getCost(anyObjectOfBuilding):
+    if anyObjectOfBuilding.containsObject is not None and len(anyObjectOfBuilding.containsObject) > 0:
+        return anyObjectOfBuilding.value + getCostOfMultipleObjects(anyObjectOfBuilding.containsObject)
+    else:
+        return anyObjectOfBuilding.value
+
+table1 = Object()
+table1.name = 'table_1'
+table1.value = 5
+
+lamp1 = Object()
+lamp1.name = 'lamp_1'
+lamp1.value = 1
+
+tv1 = Object()
+tv1.name = 'tv_1'
+tv1.value = 3
+
+meetingRoom1 = Object()
+meetingRoom1.name = 'meetingRoom_1'
+meetingRoom1.value = 10
+meetingRoom1.containsObject = [lamp1, table1]
+
+meetingRoom2 = Object()
+meetingRoom2.name = 'meetingRoom_2'
+meetingRoom2.value = 20
+meetingRoom2.containsObject = [lamp1, table1, tv1]
+
+floor1 = Object()
+floor1.name = 'floor_1'
+floor1.value = 20
+floor1.containsObject = [meetingRoom1, meetingRoom2]
+
+builing1 = Object()
+builing1.name = 'building_1'
+builing1.value = 100
+builing1.containsObject = [floor1]
+
+print('t1', getCost(table1))
+print('m1', getCost(meetingRoom1))
+print('m2', getCost(meetingRoom2))
+print('f1', getCost(floor1))
+print('b1', getCost(builing1))
 
 
 </pre>
