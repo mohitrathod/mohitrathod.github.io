@@ -8,10 +8,12 @@
 
 <h5 align="right"  >  code snippets can directly run at <a href="http://www.codechef.com/ide">codechef.com/ide</a> with Python-3.4</h5>
 
-<p>
-1) Return multiple values from a function in Python Example 
-
 <pre>
+
+
+<a name="ReturnMultipleValuesFromAFunctionInPythonExample" href="#/pythonBlog#ReturnMultipleValuesFromAFunctionInPythonExample" >Return multiple values from a function in Python Example</a>
+
+
 def f(in_str):
     out_str = in_str.upper()
     return True, out_str # Creates tuple automatically
@@ -20,16 +22,13 @@ succeeded, b = f("a") # Automatic tuple unpacking
 
 print ("var1" , succeeded , " var2" , str(b))
 
-</pre>
-
-</p>
 
 <hr style="border-top: 1px;" />
 
-<p>
-2)  Loop Statement Example 
 
-<pre>
+<a name="loopStatement" href="#/pythonBlog#loopStatement" >Loop Statement Example</a>
+
+
 
 print("-----")
 print("for loop example ")
@@ -94,18 +93,11 @@ for num in range(10,20):  #to iterate between 10 to 20
 #18 equals 2 * 9
 #19 is a prime number  
 
-</pre>
-
-</p>
-
-
-<p>
 
 <hr style="border-top: 1px;" />
 
-3)  Multiline comment Example
+<a name="MultilineCommentExample" href="#/pythonBlog#MultilineCommentExample" >Multiline comment Example</a>
 
-<pre>
 
 '''
 This is a multi line
@@ -115,18 +107,14 @@ You can use triple-quoted strings. When they're not a docstring (first thing in 
 
 print("program starts after comments")
 
-</pre>
-
-
-</p>
 
 <hr style="border-top: 1px;" />
 
-<p>
 
-4) how to swap variables in python ?
 
-<pre>
+<a name="swapVariablesPython" href="#/pythonBlog#swapVariablesPython" >How to swap variables in python ?</a> 
+
+
 
 Python evaluates expressions from left to right. Notice that while evaluating an assignment, the right-hand side is evaluated before the left-hand side.
 
@@ -136,37 +124,23 @@ That means to swap values from a to b and viceversa the following expression is 
 
 	a,b = b,a : 
 
-</pre>
-
-</p>
 <hr style="border-top: 1px;" />
 
-
-<p>
-
-5) Python Utilities that can be used to make everyday life easy
-	
-<pre>
+<a name="pythonAsUtilities" href="#/pythonBlog#pythonAsUtilities" >Python Utilities that can be used to make everyday life easy</a> 
 
 print("Day_Over_Day_Rate_Adjustment".lower())
 
-</pre>
+#----
+
+print('Return multiple values from a function in Python Example'.title().replace(' ', ''))
 	
-	
-	
-</p>	
 
 <hr style="border-top: 1px;" />
 
-<p>
-
-6) is Python pass by value or pass by reference ?
+<a name="PythonPassByValueOrPassByReference" href="#/pythonBlog#PythonPassByValueOrPassByReference" >is Python pass by value or pass by reference ?</a> 
 	
-</br>
 You can not pass a simple primitive by reference in Python, but you can do things like:	
 	
-<pre>
-
 def foo(y):
   y[0] = y[0]**2
 
@@ -174,12 +148,8 @@ x = [5]
 foo(x)
 print x[0]
 
-</pre>
 	
 That is a weird way to go about it, however. Note that in Python, you can also return more than one value, making some of the use cases for pass by reference less important:
-</br>
-
-<pre>
 
 def foo(x, y):
    return x**2, y**2
@@ -188,15 +158,10 @@ a = 1
 b = 2
 a, b = foo(a, b)
 
-</pre>
-	
 	
 When you return values like that, they are being returned as a Tuple which is in turn unpacked.
 
-</br>
 Another way to think about this is that, while you can't explicitly pass variables by reference in Python, you can modify the properties of objects that were passed in. In my example (and others) you can modify members of the list that was passed in. You would not, however, be able to reassign the passed in variable entirely. For instance, see the following two pieces of code look like they might do something similar, but end up with different results:	
-
-<pre>
 
 def clear_a(x):
   x = []
@@ -208,13 +173,9 @@ z = [1,2,3]
 clear_a(z) # z will not be changed
 clear_b(z) # z will be emptied
 
-</pre>
-	
-</p>	
 
 <hr style="border-top: 1px;" />
 
-<pre>
 
 <a name="simpleHttpServerPython" href="#/pythonBlog#simpleHttpServerPython" >Start simple http server with python</a>
 
@@ -243,15 +204,12 @@ If you wish to change the port that's used start the program via:
 
 	$ python -m SimpleHTTPServer 8080
 	
-</pre>
-	
 
 
 <hr style="border-top: 1px;" />
 
 
-<pre>
-8) Given an array arr[] of n integers, construct a Product Array prod[] (of same size) such that prod[i] is equal to the product of all the elements of arr[] except arr[i].
+<a name="ProductArrayPuzzle" href="#/pythonBlog#ProductArrayPuzzle" >Given an array arr[] of n integers, construct a Product Array prod[] (of same size) such that prod[i] is equal to the product of all the elements of arr[] except arr[i].</a>
 	
 	
 	print ('-- product array puzzle --')
@@ -272,7 +230,7 @@ If you wish to change the port that's used start the program via:
  
 <hr style="border-top: 1px;" />
 
-9) reverse the array 
+<a name="ReverseTheArray" href="#/pythonBlog#ReverseTheArray" >Reverse the array</a>
 
 	Sample Input
 
@@ -296,6 +254,8 @@ If you wish to change the port that's used start the program via:
 	print (re.sub(",|\[|\]", "", str(arr)))
 
 <hr style="border-top: 1px;" />
+
+<a name="GetNodeDataOfTheNthNodeFromTheEnd" href="#/pythonBlog#GetNodeDataOfTheNthNodeFromTheEnd" >Get Node data of the Nth Node from the end</a>
 
 """
  Get Node data of the Nth Node from the end.
