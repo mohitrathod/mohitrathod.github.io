@@ -342,4 +342,96 @@ print(reduce(lambda x, y: x+y, range(1,101)))
 
 <hr style="border-top: 1px;" />
 
+<a name="WebScraping" href="#/pythonBlog#WebScraping" >Beginner’s guide to Web Scraping in Python (using BeautifulSoup)</a>
+
+What is Web Scraping?
+
+Web scraping is a computer software technique of extracting information from websites. This technique mostly focuses on the transformation of unstructured data (HTML format) on the web into structured data (database or spreadsheet).
+
+You can perform web scrapping in various ways, including use of Google Docs to almost every programming language. I would resort to Python because of its ease and rich eocsystem. It has a library known as ‘BeautifulSoup’ which assists this task. In this article, I’ll show you the easiest way to learn web scraping using python programming.
+
+For those of you, who need a non-programming way to extract information out of web pages, you can also look at import.io . It provides a GUI driven interface to perform all basic web scraping operations. The hackers can continue to read this article!
+
+
+Libraries required for web scraping
+
+
+    BeautifulSoup: It is an incredible tool for pulling out information from a webpage. You can use it to extract tables, lists, paragraph and you can also put filters to extract information from web pages. In this article, we will use latest version BeautifulSoup 4. You can look at the installation instruction in its <a href="http://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank" rel="nofollow noopener noreferrer">documentation page</a>.
+    Urllib2: It is a Python module which can be used for fetching URLs. It defines functions and classes to help with URL actions (basic and digest authentication, redirections, cookies, etc). For more detail refer to the documentation page.
+	
+	Python has several other options for HTML scraping in addition to BeatifulSoup. Here are some others:
+
+    <ul style="text-align: justify;">
+		<li><a href="http://wwwsearch.sourceforge.net/mechanize/" rel="nofollow">mechanize</a></li>
+		<li><a href="http://arshaw.com/scrapemark/" rel="nofollow">scrapemark</a></li>
+		<li><a href="http://scrapy.org/" rel="nofollow">scrapy</a></li>
+	</ul>
+
+	
+BeautifulSoup Example:
+
+#import the library used to query a website
+from urllib.request import urlopen
+
+#specify the url
+wiki = "https://en.wikipedia.org/wiki/List_of_state_and_union_territory_capitals_in_India"
+
+#Query the website and return the html to the variable 'page'
+page = urlopen(wiki)
+
+#import the Beautiful soup functions to parse the data returned from the website
+from bs4 import BeautifulSoup
+
+#Parse the html in the 'page' variable, and store it in Beautiful Soup format
+soup = BeautifulSoup(page)
+
+print(soup.title.string)
+
+all_links = soup.find_all("a")
+for link in all_links:
+    print(link.get("href"))
+
+all_tables=soup.find_all('table')
+
+right_table=soup.find('table', class_='wikitable sortable plainrowheaders')
+print(right_table)
+
+#Generate lists
+A=[]
+B=[]
+C=[]
+D=[]
+E=[]
+F=[]
+G=[]
+
+for row in right_table.findAll("tr"):
+    cells = row.findAll('td')
+    states=row.findAll('th') #To store second column data
+    if len(cells)==6: #Only extract table body not heading
+        A.append(cells[0].find(text=True))
+        B.append(states[0].find(text=True))
+        C.append(cells[1].find(text=True))
+        D.append(cells[2].find(text=True))
+        E.append(cells[3].find(text=True))
+        F.append(cells[4].find(text=True))
+        G.append(cells[5].find(text=True))
+
+#import pandas to convert list to data frame
+import pandas as pd
+df=pd.DataFrame(A,columns=['Number'])
+df['State/UT']=B
+df['Admin_Capital']=C
+df['Legislative_Capital']=D
+df['Judiciary_Capital']=E
+df['Year_Capital']=F
+df['Former_Capital']=G
+print(df)
+
+more at <a href="https://www.analyticsvidhya.com/blog/2015/10/beginner-guide-web-scraping-beautiful-soup-python/">https://www.analyticsvidhya.com/blog/2015/10/beginner-guide-web-scraping-beautiful-soup-python/ </a>
+
+
+<hr style="border-top: 1px;" />
+
+
 </pre>
