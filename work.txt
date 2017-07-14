@@ -202,6 +202,11 @@ management skills 
 
 
 
+Please start preparation on Core Java concepts, OOPS, Collections,
+Threading, Design patterns, Java 8 fundamentals
+
+
+
 
 
 
