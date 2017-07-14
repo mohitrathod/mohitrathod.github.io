@@ -1259,6 +1259,453 @@ Time slicing: A task executes for a predefined slice of time and then reenters t
 <hr style="border-top: 1px;" />
 
 
+What is Inheritance in Java ?
+Inheritance in Java or OOPS (Object oriented programming) is a feature which allows coding reusability.  In other words, Inheritance  self-implies inheriting or we can say acquiring something from others. Along with Abstraction, Encapsulation and Polymorphism, Inheritance forms the backbone of Object oriented programming and Java.  In Java, we use the term inheritance when one object acquires some property from other objects. In Java, inheritance is defined in terms of superclass and subclass. it is normally used when some object wants to use existing feature of some class and also want to provide some special feature, so we can say inheritance has given the advantage of reusability.
 
+By using Inheritance between Superclass and Subclass, a IS-A Relationship is formed which means you can use any subclass object in place of the super class object e.g. if a method expects a superclass object, you can pass a subclass object to it. Inheritance in Java is also used to provide a concrete implementation of abstract class and interface in Java.
+
+
+ Inheritance in Java- Things to remember
+Here are some important points about Inheritance in Java which is worth remembering:
+
+    One subclass can extend only one super class in Java but it can implement the multiple interfaces.
+    A private member of the super class can not be inherited in subclass e.g. private field and private methods.
+    Default member can only be inherited in same package subclass, not in another package.
+    The constructor in Java is not inherited by the subclass.
+    If a class implements Interface or extends an abstract class, it needs to override all abstract methods untile it is not abstract.
+    Multiple inheritances are not supported in java but we can achieve this by using interface.One class can implement multiple interfaces
+    In Java class never extends the interface rather it implements interface
+    One interface can extend another interface in Java.
+
+Why multiple inheritances are not supported in Java ?
+
+The diamond problem
+A diamond class inheritance diagram.
+
+The "diamond problem" (sometimes referred to as the "deadly diamond of death"[4]) is an ambiguity that arises when two classes B and C inherit from A, and class D inherits from both B and C. If there is a method in A that B and C have overridden, and D does not override it, then which version of the method does D inherit: that of B, or that of C?
+
+For example, in the context of GUI software development, a class Button may inherit from both classes Rectangle (for appearance) and Clickable (for functionality/input handling), and classes Rectangle and Clickable both inherit from the Object class. Now if the equals method is called for a Button object and there is no such method in the Button class but there is an overridden equals method in Rectangle or Clickable (or both), which method should be eventually called?
+
+It is called the "diamond problem" because of the shape of the class inheritance diagram in this situation. In this case, class A is at the top, both B and C separately beneath it, and D joins the two together at the bottom to form a diamond shape.
+
+Java 8 introduces default methods on interfaces. If A,B,C are interfaces, B,C can each provide a different implementation to an abstract method of A, causing the diamond problem. Either class D must reimplement the method (the body of which can simply forward the call to one of the super implementations), or the ambiguity will be rejected as a compile error.[6] Prior to Java 8, Java was not subject to the Diamond problem risk, as Java does not support multiple inheritance.
+
+
+How hashmap works in java?
+
+Single statement answer
+
+If anybody asks me to describe “How HashMap works?“, I simply answer: “On principle of Hashing“. As simple as it is. Now before answering it, one must be very sure to know at least basics of Hashing. Right??
+
+What is Hashing
+
+Hashing in its simplest form, is a way to assigning a unique code for any variable/object after applying any formula/algorithm on its properties. A true Hashing function must follow this rule:
+
+Hash function should return the same hash code each and every time, when function is applied on same or equal objects. In other words, two equal objects must produce same hash code consistently.
+
+All objects in java inherit a default implementation of hashCode() function defined in Object class. This function produce hash code by typically converting the internal address of the object into an integer, thus producing different hash codes for all different objects.
+
+A little about Entry class
+
+A map by definition is : “An object that maps keys to values”. Very easy.. right?
+
+So, there must be some mechanism in HashMap to store this key value pair. Answer is YES. HashMap has an inner class Entry, which looks like this:
+static class Entry<K ,V> implements Map.Entry<K ,V>
+{
+    final K key;
+    V value;
+    Entry<K ,V> next;
+    final int hash;
+    ...//More code goes here
+}
+
+What put() method actually does
+
+Before going into put() method’s implementation, it is very important to learn that instances of Entry class are stored in an array. HashMap class defines this variable as:
+/**
+ * The table, resized as necessary. Length MUST Always be a power of two.
+ */
+transient Entry[] table;
+
+Now look at code implementation of put() method:
+
+/**
+* Associates the specified value with the specified key in this map. If the
+* map previously contained a mapping for the key, the old value is
+* replaced.
+*
+* @param key
+*            key with which the specified value is to be associated
+* @param value
+*            value to be associated with the specified key
+* @return the previous value associated with <tt>key</tt>, or <tt>null</tt>
+*         if there was no mapping for <tt>key</tt>. (A <tt>null</tt> return
+*         can also indicate that the map previously associated
+*         <tt>null</tt> with <tt>key</tt>.)
+*/
+public V put(K key, V value) {
+    if (key == null)
+    return putForNullKey(value);
+    int hash = hash(key.hashCode());
+    int i = indexFor(hash, table.length);
+    for (Entry<K , V> e = table[i]; e != null; e = e.next) {
+        Object k;
+        if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+            V oldValue = e.value;
+            e.value = value;
+            e.recordAccess(this);
+            return oldValue;
+        }
+    }
+ 
+    modCount++;
+    addEntry(hash, key, value, i);
+    return null;
+}
+
+Lets note down the steps one by one:
+
+1) First of all, key object is checked for null. If key is null, value is stored in table[0] position. Because hash code for null is always 0.
+
+2) Then on next step, a hash value is calculated using key’s hash code by calling its hashCode() method. This hash value is used to calculate index in array for storing Entry object. JDK designers well assumed that there might be some poorly written hashCode() functions that can return very high or low hash code value. To solve this issue, they introduced another hash() function, and passed the object’s hash code to this hash() function to bring hash value in range of array index size.
+
+3) Now indexFor(hash, table.length) function is called to calculate exact index position for storing the Entry object.
+
+4) Here comes the main part. Now, as we know that two unequal objects can have same hash code value, how two different objects will be stored in same array location [called bucket].
+Answer is LinkedList. If you remember, Entry class had an attribute “next”. This attribute always points to next object in chain. This is exactly the behavior of LinkedList.
+
+So, in case of collision, Entry objects are stored in LinkedList form. When an Entry object needs to be stored in particular index, HashMap checks whether there is already an entry?? If there is no entry already present, Entry object is stored in this location.
+
+If there is already an object sitting on calculated index, its next attribute is checked. If it is null, and current Entry object becomes next node in LinkedList. If next variable is not null, procedure is followed until next is evaluated as null.
+
+What if we add the another value object with same key as entered before. Logically, it should replace the old value. How it is done? Well, after determining the index position of Entry object, while iterating over LinkedList on calculated index, HashMap calls equals method on key object for each Entry object. All these Entry objects in LinkedList will have similar hash code but equals() method will test for true equality. If key.equals(k) will be true then both keys are treated as same key object. This will cause the replacing of value object inside Entry object only.
+
+In this way, HashMap ensure the uniqueness of keys.
+
+How get() methods works internally
+
+Now we have got the idea, how key-value pairs are stored in HashMap. Next big question is : what happens when an object is passed in get method of HashMap? How the value object is determined?
+
+Answer we already should know that the way key uniqueness is determined in put() method , same logic is applied in get() method also. The moment HashMap identify exact match for the key object passed as argument, it simply returns the value object stored in current Entry object.
+
+If no match is found, get() method returns null.
+
+Let have a look at code:
+/**
+* Returns the value to which the specified key is mapped, or {@code null}
+* if this map contains no mapping for the key.
+*
+* <p>
+* More formally, if this map contains a mapping from a key {@code k} to a
+* value {@code v} such that {@code (key==null ? k==null :
+* key.equals(k))}, then this method returns {@code v}; otherwise it returns
+* {@code null}. (There can be at most one such mapping.)
+*
+* </p><p>
+* A return value of {@code null} does not <i>necessarily</i> indicate that
+* the map contains no mapping for the key; it's also possible that the map
+* explicitly maps the key to {@code null}. The {@link #containsKey
+* containsKey} operation may be used to distinguish these two cases.
+*
+* @see #put(Object, Object)
+*/
+public V get(Object key) {
+    if (key == null)
+    return getForNullKey();
+    int hash = hash(key.hashCode());
+    for (Entry<K , V> e = table[indexFor(hash, table.length)]; e != null; e = e.next) {
+        Object k;
+        if (e.hash == hash && ((k = e.key) == key || key.equals(k)))
+            return e.value;
+    }
+    return null;
+}
+
+Above code is same as put() method till if (e.hash == hash && ((k = e.key) == key || key.equals(k))), after this simply value object is returned.
+
+Key Notes
+
+    Data structure to store Entry objects is an array named table of type Entry.
+    A particular index location in array is referred as bucket, because it can hold the first element of a LinkedList of Entry objects.
+    Key object’s hashCode() is required to calculate the index location of Entry object.
+    Key object’s equals() method is used to maintain uniqueness of Keys in map.
+    Value object’s hashCode() and equals() method are not used in HashMap’s get() and put() methods.
+    Hash code for null keys is always zero, and such Entry object is always stored in zero index in Entry[].
+
+[Update] Improvements in Java 8
+
+As part of the work for JEP 180, there is a performance improvement for HashMap objects where there are lots of collisions in the keys by using balanced trees rather than linked lists to store map entries. The principal idea is that once the number of items in a hash bucket grows beyond a certain threshold, that bucket will switch from using a linked list of entries to a balanced tree. In the case of high hash collisions, this will improve worst-case performance from O(n) to O(log n).
+
+Basically when a bucket becomes too big (currently: TREEIFY_THRESHOLD = 8), HashMap dynamically replaces it with an ad-hoc implementation of tree map. This way rather than having pessimistic O(n) we get much better O(log n).
+
+Bins (elements or nodes) of TreeNodes may be traversed and used like any others, but additionally support faster lookup when overpopulated. However, since the vast majority of bins in normal use are not overpopulated, checking for existence of tree bins may be delayed in the course of table methods.
+
+Tree bins (i.e., bins whose elements are all TreeNodes) are ordered primarily by hashCode, but in the case of ties, if two elements are of the same “class C implements Comparable<C>“, type then their compareTo() method is used for ordering.
+
+Because TreeNodes are about twice the size of regular nodes, we use them only when bins contain enough nodes. And when they become too small (due to removal or resizing) they are converted back to plain bins (currently: UNTREEIFY_THRESHOLD = 6). In usages with well-distributed user hashCodes, tree bins are rarely used.
+
+I hope, i have correctly communicated my thoughts by this article. If you find any difference or need any help in any point, please drop a comment.
+
+Happy Learning !!
+
+http://howtodoinjava.com/core-java/collections/how-hashmap-works-in-java/
+
+<hr style="border-top: 1px;" />
+
+Working with hashCode and equals methods in java
+
+The general contract of hashCode is:
+
+    Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer, provided no information used in equals comparisons on the object is modified. This integer need not remain consistent from one execution of an application to another execution of the same application.
+    If two objects are equal according to the equals(Object) method, then calling the hashCode method on each of the two objects must produce the same integer result.
+    It is not required that if two objects are unequal according to the equals(java.lang.Object) method, then calling the hashCode method on each of the two objects must produce distinct integer results. However, the programmer should be aware that producing distinct integer results for unequal objects may improve the performance of hash tables. 
+
+Usage of hashCode() and equals()
+
+hashCode() method is used to get a unique integer for given object. This integer is used for determining the bucket location, when this object needs to be stored in some HashTable like data structure. By default, Object’s hashCode() method returns and integer representation of memory address where object is stored.
+
+equals() method, as name suggest, is used to simply verify the equality of two objects. Default implementation simply check the object references of two objects to verify their equality.
+
+Overriding the default behavior
+
+Everything works fine until you do not override any of these methods in your classes. But, sometimes application needs to change the default behavior of some objects.
+
+Lets take an example where your application has Employee object. Lets create a minimal possible structure of Employee class::
+public class Employee
+{
+    private Integer id;
+    private String firstname;
+    private String lastName;
+    private String department;
+ 
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public String getFirstname() {
+        return firstname;
+    }
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    public String getDepartment() {
+        return department;
+    }
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+}
+
+Above Employee class has some very basic attributes and there accessor methods. Now consider a simple situation where you need to compare two employee objects.
+public class EqualsTest {
+    public static void main(String[] args) {
+        Employee e1 = new Employee();
+        Employee e2 = new Employee();
+ 
+        e1.setId(100);
+        e2.setId(100);
+ 
+        //Prints false in console
+        System.out.println(e1.equals(e2));
+    }
+}
+
+No prize for guessing. Above method will print “false“. But, is it really correct after knowing that both objects represent same employee. In a real time application, this must return true.
+
+To achieve correct behavior, we need to override equals method as below:
+public boolean equals(Object o) {
+    if(o == null)
+    {
+        return false;
+    }
+    if (o == this)
+    {
+        return true;
+    }
+    if (getClass() != o.getClass())
+    {
+        return false;
+    }
+     
+    Employee e = (Employee) o;
+    return (this.getId() == e.getId());
+     
+}
+
+Add this method to your Employee class, and EqualsTest will start returning “true“.
+
+So are we done? Not yet. Lets test again above modified Employee class in different way.
+import java.util.HashSet;
+import java.util.Set;
+ 
+public class EqualsTest
+{
+    public static void main(String[] args)
+    {
+        Employee e1 = new Employee();
+        Employee e2 = new Employee();
+ 
+        e1.setId(100);
+        e2.setId(100);
+ 
+        //Prints 'true'
+        System.out.println(e1.equals(e2));
+ 
+        Set<Employee> employees = new HashSet<Employee>();
+        employees.add(e1);
+        employees.add(e2);
+         
+        //Prints two objects
+        System.out.println(employees);
+    }
+}
+
+Above class prints two objects in second print statement. If both employee objects have been equal, in a Set which stores only unique objects, there must be only one instance inside HashSet, after all both objects refer to same employee. What is it we are missing??
+
+We are missing the second important method hashCode(). As java docs say, if you override equals() method then you must override hashCode() method. So lets add another method in our Employee class.
+@Override
+public int hashCode()
+{
+    final int PRIME = 31;
+    int result = 1;
+    result = PRIME * result + getId();
+    return result;
+}
+
+Once above method is added in Employee class, the second statement start printing only single object in second statement, and thus validating the true equality of e1 and e2.
+
+Overriding hashCode() and equals() using Apache Commons Lang
+
+Apache commons provide two excellent utility classes HashCodeBuilder and EqualsBuilder for generating hash code and equals methods. Below is its usage:
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+public class Employee
+{
+    private Integer id;
+    private String firstname;
+    private String lastName;
+    private String department;
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public String getFirstname() {
+        return firstname;
+    }
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    public String getDepartment() {
+        return department;
+    }
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+    @Override
+    public int hashCode()
+    {
+        final int PRIME = 31;
+        return new HashCodeBuilder(getId()%2==0?getId()+1:getId(), PRIME).toHashCode();
+    }
+    @Override
+    public boolean equals(Object o) {
+    if (o == null)
+       return false;
+        
+    if (o == this)
+       return true;
+        
+    if (o.getClass() != getClass())
+       return false;
+     
+    Employee e = (Employee) o;
+     
+    return new EqualsBuilder().
+              append(getId(), e.getId()).
+              isEquals();
+    }
+}
+
+Alternatively, if you are using any code editor, they also must be capable of generating some good structure for you. For example, Eclipse IDE has option under right click on class >> source > Generate hashCode() and equals() … will generate a very good implementation for you.
+
+Important things to remember
+
+1) Always use same attributes of an object to generate hashCode() and equals() both. As in our case, we have used employee id.
+
+2) equals() must be consistent (if the objects are not modified, then it must keep returning the same value).
+
+3) Whenever a.equals(b), then a.hashCode() must be same as b.hashCode().
+
+4) If you override one, then you should override the other.
+
+Special Attention When Using in ORM
+
+If you’re dealing with an ORM, make sure to always use getters, and never field references in hashCode() and equals(). This is for reason, in ORM, occasionally fields are lazy loaded and not available until called their getter methods.
+
+For example, In our Employee class if we use e1.id == e2.id. It is very much possible that id field is lazy loaded. So in this case, one might be zero or null, and thus resulting in incorrect behavior.
+
+But if uses e1.getId() == e2.getId(), we can be sure even if field is lazy loaded; calling getter will populate the field first.
+
+This is all i know about hashCode() and equals() methods. I hope, it will help someone somewhere.
+
+If you feel, I am missing something or wrong somewhere, please leave a comment. I will update this post again to help others.
+
+Happy Learning !!
+
+http://howtodoinjava.com/core-java/basics/working-with-hashcode-and-equals-methods-in-java/
+
+
+Using HashMap in non-synchronized code in multi-threaded application
+
+In normal cases, it can leave the hashmap in inconsistent state where key-value pairs added and retrieved can be different. Apart from this, other surprising behavior like NullPointerException can come into picture.
+
+In worst case, It can cause infinite loop. YES. You got it right. It can cause infinite loop. What did you asked, How?? Well, here is the reason.
+
+HashMap has the concept of rehashing when it reaches to its upper limit of size. This rehashing is the process of creating a new memory area, and copying all the already present key-value pairs in new memory are. Lets say Thread A tried to put a key-value pair in map and then rehashing started. At the same time, thread B came and started manipulating the buckets using put operation.
+
+Here while rehashing process, there are chances to generate the cyclic dependency where one element in linked list [in any bucket] can point to any previous node in same bucket. This will result in infinite loop, because rehashing code contains a “while(true) { //get next node; }” block and in cyclic dependency it will run infinite.
+
+To watch closely, look art source code of transfer method which is used in rehashing:
+public Object get(Object key) {
+    Object k = maskNull(key);
+    int hash = hash(k);
+    int i = indexFor(hash, table.length);
+    Entry e = table[i];
+ 
+    //While true is always a bad practice and cause infinite loops
+ 
+    while (true) {
+        if (e == null)
+            return e;
+        if (e.hash == hash &amp;&amp; eq(k, e.key))
+            return e.value;
+        e = e.next;
+    }
+}
+
+I will write a more detailed article on this in future.
+
+I hope I was able to put some more items on your knowledge bucket. If you find this article helpful, please consider it sharing with your friends.
+
+Happy Learning !!	
+	
+<hr style="border-top: 1px;" />
+	
 <pre>
 
