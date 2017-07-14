@@ -1,1 +1,238 @@
 
+
+
+
+
+
+
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:"Segoe UI";
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:8.0pt;
+	margin-left:0in;
+	line-height:107%;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+.MsoChpDefault
+	{font-family:"Calibri",sans-serif;}
+.MsoPapDefault
+	{margin-bottom:8.0pt;
+	line-height:107%;}
+ /* Page Definitions */
+ @page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+-->
+
+
+
+
+
+
+
+
+[‎7/‎14/‎2017
+4:58 PM] Rathod, Mohit (WM Technology): 
+
+Hi Radhika, Good
+Afternoon there
+
+[‎7/‎14/‎2017
+4:58 PM] Racherla, Radhika (IST): 
+
+hi
+
+[‎7/‎14/‎2017
+4:59 PM] Rathod, Mohit (WM Technology): 
+
+so my resume is
+shortlisted and i could have interview in next week
+
+[‎7/‎14/‎2017
+5:00 PM] Racherla, Radhika (IST): 
+
+keep
+preparing 
+
+TR team
+has very high expectations..their standards are high
+
+[‎7/‎14/‎2017
+5:00 PM] Rathod, Mohit (WM Technology): 
+
+:)
+
+Sourabh ask me to talk to
+you about your interview feedback and 
+
+some tips 
+
+so please call me once
+you have some time
+
+
+
+[‎7/‎14/‎2017
+5:02 PM] Rathod, Mohit (WM Technology): 
+
+ok good will ping you if
+i need any help
+
+please do call me once
+you have some time
+
+any time
+
+[‎7/‎14/‎2017
+5:03 PM] Racherla, Radhika (IST): 
+
+sure..will
+call during lunch
+
+[‎7/‎14/‎2017
+5:03 PM] Rathod, Mohit (WM Technology): 
+
+cool
+
+ 
+
+
+
+
+Java Developer – Transaction Reporting - Operations
+Technology – VP - Glasgow
+
+
+
+ 
+
+Company Profile:
+
+Morgan Stanley is a leading global financial services firm providing a wide range of investment
+banking, securities, investment management and wealth management services. The Firm's employees serve clients worldwide including corporations, governments and individuals from more than 1,200 offices in 43 countries.
+
+ 
+
+As a market leader, the talent and passion of our people is critical to our success.
+ Together, we share a common set of values rooted in integrity, excellence and strong team ethic.  Morgan Stanley can provide a superior foundation for building a professional career - a place for people to learn, to achieve and grow. A philosophy that balances personal
+lifestyles, perspectives and needs is an
+important part of our culture.
+
+ 
+
+Morgan Stanley is an
+equal opportunities employer. We work to provide a supportive and inclusive
+environment where all individuals can maximize their full potential. Our
+skilled and creative workforce is comprised of individuals drawn from a broad
+cross section of the global communities in which we operate and who reflect a
+variety of backgrounds, talents, perspectives and experiences. Our strong
+commitment to a culture of inclusion is evident through our constant focus on
+recruiting, developing and advancing individuals based on their skills and
+talents.
+
+ 
+
+Department &
+Team Profile:
+
+Operations & Compliance Technology
+(OCT) comprises of functionally aligned development teams who support critical
+firm functions such as Legal, Compliance and Operations. OCT develops strategic
+solutions that support key business processes, including Settlements,
+Confirmations, Regulatory Reporting, Position Keeping, Anti-Money Laundering
+and Trade Surveillance.
+
+Global Transaction Reporting
+(GTR) Technology serves the global transaction regulatory reporting
+requirements of the firm. These requirements span OTC derivatives, listed derivatives
+and cash products. The regulations covered are across America (e.g. Dodd-Frank
+and CSA), Europe (e.g. MiFID I and EMIR), and Asia (e.g. JFSA and HKMA). The
+team are required to work on both meeting the firm’s current regulatory
+obligations and on meeting future regulatory obligations (e.g. MiFID II).
+
+Role Profile:
+
+The
+Global Transaction Reporting team is looking for a senior java developer to
+join the growing team in Glasgow (a key strategic location). You will be part
+of a global team, which also has presence in London, Mumbai, and New York. You will be part of
+a dynamic team building systems that are critical to the business and solving
+problems to meet the ever changing regulatory environment.  
+
+You will be part of a dynamic team building
+systems that are critical to the business. Solving problems to meet the ever changing
+regulatory environment.  You will work primarily as a Java developer
+as part of a collaborative agile development team.You will be required to liaise directly with
+a variety of stakeholders throughout the firmYou will develop functionality in an
+iterative fashion, liaising with the business analysts, product owners and
+other developers within the scrum teamYou will be responsible for continuously
+improving the quality of our system and codebase including code reviews and
+refactoring where necessary. Required Skills:
+
+
+
+
+
+
+
+
+
+
+
+
+
+Experience of agile and scrum methodologies.Core Java.Unix shell scripting.SQL and Relational Databases such as DB2.Integration technologies -
+MQ/Xml/SOAP/JSON/Protocol Buffers/Spring.Enterprise Architecture Patterns, GoF design Build & agile - Ant, Gradle/Maven, Sonar,
+Jenkins/Hudson, GIT/perforce.Sound understanding of Object Oriented
+Analysis, Design and Programming.Strong communication and stakeholder
+management skills 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Desired Skills:
+
+Experience in banking and regulatory
+reporting (CTFC, EMIR, Dodd Frank, MiFID)Knowledge of OTC, listed and cash productsDomain driven design and micro-services
+experience
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+
+
+
