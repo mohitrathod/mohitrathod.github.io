@@ -71,5 +71,31 @@ select e.emp_name, (select count(*) from employee where mrg_id = e.emp_id) as em
 
 <hr style="border-top: 1px;" />
 
+How many columns is too many columns?
+
+I've noticed that a lot of folks here cite tables with 20+ (I've seen as much as 55) columns in one table. Now I don't pretend to be a database design expert, but I've always heard that this is a horrible practice. When I see this, I usually suggest splitting into two tables with a one to one relationship: one containing the most frequently used data, the other with the least often used data. Though at the same time, there's the possible issue of performance (less JOINs and such). So my question is this:
+When it comes to really LARGE scale databases, is there actually an advantage to having a large amount of columns, despite the fact that this usually leads to many NULL values?
+Which is more of a performance hit: lots of columns with lots of NULLs, or fewer columns with lots of JOINs?
+
+
+
+
+The design of the table depends on the entity it needs to store. If all the data belongs together, then 50 columns (or even 100) might be the correct thing to do.
+So long as the table is normalized, there is no rule of thumb regarding size, apart from database capabilities and the need to optimize.
+
+
+
+It's considered too many once it's above the maximum limit supported by the database.
+The fact that you don't need every column to be returned by every query is perfectly normal; that's why SELECT statement lets you explicitly name the columns you need.
+As a general rule, your table structure should reflect your domain model; if you really do have 70 (100, what have you) attributes that belong to the same entity there's no reason to separate them into multiple tables.
+
+MySQL has hard limit of 4096 columns per table, but the effective maximum may be less for a given table. The exact column limit depends on several factors.
+
+
+
+
+
+
+
 
 </pre>
