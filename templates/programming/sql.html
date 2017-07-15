@@ -91,6 +91,251 @@ As a general rule, your table structure should reflect your domain model; if you
 
 MySQL has hard limit of 4096 columns per table, but the effective maximum may be less for a given table. The exact column limit depends on several factors.
 
+<hr style="border-top: 1px;" />
+
+What does UNION do? What is the difference between UNION and UNION ALL?
+
+UNION merges the contents of two structurally-compatible tables into a single combined table. The difference between UNION and UNION ALL is that UNION will omit duplicate records whereas UNION ALL will include duplicate records.
+
+It is important to note that the performance of UNION ALL will typically be better than UNION, since UNION requires the server to do the additional work of removing any duplicates. So, in cases where is is certain that there will not be any duplicates, or where having duplicates is not a problem, use of UNION ALL would be recommended for performance reasons.
+
+<hr style="border-top: 1px;" />
+
+List and explain the different types of JOIN clauses supported in ANSI-standard SQL.
+
+ANSI-standard SQL specifies five types of JOIN clauses as follows:
+
+    INNER JOIN (a.k.a. “simple join”): Returns all rows for which there is at least one match in BOTH tables. This is the default type of join if no specific JOIN type is specified.
+
+    LEFT JOIN (or LEFT OUTER JOIN): Returns all rows from the left table, and the matched rows from the right table; i.e., the results will contain all records from the left table, even if the JOIN condition doesn’t find any matching records in the right table. This means that if the ON clause doesn’t match any records in the right table, the JOIN will still return a row in the result for that record in the left table, but with NULL in each column from the right table.
+
+    RIGHT JOIN (or RIGHT OUTER JOIN): Returns all rows from the right table, and the matched rows from the left table. This is the exact opposite of a LEFT JOIN; i.e., the results will contain all records from the right table, even if the JOIN condition doesn’t find any matching records in the left table. This means that if the ON clause doesn’t match any records in the left table, the JOIN will still return a row in the result for that record in the right table, but with NULL in each column from the left table.
+
+    FULL JOIN (or FULL OUTER JOIN): Returns all rows for which there is a match in EITHER of the tables. Conceptually, a FULL JOIN combines the effect of applying both a LEFT JOIN and a RIGHT JOIN; i.e., its result set is equivalent to performing a UNION of the results of left and right outer queries.
+
+    CROSS JOIN: Returns all records where each row from the first table is combined with each row from the second table (i.e., returns the Cartesian product of the sets of rows from the joined tables). Note that a CROSS JOIN can either be specified using the CROSS JOIN syntax (“explicit join notation”) or (b) listing the tables in the FROM clause separated by commas without using a WHERE clause to supply join criteria (“implicit join notation”).
+
+<hr style="border-top: 1px;" />
+
+What will be the result of the query below? Explain your answer and provide a version that behaves correctly.
+
+select case when null = null then 'Yup' else 'Nope' end as Result;
+
+This query will actually yield “Nope”, seeming to imply that null is not equal to itself! The reason for this is that the proper way to compare a value to null in SQL is with the is operator, not with =.
+
+Accordingly, the correct version of the above query that yields the expected result (i.e., “Yup”) would be as follows:
+
+select case when null is null then 'Yup' else 'Nope' end as Result;
+
+<hr style="border-top: 1px;" />
+
+Given the following tables:
+
+sql> SELECT * FROM runners;
++----+--------------+
+| id | name         |
++----+--------------+
+|  1 | John Doe     |
+|  2 | Jane Doe     |
+|  3 | Alice Jones  |
+|  4 | Bobby Louis  |
+|  5 | Lisa Romero  |
++----+--------------+
+
+sql> SELECT * FROM races;
++----+----------------+-----------+
+| id | event          | winner_id |
++----+----------------+-----------+
+|  1 | 100 meter dash |  2        |
+|  2 | 500 meter dash |  3        |
+|  3 | cross-country  |  2        |
+|  4 | triathalon     |  NULL     |
++----+----------------+-----------+
+
+What will be the result of the query below?
+
+SELECT * FROM runners WHERE id NOT IN (SELECT winner_id FROM races)
+
+Explain your answer and also provide an alternative version of this query that will avoid the issue that it exposes.
+
+Surprisingly, given the sample data provided, the result of this query will be an empty set. The reason for this is as follows: If the set being evaluated by the SQL NOT IN condition contains any values that are null, then the outer query here will return an empty set, even if there are many runner ids that match winner_ids in the races table.
+
+Knowing this, a query that avoids this issue would be as follows:
+
+SELECT * FROM runners WHERE id NOT IN (SELECT winner_id FROM races WHERE winner_id IS NOT null)
+
+
+
+<hr style="border-top: 1px;" />
+
+Given two tables created and populated as follows:
+
+CREATE TABLE dbo.envelope(id int, user_id int);
+CREATE TABLE dbo.docs(idnum int, pageseq int, doctext varchar(100));
+
+INSERT INTO dbo.envelope VALUES
+  (1,1),
+  (2,2),
+  (3,3);
+
+INSERT INTO dbo.docs(idnum,pageseq) VALUES
+  (1,5),
+  (2,6),
+  (null,0);
+
+What will the result be from the following query:
+
+UPDATE docs SET doctext=pageseq FROM docs INNER JOIN envelope ON envelope.id=docs.idnum
+WHERE EXISTS (
+  SELECT 1 FROM dbo.docs
+  WHERE id=envelope.id
+);
+
+Explain your answer.
+
+
+<hr style="border-top: 1px;" />
+
+Given two tables created and populated as follows:
+
+CREATE TABLE dbo.envelope(id int, user_id int);
+CREATE TABLE dbo.docs(idnum int, pageseq int, doctext varchar(100));
+
+INSERT INTO dbo.envelope VALUES
+  (1,1),
+  (2,2),
+  (3,3);
+
+INSERT INTO dbo.docs(idnum,pageseq) VALUES
+  (1,5),
+  (2,6),
+  (null,0);
+
+What will the result be from the following query:
+
+UPDATE docs SET doctext=pageseq FROM docs INNER JOIN envelope ON envelope.id=docs.idnum
+WHERE EXISTS (
+  SELECT 1 FROM dbo.docs
+  WHERE id=envelope.id
+);
+
+Explain your answer.
+
+The result of the query will be as follows:
+
+idnum  pageseq  doctext
+1      5        5
+2      6        6
+NULL   0        NULL
+
+The EXISTS clause in the above query is a red herring. It will always be true since ID is not a member of dbo.docs. As such, it will refer to the envelope table comparing itself to itself!
+
+The idnum value of NULL will not be set since the join of NULL will not return a result when attempting a match with any value of envelope.
+
+
+<hr style="border-top: 1px;" />
+
+What is wrong with this SQL query? Correct it so it executes properly.
+
+SELECT Id, YEAR(BillingDate) AS BillingYear 
+FROM Invoices
+WHERE BillingYear >= 2010;
+
+The expression BillingYear in the WHERE clause is invalid. Even though it is defined as an alias in the SELECT phrase, which appears before the WHERE phrase, the logical processing order of the phrases of the statement is different from the written order. Most programmers are accustomed to code statements being processed generally top-to-bottom or left-to-right, but T-SQL processes phrases in a different order.
+
+The correct query should be:
+
+SELECT Id, YEAR(BillingDate) AS BillingYear
+FROM Invoices
+WHERE YEAR(BillingDate) >= 2010;
+
+
+
+<hr style="border-top: 1px;" />
+
+Given these contents of the Customers table:
+
+Id	Name			ReferredBy
+1	John Doe		NULL
+2	Jane Smith		NULL
+3	Anne Jenkins		2
+4	Eric Branford		NULL
+5	Pat Richards		1
+6	Alice Barnes		2
+
+Here is a query written to return the list of customers not referred by Jane Smith:
+
+SELECT Name FROM Customers WHERE ReferredBy <> 2;
+
+What will be the result of the query? Why? What would be a better way to write it?
+
+Although there are 4 customers not referred by Jane Smith (including Jane Smith herself), the query will only return one: Pat Richards. All the customers who were referred by nobody at all (and therefore have NULL in their ReferredBy column) don’t show up. But certainly those customers weren’t referred by Jane Smith, and certainly NULL is not equal to 2, so why didn’t they show up?
+
+SQL Server uses three-valued logic, which can be troublesome for programmers accustomed to the more satisfying two-valued logic (TRUE or FALSE) most programming languages use. In most languages, if you were presented with two predicates: ReferredBy = 2 and ReferredBy <> 2, you would expect one of them to be true and one of them to be false, given the same value of ReferredBy. In SQL Server, however, if ReferredBy is NULL, neither of them are true and neither of them are false. Anything compared to NULL evaluates to the third value in three-valued logic: UNKNOWN.
+
+The query should be written:
+
+SELECT Name FROM Customers WHERE ReferredBy IS NULL OR ReferredBy <> 2
+
+Watch out for the following, though!
+
+SELECT Name FROM Customers WHERE ReferredBy = NULL OR ReferredBy <> 2
+
+This will return the same faulty set as the original. Why? We already covered that: Anything compared to NULL evaluates to the third value in the three-valued logic: UNKNOWN. That “anything” includes NULL itself! That’s why SQL Server provides the IS NULL and IS NOT NULL operators to specifically check for NULL. Those particular operators will always evaluate to true or false.
+
+Even if a candidate doesn’t have a great amount of experience with SQL Server, diving into the intricacies of three-valued logic in general can give a good indication of whether they have the ability learn it quickly or whether they will struggle with it.
+
+<hr style="border-top: 1px;" />
+
+Difference between primary key and unique key in SQL
+
+1) Unique key in a table can be null, at-least one but primary key can not be null in any table in relation database like MySQL , Oracle etc.
+
+2) Primary key can be combination of more than one unique keys in same table.
+
+3) There can be only one primary key per table in relation database e.g. MySQL, Oracle or Sybase but there can be more than one unique key per table.
+
+4) Unique key is represented using unique constraint while primary key is created using primary key constraint in any table and it's automatically gets unique constraint.
+
+5) Many database engine automatically puts clustered index on primary key and since you can only have one clustered index per table, its not available to any other unique key at same time.
+
+
+<hr style="border-top: 1px;" />
+
+Considering the database schema displayed in the SQLServer-style diagram below, write a SQL query to return a list of all the invoices. For each invoice, show the Invoice ID, the billing date, the customer’s name, and the name of the customer who referred that customer (if any). The list should be ordered by billing date.
+
+<img src="data:image/png;base64,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"/>
+
+SELECT i.Id, i.BillingDate, c.Name, r.Name AS ReferredByName
+FROM Invoices i
+ JOIN Customers c ON i.CustomerId = c.Id
+ LEFT JOIN Customers r ON c.ReferredBy = r.Id
+ORDER BY i.BillingDate;
+
+This question simply tests the candidate’s ability take a plain-English requirement and write a corresponding SQL query. There is nothing tricky in this one, it just covers the basics:
+
+    Did the candidate remember to use a LEFT JOIN instead of an inner JOIN when joining the customer table for the referring customer name? If not, any invoices by customers not referred by somebody will be left out altogether.
+
+    Did the candidate alias the tables in the JOIN? Most experienced T-SQL programmers always do this, because repeating the full table name each time it needs to be referenced gets tedious quickly. In this case, the query would actually break if at least the Customer table wasn’t aliased, because it is referenced twice in different contexts (once as the table which contains the name of the invoiced customer, and once as the table which contains the name of the referring customer).
+
+    Did the candidate disambiguate the Id and Name columns in the SELECT? Again, this is something most experienced programmers do automatically, whether or not there would be a conflict. And again, in this case there would be a conflict, so the query would break if the candidate neglected to do so.
+
+Note that this query will not return Invoices that do not have an associated Customer. This may be the correct behavior for most cases (e.g., it is guaranteed that every Invoice is associated with a Customer, or unmatched Invoices are not of interest). However, in order to guarantee that all Invoices are returned no matter what, the Invoices table should be joined with Customers using LEFT JOIN:
+
+SELECT i.Id, i.BillingDate, c.Name, r.Name AS ReferredByName
+FROM Invoices i
+ LEFT JOIN Customers c ON i.CustomerId = c.Id
+ LEFT JOIN Customers r ON c.ReferredBy = r.Id
+ORDER BY i.BillingDate;
+
+
+<hr style="border-top: 1px;" />
+<hr style="border-top: 1px;" />
+<hr style="border-top: 1px;" />
+<hr style="border-top: 1px;" />
+
+
+
 
 
 
