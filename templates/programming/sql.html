@@ -330,8 +330,170 @@ ORDER BY i.BillingDate;
 
 
 <hr style="border-top: 1px;" />
+
+Assume a schema of Emp ( Id, Name, DeptId ) , Dept ( Id, Name).
+
+If there are 10 records in the Emp table and 5 records in the Dept table, how many rows will be displayed in the result of the following SQL query:
+
+Select * From Emp, Dept
+
+Explain your answer.
+
+The query will result in 50 rows as a “cartesian product” or “cross join”, which is the default whenever the ‘where’ clause is omitted.
+
 <hr style="border-top: 1px;" />
+
+Given a table SALARIES, such as the one below, that has m = male and f = female values. Swap all f and m values (i.e., change all f values to m and vice versa) with a single update query and no intermediate temp table.
+
+Id  Name  Sex  Salary
+1   A     m    2500
+2   B     f    1500
+3   C     m    5500
+4   D     f    500
+
+UPDATE SALARIES SET sex = CASE sex WHEN 'm' THEN 'f' ELSE 'm' END
+
 <hr style="border-top: 1px;" />
+
+Given two tables created as follows
+
+create table test_a(id numeric);
+
+create table test_b(id numeric);
+
+insert into test_a(id) values
+  (10),
+  (20),
+  (30),
+  (40),
+  (50);
+
+insert into test_b(id) values
+  (10),
+  (30),
+  (50);
+
+Write a query to fetch values in table test_a that are and not in test_b without using the NOT keyword.
+
+In SQL Server, PostgreSQL, and SQLite, this can be done using the except keyword as follows:
+
+select * from test_a
+except
+select * from test_b;
+
+In Oracle, the minus keyword is used instead.
+
+MySQL does not support the except function, so it is necessary to use not in.
+
+
+--
+
+Given a table TBL with a field Nmbr that has rows with the following values:
+
+1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1
+
+Write a query to add 2 where Nmbr is 0 and add 3 where Nmbr is 1.
+
+update TBL set Nmbr = case when Nmbr > 0 then Nmbr+3 else Nmbr+2 end;
+
+--
+
+Write a SQL query to find the 10th highest employee salary from an Employee table. Explain your answer.
+
+(Note: You may assume that there are at least 10 records in the Employee table.)
+
+This can be done as follows:
+
+SELECT TOP (1) Salary FROM
+(
+    SELECT DISTINCT TOP (10) Salary FROM Employee ORDER BY Salary DESC
+) AS Emp ORDER BY Salary
+
+This works as follows:
+
+First, the SELECT DISTINCT TOP (10) Salary FROM Employee ORDER BY Salary DESC query will select the top 10 salaried employees in the table. However, those salaries will be listed in descending order. That was necessary for the first query to work, but now picking the top 1 from that list will give you the highest salary not the the 10th highest salary.
+
+Therefore, the second query reorders the 10 records in ascending order (which the default sort order) and then selects the top record (which will now be the lowest of those 10 salaries).
+
+Not all databases support the TOP keyword. For example, MySQL and PostreSQL use the LIMIT keyword, as follows:
+
+SELECT Salary FROM
+(
+    SELECT DISTINCT Salary FROM Employee ORDER BY Salary DESC LIMIT 10
+) AS Emp ORDER BY Salary LIMIT 1;
+
+--
+
+Write a SQL query using UNION ALL (not UNION) that uses the WHERE clause to eliminate duplicates. Why might you want to do this?
+
+You can avoid duplicates using UNION ALL and still run much faster than UNION DISTINCT (which is actually same as UNION) by running a query like this:
+
+SELECT * FROM mytable WHERE a=X UNION ALL SELECT * FROM mytable WHERE b=Y AND a!=X
+
+The key is the AND a!=X part. This gives you the benefits of the UNION (a.k.a., UNION DISTINCT) command, while avoiding much of its performance hit.
+
+--
+
+Given the following tables:
+
+SELECT * FROM users;
+
+user_id  username
+1        John Doe                                                                                            
+2        Jane Don                                                                                            
+3        Alice Jones                                                                                         
+4        Lisa Romero
+
+SELECT * FROM training_details;
+
+user_training_id  user_id  training_id  training_date
+1                 1        1            "2015-08-02"
+2                 2        1            "2015-08-03"
+3                 3        2            "2015-08-02"
+4                 4        2            "2015-08-04"
+5                 2        2            "2015-08-03"
+6                 1        1            "2015-08-02"
+7                 3        2            "2015-08-04"
+8                 4        3            "2015-08-03"
+9                 1        4            "2015-08-03"
+10                3        1            "2015-08-02"
+11                4        2            "2015-08-04"
+12                3        2            "2015-08-02"
+13                1        1            "2015-08-02"
+14                4        3            "2015-08-03"
+
+Write a query to to get the list of users who took the a training lesson more than once in the same day, grouped by user and training lesson, each ordered from the most recent lesson date to oldest date.
+
+SELECT
+      u.user_id,
+      username,
+      training_id,
+      training_date,
+      count( user_training_id ) AS count
+  FROM users u JOIN training_details t ON t.user_id = u.user_id
+  GROUP BY user_id,
+           training_id,
+           training_date
+  HAVING count( user_training_id ) > 1
+  ORDER BY training_date DESC;
+
+user_id  username      training_id  training_date             count
+4        Lisa Romero   2            August, 04 2015 00:00:00  2
+4        Lisa Romero   3            August, 03 2015 00:00:00  2
+1        John Doe      1            August, 02 2015 00:00:00  3
+3        Alice Jones   2            August, 02 2015 00:00:00  2
+
+
+--
+
+What is an execution plan? When would you use it? How would you view the execution plan?
+
+An execution plan is basically a road map that graphically or textually shows the data retrieval methods chosen by the SQL server’s query optimizer for a stored procedure or ad hoc query. Execution plans are very useful for helping a developer understand and analyze the performance characteristics of a query or stored procedure, since the plan is used to execute the query or stored procedure.
+
+In many SQL systems, a textual execution plan can be obtained using a keyword such as EXPLAIN, and visual representations can often be obtained as well. In Microsoft SQL Server, the Query Analyzer has an option called “Show Execution Plan” (located on the Query drop down menu). If this option is turned on, it will display query execution plans in a separate window when a query is run.
+
+--
+
 <hr style="border-top: 1px;" />
 
 
