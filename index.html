@@ -86,8 +86,8 @@
                     controller: 'mainController'
                 }).
 				when('/javaBlog', {
-                    templateUrl: 'templates/programming/java.html',
-                    controller: 'mainController'
+					template: 'loading..',
+                    controller: 'javaController'
                 }).
 				when('/sqlBlog', {
                     templateUrl: 'templates/programming/sql.html',
@@ -115,9 +115,14 @@
 		window.location = "https://in.linkedin.com/in/rathodmohit";
     })
 	
+	module.controller("javaController", function($scope) {
+		window.location = "/blog/java";
+    })
+	
 	module.controller("resumeController", function($scope) {
 		window.location = "/resume.html";
     })
+	
 	module.controller("routerController", function($scope) {
 		window.location = "https://netgear.opendns.com/account.php?device_id=0000582C487217DD&profile=2658728"
     })
