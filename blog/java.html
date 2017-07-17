@@ -1728,6 +1728,14 @@ Happy Learning !!
 	
 <hr style="border-top: 1px;" />
 	
+How can I sort a LinkedHashMap based on its values given that the LinkedHashMap contains of String and Integer. So I need to sort it based on the Values which are Integers.
+
+map.entrySet().stream()
+    .sorted(Map.Entry.comparingByValue())
+    .forEach(entry -> ... );
+	
+<hr style="border-top: 1px;" />
+
 <pre>
 
 </div>
