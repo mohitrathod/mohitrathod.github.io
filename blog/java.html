@@ -1880,6 +1880,14 @@ Moreover, our perception of the real world is inevitably based on mutable object
 Apart from all these legitimate reasons, alas, the most probable cause why people keep creating mutable objects is inertia of mind, a.k.a. resistance to change. Note that most developers of today have been trained well before immutability (and the containing paradigm, functional programming) became "trendy" in their sphere of influence, and don't keep their knowledge up to date about new tools and methods of our trade - in fact, many of us humans positively resist new ideas and processes. "I have been programming like this for nn years and I don't care about the latest stupid fads!"
 
 	
+How can I sort a LinkedHashMap based on its values given that the LinkedHashMap contains of String and Integer. So I need to sort it based on the Values which are Integers.
+
+map.entrySet().stream()
+    .sorted(Map.Entry.comparingByValue())
+    .forEach(entry -> ... );
+	
+<hr style="border-top: 1px;" />
+
 <pre>
 
 </div>
