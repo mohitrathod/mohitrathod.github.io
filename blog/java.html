@@ -1312,7 +1312,7 @@ It is called the "diamond problem" because of the shape of the class inheritance
 Java 8 introduces default methods on interfaces. If A,B,C are interfaces, B,C can each provide a different implementation to an abstract method of A, causing the diamond problem. Either class D must reimplement the method (the body of which can simply forward the call to one of the super implementations), or the ambiguity will be rejected as a compile error.[6] Prior to Java 8, Java was not subject to the Diamond problem risk, as Java does not support multiple inheritance.
 
 
-How hashmap works in java?
+<a name="HowHashmapWorksInJava" href="#HowHashmapWorksInJava" >How hashmap works in java ?</a>
 
 Single statement answer
 
@@ -1473,7 +1473,10 @@ http://howtodoinjava.com/core-java/collections/how-hashmap-works-in-java/
 
 <hr style="border-top: 1px;" />
 
-Working with hashCode and equals methods in java
+
+<a name="hashCodeAndEquals" href="#hashCodeAndEquals" >Working with hashCode and equals methods in java</a>
+
+
 
 The general contract of hashCode is:
 
@@ -1728,7 +1731,7 @@ Happy Learning !!
 	
 <hr style="border-top: 1px;" />
 
-Volatile Vs Atomic
+<a name="VolatileVsAtomic" href="#VolatileVsAtomic" >Volatile Vs Atomic</a>
 
 The effect of the volatile keyword is approximately that each individual read or write operation on that variable is atomic.
 
@@ -1739,7 +1742,7 @@ The Atomic classes, like AtomicInteger and AtomicReference, provide a wider vari
 
 <hr style="border-top: 1px;" />
 
-How can I sort a LinkedHashMap based on its values given that the LinkedHashMap contains of String and Integer. So I need to sort it based on the Values which are Integers.
+<a name="LinkedHashMapSortByValue" href="#LinkedHashMapSortByValue" >How can I sort a LinkedHashMap based on its values given that the LinkedHashMap contains of String and Integer. So I need to sort it based on the Values which are Integers.</a>
 
 map.entrySet().stream()
     .sorted(Map.Entry.comparingByValue())
@@ -1747,7 +1750,8 @@ map.entrySet().stream()
 	
 <hr style="border-top: 1px;" />	
 
-Immutable Objects
+<a name="ImmutableObjects" href="#ImmutableObjects" >Immutable Objects</a>
+
 
 An object is considered immutable if its state cannot change after it is constructed. Maximum reliance on immutable objects is widely accepted as a sound strategy for creating simple, reliable code.
 Immutable objects are particularly useful in concurrent applications. Since they cannot change state, they cannot be corrupted by thread interference or observed in an inconsistent state.
