@@ -1,0 +1,460 @@
+
+<!DOCTYPE html>
+<html lang="en-us">
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>Java Blog</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://material.angularjs.org/1.1.1/docs.css" rel='stylesheet' type='text/css' ></link>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    
+  </head>
+
+<body>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1 align="center" > Python Notes </h1>	
+
+<h5 align="left"  > published on 11 Oct. 2016 </h5>
+
+<hr>
+
+<h5 align="right"  >  code snippets can directly run at <a href="http://www.codechef.com/ide">codechef.com/ide</a> with Python-3.4</h5>
+
+<pre>
+
+
+<a name="ReturnMultipleValuesFromAFunctionInPythonExample" href="#ReturnMultipleValuesFromAFunctionInPythonExample" >Return multiple values from a function in Python Example</a>
+
+
+def f(in_str):
+    out_str = in_str.upper()
+    return True, out_str # Creates tuple automatically
+
+succeeded, b = f("a") # Automatic tuple unpacking
+
+print ("var1" , succeeded , " var2" , str(b))
+
+
+<hr style="border-top: 1px;" />
+
+
+<a name="loopStatement" href="#loopStatement" >Loop Statement Example</a>
+
+
+
+print("-----")
+print("for loop example ")
+
+for letter in 'Python':     # First Example
+   print ('Current Letter :', letter)
+
+fruits = ['banana', 'apple',  'mango']
+for fruit in fruits:        # Second Example
+   print ('Current fruit :', fruit)
+
+#Output :
+
+#print ("Good bye!")
+
+#Current Letter : P
+#Current Letter : y
+#Current Letter : t
+#Current Letter : h
+#Current Letter : o
+#Current Letter : n
+#Current fruit : banana
+#Current fruit : apple
+#Current fruit : mango
+#Good bye!
+
+print("-----")
+print("Iterating by Sequence Index")
+
+fruits = ['banana', 'apple',  'mango']
+for index in range(len(fruits)):
+   print ('Current fruit :', fruits[index])
+   
+#Output :
+
+#Current fruit : banana
+#Current fruit : apple
+#Current fruit : mango   
+
+print("-----")
+print("Using else Statement with Loops")
+
+for num in range(10,20):  #to iterate between 10 to 20
+   for i in range(2,num): #to iterate on the factors of the number
+      if num%i == 0:      #to determine the first factor
+         j=num/i          #to calculate the second factor
+         print ('%d equals %d * %d' % (num,i,j))
+         break #to move to the next number, the #first FOR
+   else:                  # else part of the loop
+      print (num, 'is a prime number')
+	  
+#Output :
+
+#10 equals 2 * 5
+#11 is a prime number
+#12 equals 2 * 6
+#13 is a prime number
+#14 equals 2 * 7
+#15 equals 3 * 5
+#16 equals 2 * 8
+#17 is a prime number
+#18 equals 2 * 9
+#19 is a prime number  
+
+
+<hr style="border-top: 1px;" />
+
+<a name="MultilineCommentExample" href="#MultilineCommentExample" >Multiline comment Example</a>
+
+
+'''
+This is a multi line
+comment.
+You can use triple-quoted strings. When they're not a docstring (first thing in a class/function/module), they are ignored.
+''' 
+
+print("program starts after comments")
+
+
+<hr style="border-top: 1px;" />
+
+
+
+<a name="swapVariablesPython" href="#swapVariablesPython" >How to swap variables in python ?</a> 
+
+
+
+Python evaluates expressions from left to right. Notice that while evaluating an assignment, the right-hand side is evaluated before the left-hand side.
+
+	http://docs.python.org/2/reference/expressions.html#evaluation-order
+
+That means to swap values from a to b and viceversa the following expression is correct 
+
+	a,b = b,a : 
+
+<hr style="border-top: 1px;" />
+
+<a name="pythonAsUtilities" href="#pythonAsUtilities" >Python Utilities that can be used to make everyday life easy</a> 
+
+print("Day_Over_Day_Rate_Adjustment".lower())
+
+#----
+
+print('Return multiple values from a function in Python Example'.title().replace(' ', ''))
+	
+
+<hr style="border-top: 1px;" />
+
+<a name="PythonPassByValueOrPassByReference" href="#PythonPassByValueOrPassByReference" >is Python pass by value or pass by reference ?</a> 
+	
+You can not pass a simple primitive by reference in Python, but you can do things like:	
+	
+def foo(y):
+  y[0] = y[0]**2
+
+x = [5]
+foo(x)
+print x[0]
+
+	
+That is a weird way to go about it, however. Note that in Python, you can also return more than one value, making some of the use cases for pass by reference less important:
+
+def foo(x, y):
+   return x**2, y**2
+
+a = 1
+b = 2
+a, b = foo(a, b)
+
+	
+When you return values like that, they are being returned as a Tuple which is in turn unpacked.
+
+Another way to think about this is that, while you can't explicitly pass variables by reference in Python, you can modify the properties of objects that were passed in. In my example (and others) you can modify members of the list that was passed in. You would not, however, be able to reassign the passed in variable entirely. For instance, see the following two pieces of code look like they might do something similar, but end up with different results:	
+
+def clear_a(x):
+  x = []
+
+def clear_b(x):
+  while x: x.pop()
+
+z = [1,2,3]
+clear_a(z) # z will not be changed
+clear_b(z) # z will be emptied
+
+
+<hr style="border-top: 1px;" />
+
+
+<a name="simpleHttpServerPython" href="#simpleHttpServerPython" >Start simple http server with python</a>
+
+If you need a quick web server running and you don't want to mess with setting up apache or something similar, then Python can help. Python comes with a simple builtin HTTP server. With the help of this little HTTP server you can turn any directory in your system into your web server directory. The only thing you need to have installed is Python.Practically speaking this is very useful to share files inside your local network. Implementing this tiny but hugely useful HTTP server is very simple, its just a single line command.
+Assume that I would like to share the directory /home/newProject and my IP address is 192.168.1.2
+Open up a terminal and type:	
+
+
+	$ cd /home/newProject
+	$ python -m SimpleHTTPServer
+	
+	# for python 3 it is
+	$ python -m http.server
+	
+That's it! Now your http server will start in port 8000. You will get the message:
+	
+	Serving HTTP on 0.0.0.0 port 8000 ...
+
+Now open a browser and type the following address:
+
+	http://127.0.0.1:8000 or http://localhost:8000
+	
+If the directory has a file named index.html, that file will be served as the initial file. If there is no index.html, then the files in the directory will be listed.
+
+If you wish to change the port that's used start the program via:
+
+	$ python -m SimpleHTTPServer 8080
+	
+
+
+<hr style="border-top: 1px;" />
+
+
+<a name="ProductArrayPuzzle" href="#ProductArrayPuzzle" >Given an array arr[] of n integers, construct a Product Array prod[] (of same size) such that prod[i] is equal to the product of all the elements of arr[] except arr[i].</a>
+	
+	
+	print ('-- product array puzzle --')
+
+	arr = [10, 3, 5, 6, 2]
+	prod = []
+
+	product = 1
+
+	for data in arr:
+	    product = product * data
+
+	for data in arr:
+	    prod.append((product / data))
+
+	print (prod)
+ 
+ 
+<hr style="border-top: 1px;" />
+
+<a name="ReverseTheArray" href="#ReverseTheArray" >Reverse the array</a>
+
+	Sample Input
+
+	4
+	1 4 3 2
+	Sample Output
+
+	2 3 4 1
+	
+	#!/bin/python3
+
+	import sys
+
+
+	n = int(input().strip())
+	arr = [int(arr_temp) for arr_temp in input().strip().split(' ')]
+
+	import re
+
+	arr.reverse()
+	print (re.sub(",|\[|\]", "", str(arr)))
+
+<hr style="border-top: 1px;" />
+
+<a name="GetNodeDataOfTheNthNodeFromTheEnd" href="#GetNodeDataOfTheNthNodeFromTheEnd" >Get Node data of the Nth Node from the end</a>
+
+"""
+ Get Node data of the Nth Node from the end.
+ head could be None as well for empty list
+ Node is defined as
+""" 
+class Node(object):
+ 
+    def __init__(self, data=None, next_node=None):
+       self.data = data
+       self.next = next_node
+
+'''return back the node data of the linked list in the below method.'''
+
+
+def GetNode(head, position):
+    
+    if head is None or position is None:
+        return
+    
+    pointer = head
+    arr = []
+    while pointer is not None and pointer.data is not None:
+        #print (pointer.data) 
+        arr.append(pointer.data)
+        if pointer.next is not None:
+            pointer = pointer.next
+        else :
+            pointer = None
+    
+    arr.append(None)
+    
+    arr.reverse()
+     
+    if (len (arr) > position):
+        print (arr [position])
+
+
+n5 = Node ()
+n4 = Node (4, n5)
+n3 = Node (3, n4)
+n2 = Node (2, n3)
+n1 = Node (1, n2)
+
+GetNode(n1, 1)
+
+# output 4
+
+
+<hr style="border-top: 1px;" />
+
+<a name="writeDataAsJson" href="#writeDataAsJson" >Write data to file on disk in json format </a>
+
+import json
+
+a = {'hello': 'world'}
+b = 'mohit'
+
+with open('C:\\Users\\mohit\\temp\\filename.json', 'wt') as handle:
+    json.dump(a, handle)
+
+<hr style="border-top: 1px;" />
+
+
+<a name="mapReduceAndLambda" href="#mapReduceAndLambda" >Map Reduce And Lambda example</a>
+
+def varToSqFeet(var):
+    return var*9
+x = list(map(varToSqFeet, [100]))
+print(x)
+
+varToSqFeetLamda = lambda var : 9*var
+print (varToSqFeetLamda(100))
+
+from functools import reduce
+f = lambda a,b: a if (a>b) else b
+print(reduce(f, [47,11,42,102,13]))
+# output: 102
+
+# Calculating the sum of the numbers from 1 to 100
+from functools import reduce
+print(reduce(lambda x, y: x+y, range(1,101)))
+# output 5050
+
+<hr style="border-top: 1px;" />
+
+<a name="WebScraping" href="#WebScraping" >Beginner’s guide to Web Scraping in Python (using BeautifulSoup)</a>
+
+What is Web Scraping?
+
+Web scraping is a computer software technique of extracting information from websites. This technique mostly focuses on the transformation of unstructured data (HTML format) on the web into structured data (database or spreadsheet).
+
+You can perform web scrapping in various ways, including use of Google Docs to almost every programming language. I would resort to Python because of its ease and rich eocsystem. It has a library known as ‘BeautifulSoup’ which assists this task. In this article, I’ll show you the easiest way to learn web scraping using python programming.
+
+For those of you, who need a non-programming way to extract information out of web pages, you can also look at import.io . It provides a GUI driven interface to perform all basic web scraping operations. The hackers can continue to read this article!
+
+
+Libraries required for web scraping
+
+
+BeautifulSoup: It is an incredible tool for pulling out information from a webpage. You can use it to extract tables, lists, paragraph and you can also put filters to extract information from web pages. In this article, we will use latest version BeautifulSoup 4. You can look at the installation instruction in its <a href="http://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank" rel="nofollow noopener noreferrer">documentation page</a>.
+Urllib2: It is a Python module which can be used for fetching URLs. It defines functions and classes to help with URL actions (basic and digest authentication, redirections, cookies, etc). For more detail refer to the documentation page.
+	
+Python has several other options for HTML scraping in addition to BeatifulSoup. Here are some others:
+
+	<a href="http://wwwsearch.sourceforge.net/mechanize/" rel="nofollow">mechanize</a>
+	<a href="http://arshaw.com/scrapemark/" rel="nofollow">scrapemark</a>
+	<a href="http://scrapy.org/" rel="nofollow">scrapy</a>
+	
+	
+BeautifulSoup Example:
+
+#import the library used to query a website
+from urllib.request import urlopen
+
+#specify the url
+wiki = "https://en.wikipedia.org/wiki/List_of_state_and_union_territory_capitals_in_India"
+
+#Query the website and return the html to the variable 'page'
+page = urlopen(wiki)
+
+#import the Beautiful soup functions to parse the data returned from the website
+from bs4 import BeautifulSoup
+
+#Parse the html in the 'page' variable, and store it in Beautiful Soup format
+soup = BeautifulSoup(page)
+
+print(soup.title.string)
+
+all_links = soup.find_all("a")
+for link in all_links:
+    print(link.get("href"))
+
+all_tables=soup.find_all('table')
+
+right_table=soup.find('table', class_='wikitable sortable plainrowheaders')
+print(right_table)
+
+#Generate lists
+A=[]
+B=[]
+C=[]
+D=[]
+E=[]
+F=[]
+G=[]
+
+for row in right_table.findAll("tr"):
+    cells = row.findAll('td')
+    states=row.findAll('th') #To store second column data
+    if len(cells)==6: #Only extract table body not heading
+        A.append(cells[0].find(text=True))
+        B.append(states[0].find(text=True))
+        C.append(cells[1].find(text=True))
+        D.append(cells[2].find(text=True))
+        E.append(cells[3].find(text=True))
+        F.append(cells[4].find(text=True))
+        G.append(cells[5].find(text=True))
+
+#import pandas to convert list to data frame
+import pandas as pd
+df=pd.DataFrame(A,columns=['Number'])
+df['State/UT']=B
+df['Admin_Capital']=C
+df['Legislative_Capital']=D
+df['Judiciary_Capital']=E
+df['Year_Capital']=F
+df['Former_Capital']=G
+print(df)
+
+more at <a href="https://www.analyticsvidhya.com/blog/2015/10/beginner-guide-web-scraping-beautiful-soup-python/">https://www.analyticsvidhya.com/blog/2015/10/beginner-guide-web-scraping-beautiful-soup-python/ </a>
+
+
+<hr style="border-top: 1px;" />
+
+
+</pre>
+
+</div>
+
+</body>
+
+</html>

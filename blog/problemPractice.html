@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>Java Blog</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://material.angularjs.org/1.1.1/docs.css" rel='stylesheet' type='text/css' ></link>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    
+  </head>
+
+<body>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1 align="center" > Problem Practice </h1>	
+
+<h5 align="left"  > published on 11 Oct. 2016 </h5>
+
+<hr>
+
+<h5 align="right"  >  code snippets can directly run at <a href="http://www.codechef.com/ide">codechef.com/ide</a></h5>
+
+<pre>
+
+<a name="FindFirstUn-RepeatedLetter" href="#FindFirstUn-RepeatedLetter" >In a given word find the first un-repeated  letter, e.g., in ‘total’ its ‘o’ and in ‘ teeter’ its ‘r’.</a>
+
+
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+/**
+ * @author mohit
+ * 
+ * In a given word find the first un-repeated  letter, e.g., in ‘total’ its ‘o’ and in ‘ teeter’ its ‘r’.
+ *
+ */
+public class FirstUnrepeatedLetter {
+
+	
+	public static void main(String[] args) {
+		
+		firstUnrepeatedLetter("total");
+		
+		firstUnrepeatedLetter("teeter");
+		
+	}
+	
+	
+	public static void firstUnrepeatedLetter (String s1) {
+		
+		String input = s1;
+		
+		Map<Character, Boolean> charOccouranceMap = new LinkedHashMap<>();
+		
+		for(Character c : input.toCharArray()) {
+			
+			if(charOccouranceMap.containsKey(c)) {
+				charOccouranceMap.put(c, true);
+			}else {
+				charOccouranceMap.put(c, false);
+			}
+			
+		}
+				
+		for (Entry<Character, Boolean> entry : charOccouranceMap.entrySet()) {
+			if(entry.getValue()) {
+				continue;
+			} else {
+				System.out.println(entry.getKey());
+				break;
+			}
+		}
+		
+	}
+	
+}
+
+
+<hr style="border-top: 1px;" />
+
+<a name="ReverseLinkedlist" href="#ReverseLinkedlist" >Reverse the LinkedList</a>
+
+
+public class ReverseLinkedList {
+
+	
+	private static class SinglyLinkedList {
+		
+		Node head;
+		
+		
+		
+		// prints content of double linked list
+	    void printList(Node node) {
+	        while (node != null) {
+	            System.out.print(node.data + " ");
+	            node = node.next;
+	        }
+	    }
+	    
+	    
+	    
+	    Node reverseV2( Node node, Node previous) {
+	    	
+//	    	System.out.println(node.data + "->" + (previous == null ? "null" : previous.data) );
+	    	
+	    	if ( node.next != null) {
+	    		
+	    		Node next1 = node.next;
+	    		
+	    		node.next = previous;
+	    		
+	    		return reverseV2(next1, node);
+	    		
+	    	} else {
+	    		
+	    		node.next = previous;
+	    		return node;
+	    		
+	    	}
+			
+	    	
+	    }
+		
+	}
+	
+	
+	private static class Node {
+		
+		int data;
+		
+		Node next;
+		
+		Node(int d) {
+			data = d;
+		}
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		
+		
+		SinglyLinkedList list = new SinglyLinkedList();
+        list.head = new Node(1);
+        list.head.next = new Node(2);
+        list.head.next.next = new Node(3);
+        list.head.next.next.next = new Node(4);
+         
+        System.out.println("Original Linked list is :");
+        list.printList(list.head);
+        System.out.println("");
+        list.head = list.reverseV2(list.head, null);
+        System.out.println("");
+        System.out.println("Reversed linked list : ");
+        list.printList(list.head);
+    }
+	
+}
+
+
+<hr style="border-top: 1px;" />
+
+
+<a name="ShortestPathInMatrixProblemJavaSolution" href="#ShortestPathInMatrixProblemJavaSolution" >Shortest Path in Matrix Problem Java solution  </a>
+	
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+public class ShortestPathMatrix {
+
+	Set<MatrixElement> elements = new HashSet<>();
+	
+	Map<String, MatrixElement> locationMap = new HashMap<>();
+	
+	public void createMatrix () {
+		
+	  /*	1	2	3
+		4	5	6	
+		7	8	9
+		10	11	13	*/
+
+
+		String matrix = "(0,0)1 \n " +
+				"(0,1)2 \n " +
+				"(0,2)3 \n " +
+				"(1,0)4 \n " +
+				"(1,1)5 \n " +
+				"(1,2)6 \n " +
+				"(2,0)7 \n " +
+				"(2,1)8 \n " +
+				"(2,2)9 \n " +
+				"(3,0)10 \n " +
+				"(3,1)11 \n " +
+				"(3,2)12 \n " +
+				"(4,0)13 \n " +
+				"(4,1)14 \n " +
+				"(4,2)15 \n " ;
+				
+		int id = 0;
+		for (String element : matrix.split("\\n")) {
+			
+			if(element.trim().length() > 0) {
+			
+				MatrixElement matrixElement = new MatrixElement();
+				matrixElement.setId(id);
+				matrixElement.setValue(element.split("\\)")[1]);
+				matrixElement.setCordX(Integer.parseInt(element.split(",")[0].replace("(", "").trim()));
+				matrixElement.setCordY(Integer.parseInt(element.split(",")[1].split("\\)")[0]));
+				elements.add(matrixElement);
+				locationMap.put(matrixElement.getCordX()+","+matrixElement.getCordY(), matrixElement);
+				id++;
+				
+			}
+			
+			
+			
+		}
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		
+		ShortestPathMatrix matrix = new ShortestPathMatrix();
+		
+		matrix.createMatrix();
+		
+		matrix.findDistanceBetweenPoint("4,1", "0,0");
+		
+		
+		
+	}
+
+
+	private void findDistanceBetweenPoint(String string, String string2) {
+		
+		MatrixElement a = locationMap.get(string);
+		MatrixElement b = locationMap.get(string2);
+		
+		int x, y;
+		
+		x = a.getCordX();
+		y = a.getCordY();
+		
+		
+		locateTheItem(x, y, b);
+		
+	}
+	
+	private void locateTheItem(int x, int y, MatrixElement b) {
+		
+		System.out.println(x + " , " + y);
+		
+		int nextX = x;
+		int nextY = y; 
+		
+		boolean locateAgain = false;
+		
+		if(b.getCordX() > x) {
+			nextX = x + 1;	
+			locateAgain = true;
+		} 
+		
+		if (b.getCordY() > y ) {
+			nextY = y + 1;	
+			locateAgain = true;
+		}
+		
+		if(b.getCordX() < x) {
+			nextX = x - 1;	
+			locateAgain = true;
+		} 
+		
+		if (b.getCordY() < y ) {
+			nextY = y - 1;	
+			locateAgain = true;
+		}
+		
+		
+		if(locateAgain) {
+			locateTheItem(nextX, nextY, b);
+		} else {
+			
+			System.out.println("traced !");
+			
+		}
+		
+		
+	}
+
+	public class MatrixElement {
+
+		private int id;
+		private String value;
+		
+		private MatrixElement left;
+		private MatrixElement right;
+		private MatrixElement top;
+		private MatrixElement bottom;
+		
+		private int cordX;
+		private int cordY;
+		
+		
+		public MatrixElement getLeft() {
+			return left;
+		}
+		public void setLeft(MatrixElement left) {
+			this.left = left;
+		}
+		public MatrixElement getRight() {
+			return right;
+		}
+		public void setRight(MatrixElement right) {
+			this.right = right;
+		}
+		public MatrixElement getTop() {
+			return top;
+		}
+		public void setTop(MatrixElement top) {
+			this.top = top;
+		}
+		public MatrixElement getBottom() {
+			return bottom;
+		}
+		public void setBottom(MatrixElement bottom) {
+			this.bottom = bottom;
+		}
+		public int getId() {
+			return id;
+		}
+		public void setId(int id) {
+			this.id = id;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+		public int getCordX() {
+			return cordX;
+		}
+		public void setCordX(int cordX) {
+			this.cordX = cordX;
+		}
+		public int getCordY() {
+			return cordY;
+		}
+		public void setCordY(int cordY) {
+			this.cordY = cordY;
+		}
+		
+		
+		
+	}
+	
+	
+}
+
+
+<hr style="border-top: 1px;" />
+
+
+
+<a name="UnionOfTwoSortedArray" href="#UnionOfTwoSortedArray" >Union Of Two Sorted Array problem</a>
+
+
+
+import java.util.Arrays;
+
+public class UnionOfTwoSortedArray {
+	
+	public static void main(String[] args) {
+		
+		int [] arr1 = {1,3,4,5,7};
+		int [] arr2 = {2,3,5,6};
+		
+		int i = arr1.length;
+		int j = arr2.length;
+		
+		int [] unionArray = new int [i + j];
+		
+		int x = 0;
+		int y = 0;
+		
+		int g = 0;
+		
+		while (x < i && y < j) {
+			
+			
+			if (arr1[x] < arr2[y]) {
+				
+				unionArray[g] = arr1[x];
+				g++;
+				x++;
+				/*unionArray[g] = arr2[y];
+				g++;*/
+				
+			} else if (arr1[x] > arr2[y]) {
+				
+				unionArray[g] = arr2[y];
+				g++;
+				y++;
+				/*unionArray[g] = arr1[x];
+				g++;*/
+				
+			} else if (arr1[x] == arr2[y]) {
+				
+				unionArray[g] = arr1[x];
+				x++;
+				y++;
+				g++;
+			}
+			
+		}
+		
+		while(x < i)
+		unionArray[g++] = arr1[x++];
+		while(y < j)
+		unionArray[g++] = arr1[y++];
+		
+		
+		System.out.println(Arrays.toString(unionArray));
+		
+	}
+
+}
+
+
+<hr style="border-top: 1px;" />
+
+
+<a name="ransomNote" href="#ransomNote" > Untraceable ransom note </a>
+
+A kidnapper wrote a ransom note but is worried it will be traced back to him. He found a magazine and wants to know if he can cut out whole words from it and use them to create an untraceable replica of his ransom note. The words in his note are case-sensitive and he must use whole words available in the magazine, meaning he cannot use substrings or concatenation to create the words he needs.
+Given the words in the magazine and the words in the ransom note, print Yes if he can replicate his ransom note exactly using whole words from the magazine; otherwise, print No.
+
+
+	def ransom_note(magazine, ransom):
+		 return not (Counter(rasom) - Counter(magazine))
+
+	m, n = map(int, input().strip().split(' '))
+	magazine = input().strip().split(' ')
+	ransom = input().strip().split(' ')
+	answer = ransom_note(magazine, ransom)
+	if(answer):
+	    print("Yes")
+	else:
+	    print("No")
+
+<hr style="border-top: 1px;" />
+
+
+<a name="ProgramToPrintColumnNamesOfExcel" href="#ProgramToPrintColumnNamesOfExcel" >Program to print column names of excel eg. a, b ... ab, ac ... az, ba ... azz, caa</a>
+
+
+	val = chr (ord('a') - 1)
+
+	def incrementString (str1) :
+	    arr = list(str1)
+	    arr.reverse()
+
+	    if ord(arr[0])-ord('a')+1 == 26:
+		arr[0] = 'a'
+		if str1[:-1] is not '':
+		    str1 = incrementString(str1[:-1])
+		else :
+		    str1 = 'a'
+		str1 = str1 + ''.join(arr[0])
+	    else:
+		arr[0] = chr(ord(arr[0]) + 1)
+		str1 = str1[:-1] + ''.join(arr[0])
+
+	    return str1
+
+	while True :
+	    val = incrementString(val)
+	    print(val)
+
+<hr style="border-top: 1px;" />
+
+<a name="nthMax" href="#nthMax" >Find Nth Max or Largest element of unsorted array </a>
+
+	arr = [7,2,1,3,10,4,5,8,9,6]
+	nthMax = 2 #specify max element here
+	maxArr = arr
+
+	for i in range (0, len(maxArr)):
+	    for j in range (i, len(maxArr)):
+		if (maxArr[i] < maxArr[j]):
+		    maxArr[i],maxArr[j] = maxArr[j],maxArr[i]
+		    if i == nthMax:
+			break
+
+	print(maxArr)
+	print(maxArr[nthMax-1])
+
+
+<hr style="border-top: 1px;" />
+
+
+<a name="removeAllAdjacentDuplicates" href="#removeAllAdjacentDuplicates" > Recursively remove all adjacent duplicates </a>
+
+problem url http://www.geeksforgeeks.org/recursively-remove-adjacent-duplicates-given-string/
+
+
+def removeAdjoints(ipx, start, end):
+    if(len(ipx) == 0):
+        print("blank")
+    else:
+        print(ipx)
+
+    if len(ipx) > 0 and end < len(ipx):
+        if ipx[start] == ipx[end]:
+            if end + 1 < len(ipx):
+                removeAdjoints(ipx, start, end + 1)
+            elif start < end:
+                ipx = ipx[0:start]
+                if len(ipx) > 0:
+                    removeAdjoints(ipx, 0, 1)
+        elif start + 1 < end:
+            ipx = ipx[0:start] + ipx[end:len(ipx)]
+            removeAdjoints(ipx, 0, 1)
+        else:
+            if end + 1 < len(ipx):
+                removeAdjoints(ipx, start + 1, end + 1)
+
+
+removeAdjoints("azxxzy", 0, 1)
+print("----")
+removeAdjoints("geeksforgeeg", 0, 1)
+print("----")
+removeAdjoints("gksforgg", 0, 1)
+print("----")
+removeAdjoints("caaabbbaacdddd", 0, 1)
+print("----")
+removeAdjoints("dddd", 0, 1)
+print("----")	
+
+
+
+<hr style="border-top: 1px;" />
+
+
+<a name="levelOrderTreeTraversal" href="#levelOrderTreeTraversal" >Level Order Tree Traversal or breadth first traversal for the tree.</a>
+
+
+''
+
+input tree
+
+                                1
+                2                               3
+        4                 5             6               7
+      8  9              10 11        12  13          14   15
+        
+'''
+
+
+class Node:
+    pass
+
+
+root = Node()
+root.data = 1
+root.left = Node()
+root.right = Node()
+
+root.left.data = 2
+root.left.left = Node()
+root.left.right = Node()
+
+root.right.data = 3
+root.right.left = Node()
+root.right.right = Node()
+
+node2 = root.left
+node2.left.data = 4
+node2.right.data = 5
+
+node3 = root.right
+node3.left.data = 6
+node3.right.data = 7
+
+node4 = node2.left
+node4.left = Node()
+node4.left.data = 8
+node4.right = Node()
+node4.right.data = 9
+
+
+node5 = node2.right
+node5.left = Node()
+node5.left.data = 10
+node5.right = Node()
+node5.right.data = 11
+
+node6 = node3.left
+node6.left = Node()
+node6.left.data = 10
+
+# node7 = node3.right   
+# node7.right = Node()
+# node7.right.data = 11
+
+
+queue = []
+
+def printTree(rootNode, queue):
+
+    if rootNode.data is not None:
+        print(rootNode.data)
+
+    t = None
+    while len(queue) > 0:
+        t = queue[len(queue)-1]
+        queue.pop()
+        print(t.data)
+    if t is not None and hasattr(t, "right"):
+        queue.append(t.right)
+    if t is not None and hasattr(t, "left"):
+        queue.append(t.left)
+
+    if hasattr(rootNode, "right"):
+        queue.append(rootNode.right)
+    if rootNode is not None and hasattr(rootNode, "left"):
+        printTree(rootNode.left, queue)
+
+
+
+printTree(root, queue)
+
+# print(root.data)
+
+more about problem at http://www.geeksforgeeks.org/level-order-tree-traversal/
+
+<hr style="border-top: 1px;" />
+
+
+<a name="heightOfTree" href="#heightOfTree" >Find height of tree</a>
+
+
+
+'''
+
+input tree
+
+                                1
+                2                               3
+        4                 5             6               7
+      8  9              10 11        12  13          14   15
+        
+'''
+
+
+class Node:
+    pass
+
+
+root = Node()
+root.data = 1
+root.left = Node()
+root.right = Node()
+
+root.left.data = 2
+root.left.left = Node()
+root.left.right = Node()
+
+root.right.data = 3
+root.right.left = Node()
+root.right.right = Node()
+
+node2 = root.left
+node2.left.data = 4
+node2.right.data = 5
+
+node3 = root.right
+node3.left.data = 6
+node3.right.data = 7
+
+node4 = node2.left
+node4.left = Node()
+node4.left.data = 8
+node4.right = Node()
+node4.right.data = 9
+
+
+node5 = node2.right
+node5.left = Node()
+node5.left.data = 10
+node5.right = Node()
+node5.right.data = 11
+
+node6 = node3.left
+node6.left = Node()
+node6.left.data = 10
+
+node10 = node5.left
+node10.left = Node()
+node10.left.data = 16
+
+
+# node7 = node3.right
+# node7.right = Node()
+# node7.right.data = 11
+
+
+maxLength = 0
+
+def findHightOfTree(head, length):
+    if head is None:
+        print(length)
+        return length
+    maxHeight = 0
+    if hasattr(head, "left"):
+        lhight = findHightOfTree(head.left, length)
+        maxHeight = lhight + 1
+    if hasattr(head, "right"):
+        rhight = findHightOfTree(head.right, length)
+        if maxHeight - 1 < rhight:
+            maxHeight = rhight+1
+        
+    print(maxHeight)
+    return maxHeight;
+
+print(findHightOfTree(root, 0))
+
+
+
+<hr style="border-top: 1px;" />
+
+
+<a name="producerConsumerProblem" href="#producerConsumerProblem" >Producer Consumer Problem</a>
+
+
+// Java program to implement solution of producer
+// consumer problem.
+import java.util.LinkedList;
+ 
+public class Threadexample
+{
+    public static void main(String[] args)
+                        throws InterruptedException
+    {
+        // Object of a class that has both produce()
+        // and consume() methods
+        final PC pc = new PC();
+ 
+        // Create producer thread
+        Thread t1 = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    pc.produce();
+                }
+                catch(InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+ 
+        // Create consumer thread
+        Thread t2 = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    pc.consume();
+                }
+                catch(InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+ 
+        // Start both threads
+        t1.start();
+        t2.start();
+ 
+        // t1 finishes before t2
+        t1.join();
+        t2.join();
+    }
+ 
+    // This class has a list, producer (adds items to list
+    // and consumber (removes items).
+    public static class PC
+    {
+        // Create a list shared by producer and consumer
+        // Size of list is 2.
+        LinkedList<Integer> list = new LinkedList<>();
+        int capacity = 2;
+ 
+        // Function called by producer thread
+        public void produce() throws InterruptedException
+        {
+            int value = 0;
+            while (true)
+            {
+                synchronized (this)
+                {
+                    // producer thread waits while list
+                    // is full
+                    while (list.size()==capacity)
+                        wait();
+ 
+                    System.out.println("Producer produced-"
+                                                  + value);
+ 
+                    // to insert the jobs in the list
+                    list.add(value++);
+ 
+                    // notifies the consumer thread that
+                    // now it can start consuming
+                    notify();
+ 
+                    // makes the working of program easier
+                    // to  understand
+                    Thread.sleep(1000);
+                }
+            }
+        }
+ 
+        // Function called by consumer thread
+        public void consume() throws InterruptedException
+        {
+            while (true)
+            {
+                synchronized (this)
+                {
+                    // consumer thread waits while list
+                    // is empty
+                    while (list.size()==0)
+                        wait();
+ 
+                    //to retrive the ifrst job in the list
+                    int val = list.removeFirst();
+ 
+                    System.out.println("Consumer consumed-"
+                                                    + val);
+ 
+                    // Wake up producer thread
+                    notify();
+ 
+                    // and sleep
+                    Thread.sleep(1000);
+                }
+            }
+        }
+    }
+}
+
+
+more at http://www.geeksforgeeks.org/producer-consumer-solution-using-threads-java/
+
+Approach 2
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+
+/**
+ * Simple Java program to demonstrate How to use wait, notify and notifyAll()
+ * method in Java by solving producer consumer problem.
+ * 
+ * @author Javin Paul
+ */
+public class ProducerConsumerInJava {
+
+    public static void main(String args[]) {
+        System.out.println("How to use wait and notify method in Java");
+        System.out.println("Solving Producer Consumper Problem");
+        
+        Queue<Integer> buffer = new LinkedList<>();
+        int maxSize = 10;
+        
+        Thread producer = new Producer(buffer, maxSize, "PRODUCER");
+        Thread consumer = new Consumer(buffer, maxSize, "CONSUMER");
+        
+        producer.start();
+        consumer.start();
+        
+
+    }
+
+}
+
+/**
+ * Producer Thread will keep producing values for Consumer
+ * to consumer. It will use wait() method when Queue is full
+ * and use notify() method to send notification to Consumer
+ * Thread.
+ * 
+ * @author WINDOWS 8
+ *
+ */
+class Producer extends Thread {
+    private Queue<Integer> queue;
+    private int maxSize;
+    
+    public Producer(Queue<Integer> queue, int maxSize, String name){
+        super(name);
+        this.queue = queue;
+        this.maxSize = maxSize;
+    }
+    
+    @Override
+    public void run() {
+        while (true) {
+            synchronized (queue) {
+                while (queue.size() == maxSize) {
+                    try {
+                        System.out .println("Queue is full, "
+                                + "Producer thread waiting for "
+                                + "consumer to take something from queue");
+                        queue.wait();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+                Random random = new Random();
+                int i = random.nextInt();
+                System.out.println("Producing value : " + i);
+                queue.add(i);
+                queue.notifyAll();
+            }
+
+        }
+    }
+}
+
+/**
+ * Consumer Thread will consumer values form shared queue.
+ * It will also use wait() method to wait if queue is
+ * empty. It will also use notify method to send 
+ * notification to producer thread after consuming values
+ * from queue.
+ * 
+ * @author WINDOWS 8
+ *
+ */
+class Consumer extends Thread {
+    private Queue<Integer> queue;
+    private int maxSize;
+    
+    public Consumer(Queue<Integer> queue, int maxSize, String name){
+        super(name);
+        this.queue = queue;
+        this.maxSize = maxSize;
+    }
+    
+    @Override
+    public void run() {
+        while (true) {
+            synchronized (queue) {
+                while (queue.isEmpty()) {
+                    System.out.println("Queue is empty,"
+                            + "Consumer thread is waiting"
+                            + " for producer thread to put something in queue");
+                    try {
+                        queue.wait();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+                System.out.println("Consuming value : " + queue.remove());
+                queue.notifyAll();
+            }
+
+        }
+    }
+}
+
+Output
+How to use wait and notify method in Java
+Solving Producer Consumper Problem
+Queue is empty,Consumer thread is waiting for producer thread to put something in queue
+Producing value : -1692411980
+Producing value : 285310787
+Producing value : -1045894970
+Producing value : 2140997307
+Producing value : 1379699468
+Producing value : 912077154
+Producing value : -1635438928
+Producing value : -500696499
+Producing value : -1985700664
+Producing value : 961945684
+Queue is full, Producer thread waiting for consumer to take something from queue
+Consuming value : -1692411980
+Consuming value : 285310787
+Consuming value : -1045894970
+Consuming value : 2140997307
+Consuming value : 1379699468
+Consuming value : 912077154
+Consuming value : -1635438928
+Consuming value : -500696499
+Consuming value : -1985700664
+Consuming value : 961945684
+Queue is empty,Consumer thread is waiting for producer thread to put something in queue
+Producing value : 1182138498
+
+
+more details at http://javarevisited.blogspot.in/2015/07/how-to-use-wait-notify-and-notifyall-in.html#axzz4hJulc43E
+
+http://javarevisited.blogspot.in/2011/05/wait-notify-and-notifyall-in-java.html#axzz4hJulc43E
+
+<hr style="border-top: 1px;" />
+
+
+<a name="printABinaryTreeInVerticalOrder" href="#printABinaryTreeInVerticalOrder" >Print a Binary Tree in Vertical Order</a>
+
+<img src="data:image/png;base64,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" ></img>
+
+
+
+# method have used hashmap
+
+class Node:
+    pass
+
+
+root = Node()
+root.data = 1
+root.left = Node()
+root.right = Node()
+
+root.left.data = 2
+root.left.left = Node()
+root.left.right = Node()
+
+root.right.data = 3
+root.right.left = Node()
+root.right.right = Node()
+
+node2 = root.left
+node2.left.data = 4
+node2.right.data = 5
+
+node3 = root.right
+node3.left.data = 6
+node3.right.data = 7
+
+node6 = node3.left
+node6.right = Node()
+node6.right.data = 8
+
+
+node7 = node3.right
+node7.right = Node()
+node7.right.data = 9
+
+
+
+
+def getVerticalOrder(node, hd, m):
+
+    if node is None:
+        return
+    else:
+        try:
+            m[hd].append(node.data)
+        except:
+            m[hd] = [node.data]
+
+    if hasattr(node, "right"):
+        getVerticalOrder(node.right, hd+1, m)
+    if hasattr(node, "left"):
+        getVerticalOrder(node.left, hd-1, m)
+
+dictM = dict()
+getVerticalOrder(root, 0 , dictM)
+
+
+print(sorted(dictM))
+
+for index, value in enumerate(sorted(dictM)):
+    for data in dictM[value]:
+        print(data, end="")
+    print()
+    
+    
+more details at http://www.geeksforgeeks.org/print-binary-tree-vertical-order/
+
+http://www.geeksforgeeks.org/print-binary-tree-vertical-order-set-2/
+
+<hr style="border-top: 1px;" />
+
+<a name="HowHashMapWorks" href="#HowHashMapWorks" >How HashMap / HashTable works</a>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/shs0KM3wKv8" frameborder="0" allowfullscreen></iframe>
+
+<hr style="border-top: 1px;" />
+
+<a name="Heaps" href="#Heaps" >Data Structures: Heaps</a>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/t0Cq6tVNRBA" frameborder="0" allowfullscreen></iframe>
+
+<hr style="border-top: 1px;" />
+
+<a name="Trees" href="#Trees" >Data Structures: Trees</a>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/oSWTXtMglKE" frameborder="0" allowfullscreen></iframe>
+
+<hr style="border-top: 1px;" />
+
+<a name="Tries" href="#Tries" >Data Structures: Tries </a>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/zIjfhVPRZCg" frameborder="0" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vlYZb68kAY0" frameborder="0" allowfullscreen></iframe>
+
+<hr style="border-top: 1px;" />
+
+<a name="findCostOfObjectNestedApproch" href="#findCostOfObjectNestedApproch" >Find The Cost (Nested Approch)</a>
+
+Let's say the building has 'n' floors, each fllor has meeting rooms & work-stations, each room has several objects (table, chairs, tv..).
+Find the cost of perticular room, complete floor or a building.
+
+Meeting Room 1:
+
+Item          
+Cost
+
+TV             
+90000
+
+Chairs       
+150000
+
+Table
+200000 
+
+Total:        
+440000
+
+ 
+
+Floor 1:
+
+Meeting Room1          440000
+
+Meeting Room2          650000
+
+Total: 1090000
+
+
+class Object:
+    name = None
+    value = None
+    containsObject = None
+    pass
+
+def getCostOfMultipleObjects(manyObjectOfBuilding):
+    totalCost = 0
+    for obj in manyObjectOfBuilding:
+        totalCost += getCost(obj)
+    return totalCost
+
+def getCost(anyObjectOfBuilding):
+    if anyObjectOfBuilding.containsObject is not None and len(anyObjectOfBuilding.containsObject) > 0:
+        return anyObjectOfBuilding.value + getCostOfMultipleObjects(anyObjectOfBuilding.containsObject)
+    else:
+        return anyObjectOfBuilding.value
+
+table1 = Object()
+table1.name = 'table_1'
+table1.value = 5
+
+lamp1 = Object()
+lamp1.name = 'lamp_1'
+lamp1.value = 1
+
+tv1 = Object()
+tv1.name = 'tv_1'
+tv1.value = 3
+
+meetingRoom1 = Object()
+meetingRoom1.name = 'meetingRoom_1'
+meetingRoom1.value = 10
+meetingRoom1.containsObject = [lamp1, table1]
+
+meetingRoom2 = Object()
+meetingRoom2.name = 'meetingRoom_2'
+meetingRoom2.value = 20
+meetingRoom2.containsObject = [lamp1, table1, tv1]
+
+floor1 = Object()
+floor1.name = 'floor_1'
+floor1.value = 20
+floor1.containsObject = [meetingRoom1, meetingRoom2]
+
+builing1 = Object()
+builing1.name = 'building_1'
+builing1.value = 100
+builing1.containsObject = [floor1]
+
+print('t1', getCost(table1))
+print('m1', getCost(meetingRoom1))
+print('m2', getCost(meetingRoom2))
+print('f1', getCost(floor1))
+print('b1', getCost(builing1))
+
+
+<hr style="border-top: 1px;" />
+
+A program to check if a binary tree is BST or not
+
+http://www.geeksforgeeks.org/a-program-to-check-if-a-binary-tree-is-bst-or-not/
+
+<hr style="border-top: 1px;" />
+
+Tree Traversals (Inorder, Preorder and Postorder)
+
+http://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
+
+<hr style="border-top: 1px;" />
+
+Search in a row wise and column wise sorted matrix
+
+www.geeksforgeeks.org/search-in-row-wise-and-column-wise-sorted-matrix/
+
+<hr style="border-top: 1px;" />
+
+
+
+</pre>
+
+
+
+</div>
+
+</body>
+
+</html>
+
