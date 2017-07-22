@@ -71,8 +71,8 @@ linesMeteredLineCalls.add(MessageFormat.format(INSERT_UPDATE_TABLE, args));
 
 create table employee (emp_id int, emp_name varchar(225), mrg_id int);
 
-insert into employee values (1, "A", null)
-insert into employee values (2, "B", null)
+insert into employee values (1, "A", null);
+insert into employee values (2, "B", null);
 insert into employee values (3, "C", null);
 insert into employee values (4, "D", null);
 insert into employee values (5, "E", null);
@@ -88,23 +88,29 @@ insert into employee values (14, "N", null);
 insert into employee values (15, "O", 14);
 insert into employee values (16, "P", 16);
 
+-- v1 with in
 select e.emp_name, (select count(*) from employee where mrg_id = e.emp_id) as emp_manage from employee e where e.emp_id in (select emp.mrg_id from employee emp where emp.mrg_id is not null group by mrg_id);
+
+-- v2 with join
+select manager.emp_id, 
+ manager.emp_name, 
+ (select count(*) from employee where mrg_id = manager.emp_id) as manages_emp 
+ from employee manager 
+ join employee e 
+ on e.mrg_id = manager.emp_id and e.mrg_id is not null group by manager.emp_id;
 
 <hr style="border-top: 1px;" />
 
-How many columns is too many columns?
+
+<a name="tooManyColumns" href="#tooManyColumns" >How many columns is too many columns?</a>
+
 
 I've noticed that a lot of folks here cite tables with 20+ (I've seen as much as 55) columns in one table. Now I don't pretend to be a database design expert, but I've always heard that this is a horrible practice. When I see this, I usually suggest splitting into two tables with a one to one relationship: one containing the most frequently used data, the other with the least often used data. Though at the same time, there's the possible issue of performance (less JOINs and such). So my question is this:
 When it comes to really LARGE scale databases, is there actually an advantage to having a large amount of columns, despite the fact that this usually leads to many NULL values?
 Which is more of a performance hit: lots of columns with lots of NULLs, or fewer columns with lots of JOINs?
 
-
-
-
 The design of the table depends on the entity it needs to store. If all the data belongs together, then 50 columns (or even 100) might be the correct thing to do.
 So long as the table is normalized, there is no rule of thumb regarding size, apart from database capabilities and the need to optimize.
-
-
 
 It's considered too many once it's above the maximum limit supported by the database.
 The fact that you don't need every column to be returned by every query is perfectly normal; that's why SELECT statement lets you explicitly name the columns you need.
@@ -114,7 +120,8 @@ MySQL has hard limit of 4096 columns per table, but the effective maximum may be
 
 <hr style="border-top: 1px;" />
 
-What does UNION do? What is the difference between UNION and UNION ALL?
+
+<a name="UNION" href="#UNION" >What does UNION do? What is the difference between UNION and UNION ALL?</a>
 
 UNION merges the contents of two structurally-compatible tables into a single combined table. The difference between UNION and UNION ALL is that UNION will omit duplicate records whereas UNION ALL will include duplicate records.
 
@@ -122,7 +129,7 @@ It is important to note that the performance of UNION ALL will typically be bett
 
 <hr style="border-top: 1px;" />
 
-List and explain the different types of JOIN clauses supported in ANSI-standard SQL.
+<a name="JOINClausesSupportedInANSIStandardSQL" href="#JOINClausesSupportedInANSIStandardSQL" >List and explain the different types of JOIN clauses supported in ANSI-standard SQL.</a>
 
 ANSI-standard SQL specifies five types of JOIN clauses as follows:
 
