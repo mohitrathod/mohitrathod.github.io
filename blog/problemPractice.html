@@ -3,7 +3,7 @@
   
   <head>
     <meta charset="UTF-8">
-    <title>Java Blog</title>
+    <title>Problem Practice</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="https://material.angularjs.org/1.1.1/docs.css" rel='stylesheet' type='text/css' ></link>
     <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" media="screen">
@@ -161,6 +161,24 @@ public class ReverseLinkedList {
     }
 
 }
+
+debug points 
+
+linklist null->1->2->3->4
+
+reverse(1,null)
+next1 2, 
+1->null
+reverse(2, 1)
+next1 3, 
+2->1->null
+reverse(3, 2)
+next1 4, 
+3->2->1->null
+reverse(4, 3)
+4->3->2->1->null
+return 4
+
 <hr style="border-top: 1px;" />
 
 
@@ -400,16 +418,14 @@ public class UnionOfTwoSortedArray {
 				unionArray[g] = arr1[x];
 				g++;
 				x++;
-				/*unionArray[g] = arr2[y];
-				g++;*/
+				
 				
 			} else if (arr1[x] > arr2[y]) {
 				
 				unionArray[g] = arr2[y];
 				g++;
 				y++;
-				/*unionArray[g] = arr1[x];
-				g++;*/
+				
 				
 			} else if (arr1[x] == arr2[y]) {
 				

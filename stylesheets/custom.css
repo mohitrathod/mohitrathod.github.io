@@ -16,7 +16,7 @@ td {
 
 tr:nth-child(even){background-color: #f2f2f2}
 
-pre {font-family: Open Sans}
+pre {font-family: Inconsolata}
 
 .code_container {
     width: 1000px;
