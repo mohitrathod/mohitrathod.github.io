@@ -1532,6 +1532,40 @@ public class Solution {
 }
 
 
+<hr style="border-top: 1px;" />
+
+<a name="MoneyTransferOperationProgram" href="#MoneyTransferOperationProgram" >Money Transfer Operation Program</a>
+
+Write java program to perform a money transfer operation  for a bank, which is multi-threaded and can run parallel with multi-processor machines
+
+Solution can be developed with cachedthreadpool and executorservices.
+
+FixedThreadPool vs CachedThreadPool: the lesser of two evils
+
+
+
+A CachedThreadPool is exactly what you should use for your situation as there are no negative consequence to using one for long running threads. The comment in the java doc about CachedThreadPools being suitable for short tasks merely suggest that they are particularly appropriate for such cases, not that they cannot or should not be used for tasks involving long running tasks.
+
+To elaborate further, Executors.newCachedThreadPool and Executors.newFixedThreadPool are both backed by the same thread pool implementation (at least in the open JDK) just with different parameters. The differences just being their thread minimum, maximum, thread kill time, and queue type.
+
+public static ExecutorService newFixedThreadPool(int nThreads) {
+     return new ThreadPoolExecutor(nThreads, nThreads,
+                                   0L, TimeUnit.MILLISECONDS,
+                                   new LinkedBlockingQueue<Runnable>());
+ }
+
+public static ExecutorService newCachedThreadPool() {
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                 60L, TimeUnit.SECONDS,
+                                 new SynchronousQueue<Runnable>());
+}
+
+A FixedThreadPool does have its advantages when you do in fact want to work with a fixed number of threads, since then you can submit any number of tasks to the executor service while knowing that the number of threads will be maintained at the level you specified. If you explicitly want to grow the number of threads, then this is not the appropriate choice.
+
+This does however mean that the one issue that you may have with the CachedThreadPool is in regards to limiting the number of threads that are running concurrently. The CachedThreadPool will not limit them for you, so you may need to write your own code to ensure that you do not run too many threads. This really depends on the design of your application and how tasks are submitted to the executor service.
+
+
+
 </pre>
 
 
