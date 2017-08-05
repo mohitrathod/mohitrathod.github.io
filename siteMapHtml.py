@@ -10,7 +10,7 @@ class URLDetails:
 
 
 currPath = dirname(realpath(__file__))
-navPath = currPath + '\\nav'
+navPath = currPath + '/blog'
 
 template = open(currPath + '/nav/static/' + "sitemap.html", 'r').read()
 allListing = []
@@ -19,7 +19,7 @@ allListing = []
 def processFiles(currentPath, inputFiles):
     for file in inputFiles:
         url = currentPath + '\\' + file
-        ptn = '\\\\nav(.*)'
+        ptn = '/blog(.*)'
         matches = re.findall(ptn, url)
         if len(matches) > 0:
             url = matches[0]
@@ -57,7 +57,7 @@ def checkAndAdd(strData):
         findNodeAndAdd(baseRoot.child, strData)
     else:
         newChild = URLDetails()
-        newChild.link = '\'/nav' + strData + '\''
+        newChild.link = '\'/blog' + strData + '\''
         newChild.name = strData
         baseRoot.child.append(newChild)
 
@@ -65,12 +65,12 @@ def processLising():
     replacement = []
 
     for r1 in allListing:
-        replacement.append('<a href=' + '\'/nav' + r1 + '\'>' + r1 + '</a>')
+        replacement.append('<a href=' + '\'/blog' + r1 + '\'>' + r1 + '</a>')
         checkAndAdd(r1)
 
 
     data = template.replace('_BLOCK_TO_REPLACE_', '\n'.join(replacement))
-    with open(currPath + '\\sitemap.html', "w+") as file:
+    with open(currPath + '/sitemap.html', "w+") as file:
         file.write(data)
     file.close()
 
