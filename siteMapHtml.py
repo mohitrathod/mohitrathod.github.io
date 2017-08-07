@@ -75,7 +75,11 @@ def processLising():
     replacement = []
 
     for r1 in allListing:
-        replacement.append('<a href=' + '\'/blog' + r1 + '\'>' + r1 + '</a>')
+        if '#' in r1:
+            replacement.append('<a href=' + '\'/blog' + r1 + '\'>' + re.sub("(.*)#", '  ', r1) + '</a>')
+        else:
+            replacement.append('<a href=' + '\'/blog' + r1 + '\'>' + re.sub("/", '', r1) + '</a>')
+
         checkAndAdd(r1)
 
 
