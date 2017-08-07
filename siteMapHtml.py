@@ -24,8 +24,17 @@ def processFiles(currentPath, inputFiles):
         if len(matches) > 0:
             url = matches[0]
             url = url.replace('\\', '/')
+            url = url.replace('.html', '')
             print(url)
             allListing.append(url)
+            # also process content of file
+            fileHandel = open(navPath + url+'.html', 'r').read()
+            print(fileHandel)
+            ptn2 = '#(.*)"'
+            matches2 = re.findall(ptn2, fileHandel)
+            if len(matches2) > 0:
+                for url2 in matches2:
+                    allListing.append( url + '#' + url2)
 
 
 def getFilesOfDirs(currentDir):
@@ -79,3 +88,4 @@ def processLising():
 getFilesOfDirs(navPath)
 processLising()
 print(baseRoot)
+
