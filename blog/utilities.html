@@ -47,6 +47,28 @@
 
 <hr style="border-top: 1px;" />
 
+<a name="calcReturnOfInvestmentAfterSomeYear" href="#calcReturnOfInvestmentAfterSomeYear" >Calculate return of investment after some years</a>
+
+    initInvestment = 250000
+    intrate = 0.15
+    years = 25
+
+    def calcIntrestForOneYear():
+        return initInvestment + (initInvestment * intrate)
+
+
+    for i in range (1 , years):
+        initInvestment = calcIntrestForOneYear()
+        print(initInvestment)
+
+    print('-----at end-----')
+    print(initInvestment) 
+
+
+
+<hr style="border-top: 1px;" />
+
+
 </pre>
 
 </div>
