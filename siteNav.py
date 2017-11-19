@@ -2,6 +2,8 @@ from os import listdir, makedirs
 from os.path import isfile, join, dirname, realpath
 import re
 
+# this program is decommissioned
+
 mypath = dirname(realpath(__file__))
 
 redirectPageTemplate = open(mypath + '/nav/static/' + "templateP.html", 'r').read()
