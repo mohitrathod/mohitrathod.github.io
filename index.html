@@ -75,8 +75,8 @@
                     controller: 'mainController'
                 }).
 				when('/blog', {
-                    templateUrl: '/blog.html',
-                    controller: 'mainController'
+                    template: 'loading..',
+                    controller: 'blogController'
                 }).
 				when('/pythonBlog', {
                     templateUrl: 'templates/programming/python.html',
@@ -134,6 +134,10 @@
 
 	module.controller("mainController", function($scope) {
 
+    })
+
+  module.controller("blogController", function($scope) {
+      window.location = "/blog.html";
     })
 
 
