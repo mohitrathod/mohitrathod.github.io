@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  
+
   <head>
     <meta charset="UTF-8">
     <title>Mohit Rathod</title>
@@ -14,8 +14,8 @@
 	<script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.1/angular-material.js"></script>
 	<link href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.1/angular-material.css" rel='stylesheet' type='text/css' ></link>
 	<link href="https://material.angularjs.org/1.1.1/docs.css" rel='stylesheet' type='text/css' ></link>
-	
-	
+
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -23,24 +23,24 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
 	<link rel="stylesheet" type="text/css" href="stylesheets/custom.css" media="screen">
-    
+
   </head>
   <body ng-app="mohitrathodApp">
 
 	<div ng-include="'/templates/navigation/nav.html'" ng-controller="navController" ></div>
 	<div style="padding-left: 2%; padding-right: 2%;" ng-view></div>
-	
+
   </body>
-  
+
   <script>
-    
+
 	var module = angular.module("mohitrathodApp", ['ngRoute', 'ngMaterial']);
 
     module.config(['$mdThemingProvider','$routeProvider',
         function($mdThemingProvider, $routeProvider) {
-		
+
 			$mdThemingProvider.disableTheming();
-		
+
             $routeProvider.
                 when('/resume', {
                     template: 'loading..',
@@ -75,7 +75,7 @@
                     controller: 'mainController'
                 }).
 				when('/blog', {
-                    templateUrl: 'templates/blog/blogIndex.html',
+                    templateUrl: '/blog.html',
                     controller: 'mainController'
                 }).
 				when('/pythonBlog', {
@@ -115,30 +115,30 @@
     module.controller("linkedInController", function($scope) {
 		window.location = "https://in.linkedin.com/in/rathodmohit";
     })
-	
+
 	module.controller("javaController", function($scope) {
 		window.location = "/blog/java";
     })
-	
+
 	module.controller("resumeController", function($scope) {
 		window.location = "/resume.html";
     })
-	
+
 	module.controller("routerController", function($scope) {
 		window.location = "https://netgear.opendns.com/account.php?device_id=0000582C487217DD&profile=2658728"
     })
-	
+
 	module.controller("navController", function($scope) {
-		 $scope.currentNavItem = 'mohitRathodPg';		 
+		 $scope.currentNavItem = 'mohitRathodPg';
     })
-	
+
 	module.controller("mainController", function($scope) {
-		 
+
     })
-	
-	
+
+
   </script>
-  
+
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -147,5 +147,5 @@
   ga('create', 'UA-82393887-1', 'auto');
   ga('send', 'pageview');
   </script>
-  
+
 </html>
