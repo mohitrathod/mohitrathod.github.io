@@ -63,8 +63,8 @@
                     controller: 'mainController'
                 }).
 				when('/about', {
-                    templateUrl: 'templates/about/about.html',
-                    controller: 'mainController'
+                    template: 'loading..',
+                    controller: 'aboutController'
                 }).
 				when('/Contact', {
                     templateUrl: 'templates/contact/contact.html',
@@ -137,8 +137,13 @@
     })
 
   module.controller("blogController", function($scope) {
-      window.location = "/blog.html";
+      window.location = "/blog";
     })
+
+  module.controller("aboutController", function($scope) {
+        window.location = "/about";
+    })
+
 
 
   </script>
