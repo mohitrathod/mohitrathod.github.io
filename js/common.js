@@ -6,7 +6,7 @@ $(document).ready(function () {
   if (path == ''){
     path = '/';
   }
-  
+
   $('.scrollmenu>a[href="' + path + '"]').addClass('active');
 
 });
