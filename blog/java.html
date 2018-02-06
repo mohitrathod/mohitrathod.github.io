@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  
+
   <head>
     <meta charset="UTF-8">
     <title>Java Blog</title>
@@ -12,16 +12,15 @@
     <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
-    
+
   </head>
 
 <body>
 
 <div style="padding-left: 2%; padding-right: 2%;">
 
-<h1 align="center" > Java Notes </h1>	
+<h1 align="center" > Java Notes </h1>
 
-<h5 align="left"  > published on 10 Oct. 2010 </h5>
 
 <hr>
 
@@ -33,8 +32,8 @@
 
 <a name="JavaForkandJoinusingForkJoinPool" href="#JavaForkandJoinusingForkJoinPool" >Java Fork and Join using ForkJoinPool</a>
 
-				
-The ForkJoinPool was added to Java in Java 7. The ForkJoinPool is similar to the Java ExecutorService but with one difference. The ForkJoinPool makes it easy for tasks to split their work up into smaller tasks which are then submitted to the ForkJoinPool too. Tasks can keep splitting their work into smaller subtasks for as long as it makes to split up the task. It may sound a bit abstract, so in this fork and join tutorial I will explain how the ForkJoinPool works, and how splitting tasks up work. 
+
+The ForkJoinPool was added to Java in Java 7. The ForkJoinPool is similar to the Java ExecutorService but with one difference. The ForkJoinPool makes it easy for tasks to split their work up into smaller tasks which are then submitted to the ForkJoinPool too. Tasks can keep splitting their work into smaller subtasks for as long as it makes to split up the task. It may sound a bit abstract, so in this fork and join tutorial I will explain how the ForkJoinPool works, and how splitting tasks up work.
 
 <b>Fork and Join Explained</b>
 
@@ -44,9 +43,9 @@ The fork and join principle consists of two steps which are performed recursivel
 
 <b>Fork</b>
 
-A task that uses the fork and join principle can fork (split) itself into smaller subtasks which can be executed concurrently. This is illustrated in the diagram below: 
+A task that uses the fork and join principle can fork (split) itself into smaller subtasks which can be executed concurrently. This is illustrated in the diagram below:
 
-<img src="/templates/programming/java/java-fork-and-join-1.png" />
+<img src="/img/java-fork-and-join-1.png" />
 
 By splitting itself up into subtasks, each subtask can be executed in parallel by different CPUs, or different threads on the same CPU.
 
@@ -59,9 +58,9 @@ The limit for when it makes sense to fork a task into subtasks is also called a 
 
 When a task has split itself up into subtasks, the task waits until the subtasks have finished executing.
 
-Once the subtasks have finished executing, the task may join (merge) all the results into one result. This is illustrated in the diagram below: 
+Once the subtasks have finished executing, the task may join (merge) all the results into one result. This is illustrated in the diagram below:
 
-<img src="/templates/programming/java/java-fork-and-join-2.png" />
+<img src="/img/java-fork-and-join-2.png" />
 
 Of course, not all types of tasks may return a result. If the tasks do not return a result then a task just waits for its subtasks to complete. No result merging takes place then.
 
@@ -71,15 +70,15 @@ The ForkJoinPool is a special thread pool which is designed to work well with fo
 
 <b>Creating a ForkJoinPool</b>
 
-You create a ForkJoinPool using its constructor. As a parameter to the ForkJoinPool constructor you pass the indicated level of parallelism you desire. The parallelism level indicates how many threads or CPUs you want to work concurrently on on tasks passed to the ForkJoinPool. Here is a ForkJoinPool creation example: 
-    
+You create a ForkJoinPool using its constructor. As a parameter to the ForkJoinPool constructor you pass the indicated level of parallelism you desire. The parallelism level indicates how many threads or CPUs you want to work concurrently on on tasks passed to the ForkJoinPool. Here is a ForkJoinPool creation example:
+
     ForkJoinPool forkJoinPool = new ForkJoinPool(4);
-    
-This example creates a ForkJoinPool with a parallelism level of 4. 
+
+This example creates a ForkJoinPool with a parallelism level of 4.
 
 <b>Submitting Tasks to the ForkJoinPool</b>
 
-You submit tasks to a ForkJoinPool similarly to how you submit tasks to an ExecutorService. You can submit two types of tasks. A task that does not return any result (an "action"), and a task which does return a result (a "task"). These two types of tasks are represented by the RecursiveAction and RecursiveTask classes. How to use both of these tasks and how to submit them will be covered in the following sections. 
+You submit tasks to a ForkJoinPool similarly to how you submit tasks to an ExecutorService. You can submit two types of tasks. A task that does not return any result (an "action"), and a task which does return a result (a "task"). These two types of tasks are represented by the RecursiveAction and RecursiveTask classes. How to use both of these tasks and how to submit them will be covered in the following sections.
 
 <b>RecursiveAction</b>
 
@@ -87,7 +86,7 @@ A RecursiveAction is a task which does not return any value. It just does some w
 
 A RecursiveAction may still need to break up its work into smaller chunks which can be executed by independent threads or CPUs.
 
-You implement a RecursiveAction by subclassing it. Here is a RecursiveAction example: 
+You implement a RecursiveAction by subclassing it. Here is a RecursiveAction example:
 
 <div class="code_container">
 import java.util.ArrayList;
@@ -193,22 +192,22 @@ public class MyRecursiveAction extends RecursiveAction {
 
 This example is very simplified. The MyRecursiveAction simply takes a fictive workLoad as parameter to its constructor. If the workLoad is above a certain threshold, the work is split into subtasks which are also scheduled for execution (via the .fork() method of the subtasks. If the workLoad is below a certain threshold then the work is carried out by the MyRecursiveAction itself.
 
-You can schedule a MyRecursiveAction for execution like this: 
+You can schedule a MyRecursiveAction for execution like this:
 
     MyRecursiveAction myRecursiveAction = new MyRecursiveAction(24);
 
     forkJoinPool.invoke(myRecursiveAction);
-    
+
 
 <b>RecursiveTask</b>
 
-A RecursiveTask is a task that returns a result. It may split its work up into smaller tasks, and merge the result of these smaller tasks into a collective result. The splitting and merging may take place on several levels. Here is a RecursiveTask example: 
+A RecursiveTask is a task that returns a result. It may split its work up into smaller tasks, and merge the result of these smaller tasks into a collective result. The splitting and merging may take place on several levels. Here is a RecursiveTask example:
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
-    
-    
+
+
 public class MyRecursiveTask extends RecursiveTask<Long> {
 
     private long workLoad = 0;
@@ -263,23 +262,23 @@ The MyRecursiveTask example also breaks the work down into subtasks, and schedul
 
 Additionally, this example then receives the result returned by each subtask by calling the join() method of each subtask. The subtask results are merged into a bigger result which is then returned. This kind of joining / mergining of subtask results may occur recursively for several levels of recursion.
 
-You can schedule a RecursiveTask like this: 
+You can schedule a RecursiveTask like this:
 
     MyRecursiveTask myRecursiveTask = new MyRecursiveTask(128);
 
     long mergedResult = forkJoinPool.invoke(myRecursiveTask);
 
-    System.out.println("mergedResult = " + mergedResult); 
-    
+    System.out.println("mergedResult = " + mergedResult);
+
 Notice how you get the final result out from the ForkJoinPool.invoke() method call.
 
 <b>ForkJoinPool Critique</b>
 
-It seems not everyone is equally happy with the new ForkJoinPool in Java 7. While searching for experiences with, and opinions about, the ForkJoinPool, there are some critique: 
+It seems not everyone is equally happy with the new ForkJoinPool in Java 7. While searching for experiences with, and opinions about, the ForkJoinPool, there are some critique:
 
     <a href='http://coopsoft.com/ar/CalamityArticle.html'> A Java Fork-Join Calamity </a>
 
-It is well worth a read before you plan to use the ForkJoinPool in your own projects. 
+It is well worth a read before you plan to use the ForkJoinPool in your own projects.
 
 <hr style="border-top: 1px;" />
 
@@ -287,7 +286,7 @@ It is well worth a read before you plan to use the ForkJoinPool in your own proj
 
 
 
-<pre> 
+<pre>
 
 <a name="Java8NewFeatures" href="#Java8NewFeatures" >Java 8 New Features</a>
 
@@ -315,34 +314,34 @@ import java.util.Comparator;
 
 public class Java8Tester {
    public static void main(String args[]){
-   
+
       List<String> names1 = new ArrayList<String>();
       names1.add("Mahesh ");
       names1.add("Suresh ");
       names1.add("Ramesh ");
       names1.add("Naresh ");
       names1.add("Kalpesh ");
-  
+
       List<String> names2 = new ArrayList<String>();
       names2.add("Mahesh ");
       names2.add("Suresh ");
       names2.add("Ramesh ");
       names2.add("Naresh ");
       names2.add("Kalpesh ");
-  
+
       Java8Tester tester = new Java8Tester();
       System.out.println("Sort using Java 7 syntax: ");
-  
+
       tester.sortUsingJava7(names1);
       System.out.println(names1);
       System.out.println("Sort using Java 8 syntax: ");
-  
+
       tester.sortUsingJava8(names2);
       System.out.println(names2);
    }
-   
+
    //sort using java 7
-   private void sortUsingJava7(List<String> names){   
+   private void sortUsingJava7(List<String> names){
       Collections.sort(names, new Comparator<String>() {
          @Override
          public int compare(String s1, String s2) {
@@ -350,7 +349,7 @@ public class Java8Tester {
          }
       });
    }
-   
+
    //sort using java 8
    private void sortUsingJava8(List<String> names){
       Collections.sort(names, (s1, s2) -> s1.compareTo(s2));
@@ -380,44 +379,44 @@ Optional return keyword − The compiler automatically returns the value if the 
 public class Java8Tester {
    public static void main(String args[]){
       Java8Tester tester = new Java8Tester();
-  
+
       //with type declaration
       MathOperation addition = (int a, int b) -> a + b;
-  
+
       //with out type declaration
       MathOperation subtraction = (a, b) -> a - b;
-  
+
       //with return statement along with curly braces
       MathOperation multiplication = (int a, int b) -> { return a * b; };
-  
+
       //without return statement and without curly braces
       MathOperation division = (int a, int b) -> a / b;
-  
+
       System.out.println("10 + 5 = " + tester.operate(10, 5, addition));
       System.out.println("10 - 5 = " + tester.operate(10, 5, subtraction));
       System.out.println("10 x 5 = " + tester.operate(10, 5, multiplication));
       System.out.println("10 / 5 = " + tester.operate(10, 5, division));
-  
+
       //with parenthesis
       GreetingService greetService1 = message ->
       System.out.println("Hello " + message);
-  
+
       //without parenthesis
       GreetingService greetService2 = (message) ->
       System.out.println("Hello " + message);
-  
+
       greetService1.sayMessage("Mahesh");
       greetService2.sayMessage("Suresh");
    }
- 
+
    interface MathOperation {
       int operation(int a, int b);
    }
- 
+
    interface GreetingService {
       void sayMessage(String message);
    }
- 
+
    private int operate(int a, int b, MathOperation mathOperation){
       return mathOperation.operation(a, b);
    }
@@ -434,7 +433,7 @@ Method references help to point to methods by their names. A method reference is
     Instance methods
     Constructors using new operator (TreeSet::new)
 
-	
+
 
 Method Reference Example
 
@@ -446,16 +445,16 @@ import java.util.ArrayList;
 public class Java8Tester {
    public static void main(String args[]){
       List names = new ArrayList();
-  
+
       names.add("Mahesh");
       names.add("Suresh");
       names.add("Ramesh");
       names.add("Naresh");
       names.add("Kalpesh");
-  
+
       names.forEach(System.out::println);
    }
-}	
+}
 
 </pre>
 <hr style="border-top: 1px;" />
@@ -588,7 +587,7 @@ This method of working on strings is crude. In Java 7, we can improve the progra
             }
 
       }
-      
+
 
 In the above program, the status field is always compared against the case label by using theString.equals() method.
 Automatic resource management
@@ -692,7 +691,7 @@ Let’s say you have a method that throws three exceptions. In the current state
             }
 
       }
-      
+
 
 Catching an endless number of exceptions one after the other in a catch block looks cluttered. And I have seen code that catches a dozen exceptions, too. This is incredibly inefficient and error prone. Java 7 has brought in a new language change to address this ugly duckling. See the improved version of the method oldMultiCatch method below:
 
@@ -941,7 +940,7 @@ In Java 7, a new feature called invokedynamic was introduced. This makes VM chan
 
 <a name="javalangOutOfMemoryError" href="#javalangOutOfMemoryError" >What is java.lang.OutOfMemoryError in Java ?</a>
 
- 
+
 
 OutOfMemoryError in Java is a subclass of java.lang.VirtualMachineError and JVM throws java.lang.OutOfMemoryError when it ran out of memory in the heap. OutOfMemoryError in Java can come anytime in heap mostly while you try to create an object and there is not enough space on the heap to allocate that object. Javadoc of OutOfMemoryError is not very informative about this, though.
 
@@ -979,35 +978,35 @@ Some time java.lang.OutOfMemoryError  in Java gets tricky and on those cases pro
 public class MTest {
 
 	public static void main(String[] args) throws InterruptedException {
-		
+
 		Thread t1 = new Thread(new Runnable() {
 			public void run() {
 				for (int i = 0; i < 1000; i ++) {
 					System.out.println("hello " +  i);
-				}				
+				}
 			}
 		});
-		
+
 		Thread t2 = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("firstName");
 			}
 		});
-		
+
 		Thread t3 = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("lastName");
 			}
 		});
-		
+
 		t1.start();
 		t1.join();
 		t2.start();
 		t2.join();
 		t3.start();
-		
+
 	}
-	
+
 }
 
 <hr style="border-top: 1px;" />
@@ -1015,10 +1014,10 @@ public class MTest {
 <a name="createDeadLock" href="#createDeadLock" >Create DeadLock in Java</a>
 
 public class MyDeadlock {
- 
+
     String str1 = "Java";
     String str2 = "UNIX";
-     
+
     Thread trd1 = new Thread("My Thread 1"){
         public void run(){
             while(true){
@@ -1030,7 +1029,7 @@ public class MyDeadlock {
             }
         }
     };
-     
+
     Thread trd2 = new Thread("My Thread 2"){
         public void run(){
             while(true){
@@ -1042,7 +1041,7 @@ public class MyDeadlock {
             }
         }
     };
-     
+
     public static void main(String a[]){
         MyDeadlock mdl = new MyDeadlock();
         mdl.trd1.start();
@@ -1161,7 +1160,7 @@ public class ThreadDemo implements Runnable {
             System.out.println(Thread.currentThread().getName() + "
             yielding control...");
 
-            /* causes the currently executing thread object to temporarily 
+            /* causes the currently executing thread object to temporarily
             pause and allow other threads to execute */
             Thread.yield();
          }
@@ -1177,7 +1176,7 @@ public class ThreadDemo implements Runnable {
    }
 }
 
-output-- 
+output--
 
 Thread 1 is yielding control...
 Thread 2 is yielding control...
@@ -1215,29 +1214,29 @@ import java.lang.*;
 public class ThreadDemo implements Runnable {
 
    public void run() {
-   
+
       Thread t = Thread.currentThread();
       System.out.print(t.getName());
-      
+
       //checks if this thread is alive
       System.out.println(", status = " + t.isAlive());
    }
 
    public static void main(String args[]) throws Exception {
-   
+
       Thread t = new Thread(new ThreadDemo());
-      
+
       // this will call run() function
       t.start();
-      
+
       // waits for this thread to die
       t.join();
       System.out.print(t.getName());
-      
+
       //checks if this thread is alive
       System.out.println(", status = " + t.isAlive());
    }
-} 
+}
 
 Output -
 
@@ -1275,7 +1274,7 @@ join method with time arguments
 
 <a name="PreemptiveSchedulingVsTimeSlicing" href="#PreemptiveSchedulingVsTimeSlicing" >What is the difference between preemptive scheduling and time slicing?</a>
 
-Preemptive scheduling: The highest priority task executes until it enters the waiting or dead states or a higher priority task comes into existence. 
+Preemptive scheduling: The highest priority task executes until it enters the waiting or dead states or a higher priority task comes into existence.
 Time slicing: A task executes for a predefined slice of time and then reenters the pool of ready tasks. The scheduler then determines which task should execute next, based on priority and other factors.
 
 <hr style="border-top: 1px;" />
@@ -1380,7 +1379,7 @@ public V put(K key, V value) {
             return oldValue;
         }
     }
- 
+
     modCount++;
     addEntry(hash, key, value, i);
     return null;
@@ -1484,7 +1483,7 @@ The general contract of hashCode is:
 
     Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer, provided no information used in equals comparisons on the object is modified. This integer need not remain consistent from one execution of an application to another execution of the same application.
     If two objects are equal according to the equals(Object) method, then calling the hashCode method on each of the two objects must produce the same integer result.
-    It is not required that if two objects are unequal according to the equals(java.lang.Object) method, then calling the hashCode method on each of the two objects must produce distinct integer results. However, the programmer should be aware that producing distinct integer results for unequal objects may improve the performance of hash tables. 
+    It is not required that if two objects are unequal according to the equals(java.lang.Object) method, then calling the hashCode method on each of the two objects must produce distinct integer results. However, the programmer should be aware that producing distinct integer results for unequal objects may improve the performance of hash tables.
 
 Usage of hashCode() and equals()
 
@@ -1503,7 +1502,7 @@ public class Employee
     private String firstname;
     private String lastName;
     private String department;
- 
+
     public Integer getId() {
         return id;
     }
@@ -1535,10 +1534,10 @@ public class EqualsTest {
     public static void main(String[] args) {
         Employee e1 = new Employee();
         Employee e2 = new Employee();
- 
+
         e1.setId(100);
         e2.setId(100);
- 
+
         //Prints false in console
         System.out.println(e1.equals(e2));
     }
@@ -1560,10 +1559,10 @@ public boolean equals(Object o) {
     {
         return false;
     }
-     
+
     Employee e = (Employee) o;
     return (this.getId() == e.getId());
-     
+
 }
 
 Add this method to your Employee class, and EqualsTest will start returning “true“.
@@ -1571,24 +1570,24 @@ Add this method to your Employee class, and EqualsTest will start returning “t
 So are we done? Not yet. Lets test again above modified Employee class in different way.
 import java.util.HashSet;
 import java.util.Set;
- 
+
 public class EqualsTest
 {
     public static void main(String[] args)
     {
         Employee e1 = new Employee();
         Employee e2 = new Employee();
- 
+
         e1.setId(100);
         e2.setId(100);
- 
+
         //Prints 'true'
         System.out.println(e1.equals(e2));
- 
+
         Set<Employee> employees = new HashSet<Employee>();
         employees.add(e1);
         employees.add(e2);
-         
+
         //Prints two objects
         System.out.println(employees);
     }
@@ -1653,15 +1652,15 @@ public class Employee
     public boolean equals(Object o) {
     if (o == null)
        return false;
-        
+
     if (o == this)
        return true;
-        
+
     if (o.getClass() != getClass())
        return false;
-     
+
     Employee e = (Employee) o;
-     
+
     return new EqualsBuilder().
               append(getId(), e.getId()).
               isEquals();
@@ -1713,9 +1712,9 @@ public Object get(Object key) {
     int hash = hash(k);
     int i = indexFor(hash, table.length);
     Entry e = table[i];
- 
+
     //While true is always a bad practice and cause infinite loops
- 
+
     while (true) {
         if (e == null)
             return e;
@@ -1729,8 +1728,8 @@ I will write a more detailed article on this in future.
 
 I hope I was able to put some more items on your knowledge bucket. If you find this article helpful, please consider it sharing with your friends.
 
-Happy Learning !!	
-	
+Happy Learning !!
+
 <hr style="border-top: 1px;" />
 
 <a name="VolatileVsAtomic" href="#VolatileVsAtomic" >Volatile Vs Atomic</a>
@@ -1749,8 +1748,8 @@ The Atomic classes, like AtomicInteger and AtomicReference, provide a wider vari
 map.entrySet().stream()
     .sorted(Map.Entry.comparingByValue())
     .forEach(entry -> ... );
-	
-<hr style="border-top: 1px;" />	
+
+<hr style="border-top: 1px;" />
 
 <a name="ImmutableObjects" href="#ImmutableObjects" >Immutable Objects</a>
 
@@ -1772,8 +1771,8 @@ Immutable objects greatly simplify your program, since they:
     don't need to be copied defensively when used as a field
     make good Map keys and Set elements (these objects must not change state while in the collection)
     have their class invariant established once upon construction, and it never needs to be checked again
-    always have "failure atomicity" (a term used by Joshua Bloch): if an immutable object throws an exception, it's never left in an undesirable or indeterminate state 	
-	
+    always have "failure atomicity" (a term used by Joshua Bloch): if an immutable object throws an exception, it's never left in an undesirable or indeterminate state
+
 Immutable objects have a very compelling list of positive qualities. Without question, they are among the simplest and most robust kinds of classes you can possibly build. When you create immutable classes, entire categories of problems simply disappear.
 
 Make a class immutable by following these guidelines:
@@ -1806,7 +1805,7 @@ public final class Planet {
      fName = aName;
      //make a private copy of aDateOfDiscovery
      //this is the only way to keep the fDateOfDiscovery
-     //field private, and shields this class from any changes that 
+     //field private, and shields this class from any changes that
      //the caller may make to the original aDateOfDiscovery object
      fDateOfDiscovery = new Date(aDateOfDiscovery.getTime());
   }
@@ -1814,8 +1813,8 @@ public final class Planet {
   /**
   * Returns a primitive value.
   *
-  * The caller can do whatever they want with the return value, without 
-  * affecting the internals of this class. Why? Because this is a primitive 
+  * The caller can do whatever they want with the return value, without
+  * affecting the internals of this class. Why? Because this is a primitive
   * value. The caller sees its "own" double that simply has the
   * same value as fMass.
   */
@@ -1826,7 +1825,7 @@ public final class Planet {
   /**
   * Returns an immutable object.
   *
-  * The caller gets a direct reference to the internal field. But this is not 
+  * The caller gets a direct reference to the internal field. But this is not
   * dangerous, since String is immutable and cannot be changed.
   */
   public String getName() {
@@ -1836,7 +1835,7 @@ public final class Planet {
 //  /**
 //  * Returns a mutable object - likely bad style.
 //  *
-//  * The caller gets a direct reference to the internal field. This is usually dangerous, 
+//  * The caller gets a direct reference to the internal field. This is usually dangerous,
 //  * since the Date object state can be changed both by this class and its caller.
 //  * That is, this class is no longer in complete control of fDate.
 //  */
@@ -1846,12 +1845,12 @@ public final class Planet {
 
   /**
   * Returns a mutable object - good style.
-  * 
+  *
   * Returns a defensive copy of the field.
   * The caller of this method can do anything they want with the
   * returned Date object, without affecting the internals of this
-  * class in any way. Why? Because they do not have a reference to 
-  * fDate. Rather, they are playing with a second Date that initially has the 
+  * class in any way. Why? Because they do not have a reference to
+  * fDate. Rather, they are playing with a second Date that initially has the
   * same data as fDate.
   */
   public Date getDateOfDiscovery() {
@@ -1879,8 +1878,8 @@ public final class Planet {
   */
   private final Date fDateOfDiscovery;
 }
- 
-If immutable objects are good, why do people keep creating mutable objects? 
+
+If immutable objects are good, why do people keep creating mutable objects?
 
 
 Both mutable and immutable objects have their own uses, pros and cons.
@@ -1893,45 +1892,45 @@ Moreover, our perception of the real world is inevitably based on mutable object
 
 Apart from all these legitimate reasons, alas, the most probable cause why people keep creating mutable objects is inertia of mind, a.k.a. resistance to change. Note that most developers of today have been trained well before immutability (and the containing paradigm, functional programming) became "trendy" in their sphere of influence, and don't keep their knowledge up to date about new tools and methods of our trade - in fact, many of us humans positively resist new ideas and processes. "I have been programming like this for nn years and I don't care about the latest stupid fads!"
 
-	
+
 <hr style="border-top: 1px;" />
 
 <a name="FinalFinallyFinalize" href="#FinalFinallyFinalize" >Difference between final, finally and finalize</a>
 
 
 
-Final is used to apply restrictions on class, method and variable. Final class can't be inherited, final method can't be overridden and final variable value can't be changed.	
-Finally is used to place important code, it will be executed whether exception is handled or not.	
+Final is used to apply restrictions on class, method and variable. Final class can't be inherited, final method can't be overridden and final variable value can't be changed.
+Finally is used to place important code, it will be executed whether exception is handled or not.
 Finalize is used to perform clean up processing just before object is garbage collected.
 
-Final is a keyword.	
-Finally is a block.	
+Final is a keyword.
+Finally is a block.
 Finalize is a method.
 
 
-class FinalExample{  
-public static void main(String[] args){  
-final int x=100;  
-x=200;//Compile Time Error  
-}}  
+class FinalExample{
+public static void main(String[] args){
+final int x=100;
+x=200;//Compile Time Error
+}}
 
-class FinallyExample{  
-public static void main(String[] args){  
-try{  
-int x=300;  
-}catch(Exception e){System.out.println(e);}  
-finally{System.out.println("finally block is executed");}  
-}}  
+class FinallyExample{
+public static void main(String[] args){
+try{
+int x=300;
+}catch(Exception e){System.out.println(e);}
+finally{System.out.println("finally block is executed");}
+}}
 
-class FinalizeExample{  
-public void finalize(){System.out.println("finalize called");}  
-public static void main(String[] args){  
-FinalizeExample f1=new FinalizeExample();  
-FinalizeExample f2=new FinalizeExample();  
-f1=null;  
-f2=null;  
-System.gc();  
-}}  
+class FinalizeExample{
+public void finalize(){System.out.println("finalize called");}
+public static void main(String[] args){
+FinalizeExample f1=new FinalizeExample();
+FinalizeExample f2=new FinalizeExample();
+f1=null;
+f2=null;
+System.gc();
+}}
 
 
 <hr style="border-top: 1px;" />
@@ -2117,7 +2116,7 @@ After removing one book record:
 </div>
 
 </body>
-  
+
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -2126,5 +2125,5 @@ After removing one book record:
   ga('create', 'UA-82393887-1', 'auto');
   ga('send', 'pageview');
   </script>
-  
+
 </html>
