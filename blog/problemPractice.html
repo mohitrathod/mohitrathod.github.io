@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  
+
   <head>
     <meta charset="UTF-8">
     <title>Problem Practice</title>
@@ -8,24 +8,22 @@
 	<link href="https://material.angularjs.org/1.1.1/docs.css" rel='stylesheet' type='text/css' ></link>
     <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" media="screen">
 	<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inconsolata" />
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>	
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
-    
+
   </head>
 
 <body>
 
 <div style="padding-left: 2%; padding-right: 2%;">
 
-<h1 align="center" > Problem Practice </h1>	
+<h1 align="center" > Problem Practice </h1>
 
-<h5 align="left"  > published on 11 Oct. 2016 </h5>
 
 <hr>
 
-<h5 align="right"  >  code snippets can directly run at <a href="http://www.codechef.com/ide">codechef.com/ide</a></h5>
 
 <pre>
 
@@ -39,38 +37,38 @@ import java.util.Map.Entry;
 
 /**
  * @author mohit
- * 
+ *
  * In a given word find the first un-repeated  letter, e.g., in ‘total’ its ‘o’ and in ‘ teeter’ its ‘r’.
  *
  */
 public class FirstUnrepeatedLetter {
 
-	
+
 	public static void main(String[] args) {
-		
+
 		firstUnrepeatedLetter("total");
-		
+
 		firstUnrepeatedLetter("teeter");
-		
+
 	}
-	
-	
+
+
 	public static void firstUnrepeatedLetter (String s1) {
-		
+
 		String input = s1;
-		
+
 		Map<Character, Boolean> charOccouranceMap = new LinkedHashMap<>();
-		
+
 		for(Character c : input.toCharArray()) {
-			
+
 			if(charOccouranceMap.containsKey(c)) {
 				charOccouranceMap.put(c, true);
 			}else {
 				charOccouranceMap.put(c, false);
 			}
-			
+
 		}
-				
+
 		for (Entry<Character, Boolean> entry : charOccouranceMap.entrySet()) {
 			if(entry.getValue()) {
 				continue;
@@ -79,9 +77,9 @@ public class FirstUnrepeatedLetter {
 				break;
 			}
 		}
-		
+
 	}
-	
+
 }
 
 
@@ -163,18 +161,18 @@ public class ReverseLinkedList {
 
 }
 
-debug points 
+debug points
 
 linklist null->1->2->3->4
 
 reverse(1,null)
-next1 2, 
+next1 2,
 1->null
 reverse(2, 1)
-next1 3, 
+next1 3,
 2->1->null
 reverse(3, 2)
-next1 4, 
+next1 4,
 3->2->1->null
 reverse(4, 3)
 4->3->2->1->null
@@ -184,7 +182,7 @@ return 4
 
 
 <a name="ShortestPathInMatrixProblemJavaSolution" href="#ShortestPathInMatrixProblemJavaSolution" >Shortest Path in Matrix Problem Java solution  </a>
-	
+
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -194,13 +192,13 @@ import java.util.Set;
 public class ShortestPathMatrix {
 
 	Set<MatrixElement> elements = new HashSet<>();
-	
+
 	Map<String, MatrixElement> locationMap = new HashMap<>();
-	
+
 	public void createMatrix () {
-		
+
 	  /*	1	2	3
-		4	5	6	
+		4	5	6
 		7	8	9
 		10	11	13	*/
 
@@ -220,12 +218,12 @@ public class ShortestPathMatrix {
 				"(4,0)13 \n " +
 				"(4,1)14 \n " +
 				"(4,2)15 \n " ;
-				
+
 		int id = 0;
 		for (String element : matrix.split("\\n")) {
-			
+
 			if(element.trim().length() > 0) {
-			
+
 				MatrixElement matrixElement = new MatrixElement();
 				matrixElement.setId(id);
 				matrixElement.setValue(element.split("\\)")[1]);
@@ -234,99 +232,99 @@ public class ShortestPathMatrix {
 				elements.add(matrixElement);
 				locationMap.put(matrixElement.getCordX()+","+matrixElement.getCordY(), matrixElement);
 				id++;
-				
+
 			}
-			
-			
-			
+
+
+
 		}
-		
+
 	}
-	
-	
+
+
 	public static void main(String[] args) {
-		
+
 		ShortestPathMatrix matrix = new ShortestPathMatrix();
-		
+
 		matrix.createMatrix();
-		
+
 		matrix.findDistanceBetweenPoint("4,1", "0,0");
-		
-		
-		
+
+
+
 	}
 
 
 	private void findDistanceBetweenPoint(String string, String string2) {
-		
+
 		MatrixElement a = locationMap.get(string);
 		MatrixElement b = locationMap.get(string2);
-		
+
 		int x, y;
-		
+
 		x = a.getCordX();
 		y = a.getCordY();
-		
-		
+
+
 		locateTheItem(x, y, b);
-		
+
 	}
-	
+
 	private void locateTheItem(int x, int y, MatrixElement b) {
-		
+
 		System.out.println(x + " , " + y);
-		
+
 		int nextX = x;
-		int nextY = y; 
-		
+		int nextY = y;
+
 		boolean locateAgain = false;
-		
+
 		if(b.getCordX() > x) {
-			nextX = x + 1;	
+			nextX = x + 1;
 			locateAgain = true;
-		} 
-		
+		}
+
 		if (b.getCordY() > y ) {
-			nextY = y + 1;	
+			nextY = y + 1;
 			locateAgain = true;
 		}
-		
+
 		if(b.getCordX() < x) {
-			nextX = x - 1;	
-			locateAgain = true;
-		} 
-		
-		if (b.getCordY() < y ) {
-			nextY = y - 1;	
+			nextX = x - 1;
 			locateAgain = true;
 		}
-		
-		
+
+		if (b.getCordY() < y ) {
+			nextY = y - 1;
+			locateAgain = true;
+		}
+
+
 		if(locateAgain) {
 			locateTheItem(nextX, nextY, b);
 		} else {
-			
+
 			System.out.println("traced !");
-			
+
 		}
-		
-		
+
+
 	}
 
 	public class MatrixElement {
 
 		private int id;
 		private String value;
-		
+
 		private MatrixElement left;
 		private MatrixElement right;
 		private MatrixElement top;
 		private MatrixElement bottom;
-		
+
 		private int cordX;
 		private int cordY;
-		
-		
+
+
 		public MatrixElement getLeft() {
 			return left;
 		}
@@ -375,12 +373,12 @@ public class ShortestPathMatrix {
 		public void setCordY(int cordY) {
 			this.cordY = cordY;
 		}
-		
-		
-		
+
+
+
 	}
-	
-	
+
+
 }
 
 
@@ -395,57 +393,57 @@ public class ShortestPathMatrix {
 import java.util.Arrays;
 
 public class UnionOfTwoSortedArray {
-	
+
 	public static void main(String[] args) {
-		
+
 		int [] arr1 = {1,3,4,5,7};
 		int [] arr2 = {2,3,5,6};
-		
+
 		int i = arr1.length;
 		int j = arr2.length;
-		
+
 		int [] unionArray = new int [i + j];
-		
+
 		int x = 0;
 		int y = 0;
-		
+
 		int g = 0;
-		
+
 		while (x < i && y < j) {
-			
-			
+
+
 			if (arr1[x] < arr2[y]) {
-				
+
 				unionArray[g] = arr1[x];
 				g++;
 				x++;
-				
-				
+
+
 			} else if (arr1[x] > arr2[y]) {
-				
+
 				unionArray[g] = arr2[y];
 				g++;
 				y++;
-				
-				
+
+
 			} else if (arr1[x] == arr2[y]) {
-				
+
 				unionArray[g] = arr1[x];
 				x++;
 				y++;
 				g++;
 			}
-			
+
 		}
-		
+
 		while(x < i)
 		unionArray[g++] = arr1[x++];
 		while(y < j)
 		unionArray[g++] = arr1[y++];
-		
-		
+
+
 		System.out.println(Arrays.toString(unionArray));
-		
+
 	}
 
 }
@@ -519,23 +517,23 @@ Given the words in the magazine and the words in the ransom note, print Yes if h
 	print(maxArr)
 	print(maxArr[nthMax-1])
 
-	
+
 -- java solution with Heap
 
 public int findKthLargest(int[] nums, int k) {
     PriorityQueue<Integer> q = new PriorityQueue<Integer>(k);
     for(int i: nums){
         q.offer(i);
- 
+
         if(q.size()>k){
             q.poll();
         }
     }
- 
+
     return q.peek();
 }
 
-	
+
 <hr style="border-top: 1px;" />
 
 
@@ -575,7 +573,7 @@ print("----")
 removeAdjoints("caaabbbaacdddd", 0, 1)
 print("----")
 removeAdjoints("dddd", 0, 1)
-print("----")	
+print("----")
 
 
 
@@ -593,7 +591,7 @@ input tree
                 2                               3
         4                 5             6               7
       8  9              10 11        12  13          14   15
-        
+
 '''
 
 
@@ -639,7 +637,7 @@ node6 = node3.left
 node6.left = Node()
 node6.left.data = 10
 
-# node7 = node3.right   
+# node7 = node3.right
 # node7.right = Node()
 # node7.right.data = 11
 
@@ -689,7 +687,7 @@ input tree
                 2                               3
         4                 5             6               7
       8  9              10 11        12  13          14   15
-        
+
 '''
 
 
@@ -759,7 +757,7 @@ def findHightOfTree(head, length):
         rhight = findHightOfTree(head.right, length)
         if maxHeight - 1 < rhight:
             maxHeight = rhight+1
-        
+
     print(maxHeight)
     return maxHeight;
 
@@ -776,7 +774,7 @@ print(findHightOfTree(root, 0))
 // Java program to implement solution of producer
 // consumer problem.
 import java.util.LinkedList;
- 
+
 public class Threadexample
 {
     public static void main(String[] args)
@@ -785,7 +783,7 @@ public class Threadexample
         // Object of a class that has both produce()
         // and consume() methods
         final PC pc = new PC();
- 
+
         // Create producer thread
         Thread t1 = new Thread(new Runnable()
         {
@@ -802,7 +800,7 @@ public class Threadexample
                 }
             }
         });
- 
+
         // Create consumer thread
         Thread t2 = new Thread(new Runnable()
         {
@@ -819,16 +817,16 @@ public class Threadexample
                 }
             }
         });
- 
+
         // Start both threads
         t1.start();
         t2.start();
- 
+
         // t1 finishes before t2
         t1.join();
         t2.join();
     }
- 
+
     // This class has a list, producer (adds items to list
     // and consumber (removes items).
     public static class PC
@@ -837,7 +835,7 @@ public class Threadexample
         // Size of list is 2.
         LinkedList<Integer> list = new LinkedList<>();
         int capacity = 2;
- 
+
         // Function called by producer thread
         public void produce() throws InterruptedException
         {
@@ -850,24 +848,24 @@ public class Threadexample
                     // is full
                     while (list.size()==capacity)
                         wait();
- 
+
                     System.out.println("Producer produced-"
                                                   + value);
- 
+
                     // to insert the jobs in the list
                     list.add(value++);
- 
+
                     // notifies the consumer thread that
                     // now it can start consuming
                     notify();
- 
+
                     // makes the working of program easier
                     // to  understand
                     Thread.sleep(1000);
                 }
             }
         }
- 
+
         // Function called by consumer thread
         public void consume() throws InterruptedException
         {
@@ -879,16 +877,16 @@ public class Threadexample
                     // is empty
                     while (list.size()==0)
                         wait();
- 
+
                     //to retrive the ifrst job in the list
                     int val = list.removeFirst();
- 
+
                     System.out.println("Consumer consumed-"
                                                     + val);
- 
+
                     // Wake up producer thread
                     notify();
- 
+
                     // and sleep
                     Thread.sleep(1000);
                 }
@@ -909,7 +907,7 @@ import java.util.Random;
 /**
  * Simple Java program to demonstrate How to use wait, notify and notifyAll()
  * method in Java by solving producer consumer problem.
- * 
+ *
  * @author Javin Paul
  */
 public class ProducerConsumerInJava {
@@ -917,16 +915,16 @@ public class ProducerConsumerInJava {
     public static void main(String args[]) {
         System.out.println("How to use wait and notify method in Java");
         System.out.println("Solving Producer Consumper Problem");
-        
+
         Queue<Integer> buffer = new LinkedList<>();
         int maxSize = 10;
-        
+
         Thread producer = new Producer(buffer, maxSize, "PRODUCER");
         Thread consumer = new Consumer(buffer, maxSize, "CONSUMER");
-        
+
         producer.start();
         consumer.start();
-        
+
 
     }
 
@@ -937,20 +935,20 @@ public class ProducerConsumerInJava {
  * to consumer. It will use wait() method when Queue is full
  * and use notify() method to send notification to Consumer
  * Thread.
- * 
+ *
  * @author WINDOWS 8
  *
  */
 class Producer extends Thread {
     private Queue<Integer> queue;
     private int maxSize;
-    
+
     public Producer(Queue<Integer> queue, int maxSize, String name){
         super(name);
         this.queue = queue;
         this.maxSize = maxSize;
     }
-    
+
     @Override
     public void run() {
         while (true) {
@@ -980,23 +978,23 @@ class Producer extends Thread {
 /**
  * Consumer Thread will consumer values form shared queue.
  * It will also use wait() method to wait if queue is
- * empty. It will also use notify method to send 
+ * empty. It will also use notify method to send
  * notification to producer thread after consuming values
  * from queue.
- * 
+ *
  * @author WINDOWS 8
  *
  */
 class Consumer extends Thread {
     private Queue<Integer> queue;
     private int maxSize;
-    
+
     public Consumer(Queue<Integer> queue, int maxSize, String name){
         super(name);
         this.queue = queue;
         this.maxSize = maxSize;
     }
-    
+
     @Override
     public void run() {
         while (true) {
@@ -1126,8 +1124,8 @@ for index, value in enumerate(sorted(dictM)):
     for data in dictM[value]:
         print(data, end="")
     print()
-    
-    
+
+
 more details at http://www.geeksforgeeks.org/print-binary-tree-vertical-order/
 
 http://www.geeksforgeeks.org/print-binary-tree-vertical-order-set-2/
@@ -1167,22 +1165,22 @@ Find the cost of perticular room, complete floor or a building.
 
 Meeting Room 1:
 
-Item          
+Item
 Cost
 
-TV             
+TV
 90000
 
-Chairs       
+Chairs
 150000
 
 Table
-200000 
+200000
 
-Total:        
+Total:
 440000
 
- 
+
 
 Floor 1:
 
@@ -1279,7 +1277,7 @@ set(key, value) - Set or insert the value if the key is not already present. Whe
 
 Analysis
 
-The key to solve this problem is using a double linked list which enables us to quickly move nodes. 
+The key to solve this problem is using a double linked list which enables us to quickly move nodes.
 
 <img  width="650" height="296"  src="data:image/png;base64,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">
 
@@ -1294,7 +1292,7 @@ class Node{
     int value;
     Node pre;
     Node next;
- 
+
     public Node(int key, int value){
         this.key = key;
         this.value = value;
@@ -1306,11 +1304,11 @@ public class LRUCache {
     HashMap<Integer, Node> map = new HashMap<Integer, Node>();
     Node head=null;
     Node end=null;
- 
+
     public LRUCache(int capacity) {
         this.capacity = capacity;
     }
- 
+
     public int get(int key) {
         if(map.containsKey(key)){
             Node n = map.get(key);
@@ -1318,38 +1316,38 @@ public class LRUCache {
             setHead(n);
             return n.value;
         }
- 
+
         return -1;
     }
- 
+
     public void remove(Node n){
         if(n.pre!=null){
             n.pre.next = n.next;
         }else{
             head = n.next;
         }
- 
+
         if(n.next!=null){
             n.next.pre = n.pre;
         }else{
             end = n.pre;
         }
- 
+
     }
- 
+
     public void setHead(Node n){
         n.next = head;
         n.pre = null;
- 
+
         if(head!=null)
             head.pre = n;
- 
+
         head = n;
- 
+
         if(end ==null)
             end = head;
     }
- 
+
     public void set(int key, int value) {
         if(map.containsKey(key)){
             Node old = map.get(key);
@@ -1362,11 +1360,11 @@ public class LRUCache {
                 map.remove(end.key);
                 remove(end);
                 setHead(created);
- 
+
             }else{
                 setHead(created);
-            }    
- 
+            }
+
             map.put(key, created);
         }
     }
@@ -1376,28 +1374,28 @@ public class LRUCache {
 
 import java.util.LinkedHashMap;
 import java.util.Map;
- 
+
 public class LRUCacheImpl extends LinkedHashMap<Integer, String> {
    private static final long serialVersionUID = 1L;
    private int capacity;
-    
+
    public LRUCacheImpl(int capacity, float loadFactor){
       super(capacity, loadFactor, true);
       this.capacity = capacity;
    }
-    
+
    /**
-    * removeEldestEntry() should be overridden by the user, otherwise it will not 
+    * removeEldestEntry() should be overridden by the user, otherwise it will not
     * remove the oldest object from the Map.
     */
    @Override
    protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest){
       return size() > this.capacity;
    }
-    
+
    public static void main(String arg[]){
       LRUCacheImpl lruCache = new LRUCacheImpl(4, 0.75f);
-       
+
       lruCache.put(1, "Object1");
       lruCache.put(2, "Object2");
       lruCache.put(3, "Object3");
@@ -1424,7 +1422,7 @@ public class LRUCacheImpl extends LinkedHashMap<Integer, String> {
 <hr style="border-top: 1px;" />
 
 
-<a name="RemoveNthNodeFromEndOfList" href="#RemoveNthNodeFromEndOfList" >Remove Nth Node From End of List (Java)</a> 
+<a name="RemoveNthNodeFromEndOfList" href="#RemoveNthNodeFromEndOfList" >Remove Nth Node From End of List (Java)</a>
 
 Given a linked list, remove the nth node from the end of list and return its head.
 
@@ -1437,7 +1435,7 @@ Calculate the length first, and then remove the nth from the beginning.
 public ListNode removeNthFromEnd(ListNode head, int n) {
     if(head == null)
         return null;
- 
+
     //get length of list
     ListNode p = head;
     int len = 0;
@@ -1445,13 +1443,13 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
         len++;
         p = p.next;
     }
- 
+
     //if remove first node
     int fromStart = len-n+1;
     if(fromStart==1)
         return head.next;
- 
-    //remove non-first node    
+
+    //remove non-first node
     p = head;
     int i=0;
     while(p!=null){
@@ -1461,7 +1459,7 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
         }
         p=p.next;
     }
- 
+
     return head;
 }
 
@@ -1473,34 +1471,34 @@ Use fast and slow pointers. The fast pointer is n steps ahead of the slow pointe
 public ListNode removeNthFromEnd(ListNode head, int n) {
     if(head == null)
         return null;
- 
+
     ListNode fast = head;
     ListNode slow = head;
- 
+
     for(int i=0; i<n; i++){
         fast = fast.next;
     }
- 
+
     //if remove the first node
     if(fast == null){
         head = head.next;
         return head;
     }
- 
+
     while(fast.next != null){
         fast = fast.next;
         slow = slow.next;
     }
- 
+
     slow.next = slow.next.next;
- 
+
     return head;
 }
 
 <hr style="border-top: 1px;" />
 
 
-<a name="LinkedListCycle" href="#LinkedListCycle" >Linked List Cycle </a> 
+<a name="LinkedListCycle" href="#LinkedListCycle" >Linked List Cycle </a>
 
 Given a linked list, determine if it has a cycle in it.
 
@@ -1518,15 +1516,15 @@ public class Solution {
     public boolean hasCycle(ListNode head) {
         ListNode fast = head;
         ListNode slow = head;
- 
+
         while(fast != null && fast.next != null){
             slow = slow.next;
             fast = fast.next.next;
- 
+
             if(slow == fast)
                 return true;
         }
- 
+
         return false;
     }
 }
@@ -1575,4 +1573,3 @@ This does however mean that the one issue that you may have with the CachedThrea
 </body>
 
 </html>
-
