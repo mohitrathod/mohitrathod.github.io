@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  
+
   <head>
     <meta charset="UTF-8">
     <title>Sql Blog</title>
@@ -12,14 +12,14 @@
     <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
-    
+
   </head>
 
 <body>
 
 <div style="padding-left: 2%; padding-right: 2%;">
 
-<h1 align="center" > SQL Notes </h1>	
+<h1 align="center" > SQL Notes </h1>
 
 <h5 align="left"  > last updated at 12 May. 2017 </h5>
 
@@ -92,11 +92,11 @@ insert into employee values (16, "P", 16);
 select e.emp_name, (select count(*) from employee where mrg_id = e.emp_id) as emp_manage from employee e where e.emp_id in (select emp.mrg_id from employee emp where emp.mrg_id is not null group by mrg_id);
 
 -- v2 with join
-select manager.emp_id, 
- manager.emp_name, 
- (select count(*) from employee where mrg_id = manager.emp_id) as manages_emp 
- from employee manager 
- join employee e 
+select manager.emp_id,
+ manager.emp_name,
+ (select count(*) from employee where mrg_id = manager.emp_id) as manages_emp
+ from employee manager
+ join employee e
  on e.mrg_id = manager.emp_id and e.mrg_id is not null group by manager.emp_id;
 
 <hr style="border-top: 1px;" />
@@ -265,7 +265,7 @@ The idnum value of NULL will not be set since the join of NULL will not return a
 
 What is wrong with this SQL query? Correct it so it executes properly.
 
-SELECT Id, YEAR(BillingDate) AS BillingYear 
+SELECT Id, YEAR(BillingDate) AS BillingYear
 FROM Invoices
 WHERE BillingYear >= 2010;
 
@@ -467,9 +467,9 @@ Given the following tables:
 SELECT * FROM users;
 
 user_id  username
-1        John Doe                                                                                            
-2        Jane Don                                                                                            
-3        Alice Jones                                                                                         
+1        John Doe
+2        Jane Don
+3        Alice Jones
 4        Lisa Romero
 
 SELECT * FROM training_details;
@@ -559,7 +559,7 @@ How can you select all the even number records from a table? All the odd number 
 
 To select all the even number records from a table:
 
-Select * from table where id % 2 = 0 
+Select * from table where id % 2 = 0
 
 To select all the odd number records from a table:
 

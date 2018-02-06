@@ -27,19 +27,28 @@ pre {font-family: Inconsolata}
 
 
 div.scrollmenu {
-    background-color: #333;
+    background-color: #f3f3f3;
     overflow: auto;
     white-space: nowrap;
 }
 
 div.scrollmenu a {
     display: inline-block;
-    color: white;
+    color: #666;
     text-align: center;
     padding: 14px;
     text-decoration: none;
 }
 
+div.scrollmenu a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+div.scrollmenu a.active {
+    color: white;
+    background-color: #4CAF50;
+}
+
 div.scrollmenu a:hover {
-    background-color: #777;
+    /* background-color: #777; */
 }
