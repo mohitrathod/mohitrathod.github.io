@@ -8,32 +8,32 @@
 
 <url>
   <loc>http://mohitrathod.com/</loc>
-  <lastmod>2017-05-22T17:52:12+00:00</lastmod>
-  <changefreq>weekly</changefreq>
+  <lastmod>2017-01-22T17:52:12+00:00</lastmod>
+  <changefreq>never</changefreq>
 </url>
 
 <url>
-  <loc>http://mohitrathod.com/nav/about</loc>
-  <lastmod>2017-05-22T17:52:12+00:00</lastmod>
-  <changefreq>weekly</changefreq>
+  <loc>http://mohitrathod.com/about</loc>
+  <lastmod>2017-01-22T17:52:12+00:00</lastmod>
+  <changefreq>never</changefreq>
 </url>
 
 <url>
   <loc>http://mohitrathod.com/resume</loc>
-  <lastmod>2017-05-22T17:52:12+00:00</lastmod>
-  <changefreq>weekly</changefreq>
+  <lastmod>2017-01-22T17:52:12+00:00</lastmod>
+  <changefreq>never</changefreq>
 </url>
 
 <url>
-  <loc>http://mohitrathod.com/nav/blog</loc>
-  <lastmod>2017-05-22T17:52:12+00:00</lastmod>
-  <changefreq>weekly</changefreq>
+  <loc>http://mohitrathod.com/blog</loc>
+  <lastmod>2018-01-22T17:52:12+00:00</lastmod>
+  <changefreq>never</changefreq>
 </url>
 
 <url>
-  <loc>http://mohitrathod.com/nav/linkedIn</loc>
-  <lastmod>2017-05-22T17:52:12+00:00</lastmod>
-  <changefreq>weekly</changefreq>
+  <loc>http://mohitrathod.com/linkedIn</loc>
+  <lastmod>2018-01-22T17:52:12+00:00</lastmod>
+  <changefreq>never</changefreq>
 </url>
 
 </urlset>
