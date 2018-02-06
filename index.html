@@ -27,7 +27,16 @@
   </head>
   <body ng-app="mohitrathodApp">
 
-	<div ng-include="'/templates/navigation/nav.html'" ng-controller="navController" ></div>
+    <div class="scrollmenu">
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/blog">Blog</a>
+      <a href="/resume">Resume</a>
+      <a href="/linkedIn">Linked-In</a>
+      <a href="/Contact">Contact</a>
+    </div>
+
+
 	<div style="padding-left: 2%; padding-right: 2%;" ng-view></div>
 
   </body>
