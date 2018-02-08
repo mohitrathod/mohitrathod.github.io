@@ -86,6 +86,8 @@ public class FirstUnrepeatedLetter {
 <hr style="border-top: 1px;" />
 
 <a name="ReverseLinkedlist" href="#ReverseLinkedlist" >Reverse the LinkedList</a>
+
+
 public class ReverseLinkedList {
 
 
@@ -457,18 +459,46 @@ public class UnionOfTwoSortedArray {
 A kidnapper wrote a ransom note but is worried it will be traced back to him. He found a magazine and wants to know if he can cut out whole words from it and use them to create an untraceable replica of his ransom note. The words in his note are case-sensitive and he must use whole words available in the magazine, meaning he cannot use substrings or concatenation to create the words he needs.
 Given the words in the magazine and the words in the ransom note, print Yes if he can replicate his ransom note exactly using whole words from the magazine; otherwise, print No.
 
+from collections import Counter
 
-	def ransom_note(magazine, ransom):
-		 return not (Counter(rasom) - Counter(magazine))
+def ransom_note(magazine, ransom):
+  return not (Counter(rasom) - Counter(magazine))
 
-	m, n = map(int, input().strip().split(' '))
-	magazine = input().strip().split(' ')
-	ransom = input().strip().split(' ')
-	answer = ransom_note(magazine, ransom)
-	if(answer):
-	    print("Yes")
-	else:
-	    print("No")
+m, n = map(int, input().strip().split(' '))
+magazine = input().strip().split(' ')
+ransom = input().strip().split(' ')
+answer = ransom_note(magazine, ransom)
+if(answer):
+    print("Yes")
+else:
+    print("No")
+
+-----
+
+Sample Input 0
+
+6 4
+give me one grand today night
+give one grand today
+
+Sample Output 0
+
+Yes
+
+-----
+
+Sample Input 1
+
+6 5
+two times three is not four
+two times two is four
+
+Sample Output 1
+
+No
+
+-----
+
 
 <hr style="border-top: 1px;" />
 
