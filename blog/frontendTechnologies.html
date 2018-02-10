@@ -155,6 +155,33 @@ added on 10-Feb-2018
 
 <hr style="border-top: 1px;" />
 
+
+<a name="DivAndSpan" href="#DivAndSpan" >Div and Span</a>
+
+What is the difference between HTML tags <div> and <span>?
+
+div is a block element, span is inline.
+
+This means that to use them semantically, divs should be used to wrap sections of a document, while spans should be used to wrap small portions of text, images, etc.
+
+For example:
+
+<div>This a large main division, with <span>a small bit</span> of spanned text!</div>
+
+Note that it is illegal to place a block level element within an inline element, so:
+
+<div>Some <span>text that <div>I want</div> to mark</span> up</div>
+
+...is illegal.
+
+added on 10-Feb-2018
+
+<hr style="border-top: 1px;" />
+
+
+
+
+
 <pre>
 
 </div>
