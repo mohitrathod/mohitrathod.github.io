@@ -24,7 +24,7 @@ pre {font-family: Inconsolata}
     padding: 2em;
 }
 
-
+/* top menu starts */
 
 div.scrollmenu {
     background-color: #f3f3f3;
@@ -52,3 +52,46 @@ div.scrollmenu a.active {
 div.scrollmenu a:hover {
     /* background-color: #777; */
 }
+
+/* top menu ends */
+
+/* side menu floating starts */
+
+.dropbtn {
+    cursor: pointer;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    padding-right : 1%;
+    padding-bottom : 1%;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    padding-right : 1%;
+    padding-bottom : 2.5%;
+}
+
+.dropdown-content a {
+    display: block;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+
+}
+
+/* side menu floating ends */
