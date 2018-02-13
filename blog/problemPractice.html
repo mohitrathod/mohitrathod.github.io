@@ -527,7 +527,7 @@ def incrementString(str1):
 while True:
     val = incrementString(val)
     print(val)
-    
+
 
 <hr style="border-top: 1px;" />
 
@@ -590,7 +590,28 @@ class JavaTest {
 
 <a name="removeAllAdjacentDuplicates" href="#removeAllAdjacentDuplicates" > Recursively remove all adjacent duplicates </a>
 
-problem url http://www.geeksforgeeks.org/recursively-remove-adjacent-duplicates-given-string/
+problem url <a href="http://www.geeksforgeeks.org/recursively-remove-adjacent-duplicates-given-string/">http://www.geeksforgeeks.org/recursively-remove-adjacent-duplicates-given-string/</a>
+
+
+Input:  azxxzy
+Output: ay
+First "azxxzy" is reduced to "azzy".
+The string "azzy" contains duplicates,
+so it is further reduced to "ay".
+
+Input: geeksforgeeg
+Output: gksfor
+First "geeksforgeeg" is reduced to
+"gksforgg". The string "gksforgg"
+contains duplicates, so it is further
+reduced to "gksfor".
+
+Input: caaabbbaacdddd
+Output: Empty String
+
+Input: acaaabbbacdddd
+Output: acac
+
 
 
 def removeAdjoints(ipx, start, end):
