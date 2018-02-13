@@ -454,7 +454,7 @@ public class UnionOfTwoSortedArray {
 <hr style="border-top: 1px;" />
 
 
-<a name="ransomNote" href="#ransomNote" > Untraceable ransom note </a>
+<a name="ransomNote" href="#ransomNote" >Untraceable ransom note</a>
 
 A kidnapper wrote a ransom note but is worried it will be traced back to him. He found a magazine and wants to know if he can cut out whole words from it and use them to create an untraceable replica of his ransom note. The words in his note are case-sensitive and he must use whole words available in the magazine, meaning he cannot use substrings or concatenation to create the words he needs.
 Given the words in the magazine and the words in the ransom note, print Yes if he can replicate his ransom note exactly using whole words from the magazine; otherwise, print No.
@@ -506,28 +506,28 @@ No
 <a name="ProgramToPrintColumnNamesOfExcel" href="#ProgramToPrintColumnNamesOfExcel" >Program to print column names of excel eg. a, b ... ab, ac ... az, ba ... azz, caa</a>
 
 
-	val = chr (ord('a') - 1)
+def incrementString(str1):
+    arr = list(str1)
+    arr.reverse()
 
-	def incrementString (str1) :
-	    arr = list(str1)
-	    arr.reverse()
+    if ord(arr[0]) - ord('a') + 1 == 26:
+        arr[0] = 'a'
+        if str1[:-1] is not '':
+            str1 = incrementString(str1[:-1])
+        else:
+            str1 = 'a'
+            str1 = str1 + ''.join(arr[0])
+    else:
+        arr[0] = chr(ord(arr[0]) + 1)
+        str1 = str1[:-1] + ''.join(arr[0])
 
-	    if ord(arr[0])-ord('a')+1 == 26:
-		arr[0] = 'a'
-		if str1[:-1] is not '':
-		    str1 = incrementString(str1[:-1])
-		else :
-		    str1 = 'a'
-		str1 = str1 + ''.join(arr[0])
-	    else:
-		arr[0] = chr(ord(arr[0]) + 1)
-		str1 = str1[:-1] + ''.join(arr[0])
+    return str1
 
-	    return str1
 
-	while True :
-	    val = incrementString(val)
-	    print(val)
+while True:
+    val = incrementString(val)
+    print(val)
+    
 
 <hr style="border-top: 1px;" />
 
@@ -550,17 +550,38 @@ No
 
 -- java solution with Heap
 
-public int findKthLargest(int[] nums, int k) {
-    PriorityQueue<Integer> q = new PriorityQueue<Integer>(k);
-    for(int i: nums){
-        q.offer(i);
+package com.company;
 
-        if(q.size()>k){
-            q.poll();
+import java.util.PriorityQueue;
+
+
+
+class JavaTest {
+
+    public static int findKthLargest(int[] nums, int k) {
+        PriorityQueue q = new PriorityQueue(k);
+        for(int i: nums){
+
+            q.offer(i);
+
+            if(q.size()>k){
+                q.poll();
+            }
+
         }
+
+        return (int)q.peek();
     }
 
-    return q.peek();
+    public static void main (String[] args) throws java.lang.Exception
+    {
+
+        int[] arr = new int[]{7, 2, 1, 3, 10, 4, 5, 8, 9, 6};
+        int k = 2;
+
+        System.out.println(findKthLargest(arr, k));
+
+    }
 }
 
 
@@ -1638,9 +1659,32 @@ if (isSubsetSum(set, n, sum) == True) :
 else :
     print("No subset with given sum")
 
+
+-----
+
+similar another problem
+
+Given an array, find there are 3 numbers have when we add them the value will equals a specified sum Example: {1,4,6,10,20,21} Sum=32, Result:true (1+10+21) Sum=65, Result:false
+
+def isSumMatching(arr, sum, arg1, arg2, arg3):
+  if sum == (arr[arg1] + arr[arg2] + arr[arg3]):
+    print (arr[arg1] + " " + arr[arg2] + " " + arr[arg3])
+    return true
+  else:
+      isSumMatching(arr, sum, arg1, arg2, arg3+1) or isSumMatching(arr, sum, arg1, arg2+1, arg3+2)
+
+arr = [1,4,6,10,20,21]
+sum = 32
+
+isSumMatching(arr, sum, 0,0,0)
+
+
 added on 11-Feb-2018
 
 <hr style="border-top: 1px;" />
+
+
+
 
 
 
