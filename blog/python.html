@@ -347,17 +347,28 @@ with open('C:\\Users\\mohit\\temp\\filename.json', 'wt') as handle:
 
 <a name="mapReduceAndLambda" href="#mapReduceAndLambda" >Map Reduce And Lambda example</a>
 
+# example 1
+
 def varToSqFeet(var):
     return var*9
 x = list(map(varToSqFeet, [100]))
 print(x)
 
+# output [900]
+
+# example 2
+
 varToSqFeetLamda = lambda var : 9*var
 print (varToSqFeetLamda(100))
+
+# output 900
+
+# example 3
 
 from functools import reduce
 f = lambda a,b: a if (a>b) else b
 print(reduce(f, [47,11,42,102,13]))
+
 # output: 102
 
 # Calculating the sum of the numbers from 1 to 100
