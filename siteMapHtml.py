@@ -12,7 +12,7 @@ class URLDetails:
 currPath = dirname(realpath(__file__))
 navPath = currPath + '/blog'
 
-template = open(currPath + '/nav/static/' + "sitemap.html", 'r').read()
+template = open(currPath  + "/html/sitemap-template.html", 'r').read()
 allListing = []
 
 
@@ -92,4 +92,3 @@ def processLising():
 getFilesOfDirs(navPath)
 processLising()
 print(baseRoot)
-
