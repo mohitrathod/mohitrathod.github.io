@@ -78,6 +78,7 @@ def processLising():
         if '#' in r1:
             replacement.append('<a href=' + '\'/blog' + r1 + '\'>' + re.sub("(.*)#", '  ', re.sub("([a-z])([A-Z])","\g<1> \g<2>",r1)) + '</a>')
         else:
+            replacement.append(' ')
             replacement.append('<a href=' + '\'/blog' + r1 + '\'>' + re.sub("/", '', re.sub("([a-z])([A-Z])","\g<1> \g<2>",r1)) + '</a>')
 
         checkAndAdd(r1)
