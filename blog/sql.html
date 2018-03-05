@@ -31,7 +31,7 @@
 
 <pre>
 
-<a name="optimizedJavaSqlInsertOrUpdateStatments" href="#optimizedJavaSqlInsertOrUpdateStatments" >Optimized Java Sql Insert or Update statments </a>
+<a name="optimized-java-sql-insert-or-update-statments" href="#optimized-java-sql-insert-or-update-statments" >Optimized Java Sql Insert or Update statments </a>
 
 private static final String INSERT_UPDATE_TABLE = "INSERT INTO "
   + TableName.TABLE_NAME
@@ -67,7 +67,7 @@ linesMeteredLineCalls.add(MessageFormat.format(INSERT_UPDATE_TABLE, args));
 
 <pre>
 
-<a name="sqlInternalJoinFindManagerResources" href="#sqlInternalJoinFindManagerResources" >Given table employee with employee id, name and manager_id, find the managers and how much employee he/she is managing with sql query. </a>
+<a name="sql-internal-join-find-manager-resources" href="#sql-internal-join-find-manager-resources" >Given table employee with employee id, name and manager_id, find the managers and how much employee he/she is managing with sql query. </a>
 
 create table employee (emp_id int, emp_name varchar(225), mrg_id int);
 
@@ -102,7 +102,7 @@ select manager.emp_id,
 <hr style="border-top: 1px;" />
 
 
-<a name="tooManyColumns" href="#tooManyColumns" >How many columns is too many columns?</a>
+<a name="too-many-columns" href="#too-many-columns" >How many columns is too many columns?</a>
 
 
 I've noticed that a lot of folks here cite tables with 20+ (I've seen as much as 55) columns in one table. Now I don't pretend to be a database design expert, but I've always heard that this is a horrible practice. When I see this, I usually suggest splitting into two tables with a one to one relationship: one containing the most frequently used data, the other with the least often used data. Though at the same time, there's the possible issue of performance (less JOINs and such). So my question is this:
@@ -121,7 +121,7 @@ MySQL has hard limit of 4096 columns per table, but the effective maximum may be
 <hr style="border-top: 1px;" />
 
 
-<a name="UNION" href="#UNION" >What does UNION do? What is the difference between UNION and UNION ALL?</a>
+<a name="union" href="#union" >What does UNION do? What is the difference between UNION and UNION ALL?</a>
 
 UNION merges the contents of two structurally-compatible tables into a single combined table. The difference between UNION and UNION ALL is that UNION will omit duplicate records whereas UNION ALL will include duplicate records.
 
@@ -129,7 +129,7 @@ It is important to note that the performance of UNION ALL will typically be bett
 
 <hr style="border-top: 1px;" />
 
-<a name="JOINClausesSupportedInANSIStandardSQL" href="#JOINClausesSupportedInANSIStandardSQL" >List and explain the different types of JOIN clauses supported in ANSI-standard SQL.</a>
+<a name="join-clauses-supported-in-ansi-standard-sql" href="#join-clauses-supported-in-ansi-standard-sql" >List and explain the different types of JOIN clauses supported in ANSI-standard SQL.</a>
 
 ANSI-standard SQL specifies five types of JOIN clauses as follows:
 
