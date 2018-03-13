@@ -76,6 +76,38 @@ print(initInvestment)
 
 <hr style="border-top: 1px;" />
 
+<a name="simple-tax-calculator-india" href="#simple-tax-calculator-india" >simple tax calculator india</a>
+
+# simple tax calculator india
+
+total_salary = 100000
+
+tax_total = 0
+
+updated_salary = total_salary - 250000  # first slab removed from main salary
+
+updated_salary = updated_salary - 150000  # 80c removed
+
+if updated_salary > 250000:
+    tax_total = tax_total + (250000 * (0.05))
+    updated_salary = updated_salary - 250000  # 5 % slab removed
+
+
+if total_salary > 500000 and updated_salary > 0:
+    tax_total = tax_total + (500000 * (0.20))
+    updated_salary = updated_salary - 500000
+
+if total_salary > 1000000 and updated_salary > 0:
+    tax_total = tax_total + (updated_salary * (0.30))
+    updated_salary = updated_salary - tax_total
+
+print(updated_salary, ' updated salary')
+print(tax_total, ' tax total')
+
+
+# some bugs needs to be fixed
+
+<hr style="border-top: 1px;" />
 
 </pre>
 
