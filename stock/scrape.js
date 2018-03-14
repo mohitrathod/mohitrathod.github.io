@@ -9,8 +9,8 @@ $(document).ready(function () {
             if (!mohit_json.mohit_data.data) {
               mohit_json.mohit_data.data = [];
             }
-            var data1 = 'mmo';
-            mohit_json.mohit_data.data.push(data1);
+            // var data1 = 'mmo';
+            // mohit_json.mohit_data.data.push(data1);
             push_data(mohit_json);
         }});
 
