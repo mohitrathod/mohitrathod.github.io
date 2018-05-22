@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV Dash</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <style>
+
+    body {
+      padding: 0;
+      margin: 0;
+      font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #333333;
+    }
+
+
+    .header {
+        padding: 2%;
+    }
+
+    .widgetSection {
+        width: 20%;
+        height: 20%;
+        float: left;
+        padding: 2%;
+        margin: 2%;
+        overflow-wrap: break-word;
+        border: 1pc solid #FBD647;
+        border-radius: 25pc;
+        font-size: 2em;
+        text-align: center;
+    }
+
+    .widgetSection:hover {
+        background-color: #FBD647;
+    }
+
+
+    </style>
+
+
+    <script>
+
+    var mohit_json;
+
+
+    $.ajax({url: "https://mohitrathod.pythonanywhere.com/",
+            crossDomain: true,
+            success: function(result){
+            console.log(result);
+            mohit_json = result;
+            $('#displayBlock').text(result);
+
+            // var data1 = 'mmo';
+            // mohit_json.mohit_data.data.push(data1);
+            // push_data(mohit_json);
+        }});
+
+    var push_data = function (mohit_json) {
+    $.ajax({
+        url: "https://api.myjson.com/bins/1166d9",
+        type: "PUT",
+        data: JSON.stringify(mohit_json),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        crossDomain: true,
+        success: function (result, textStatus, jqXHR) {
+          console.log(result);
+        },
+        error: function (jqXHR, exception) {
+
+            console.log(jqXHR.status)
+            console.log(exception);
+
+        },
+    });
+    }
+
+
+    $('#login').click(function(){
+
+        $.post("/login",
+        {
+            username: $('#username').val(),
+            password: $('#password').val()
+        },
+        function(data, status){
+            alert("Data: " + data + "\nStatus: " + status);
+            if (status == 'success') {
+                document.cookie = 'next_req=' + data.next_req + ";"
+                do_secure_call();
+            }
+
+        });
+
+    });
+
+
+    do_secure_call = function () {
+
+        $.post("/secure",
+        {
+            next_req : decodeURIComponent(document.cookie).split(';')[0]
+        },
+        function(data, status){
+            alert("Data: " + data + "\nStatus: " + status);
+            if (status == 'success') {
+
+            }
+
+        });
+
+    }
+
+    </script>
+
+</head>
+
+  <body>
+
+
+  <div style="width: 100%; float: left;">
+
+
+    <div class="header">
+        <h1>Welcome To TV App1</h1>
+    </div>
+
+
+    <div class="widgetSection" id="displayBlock">Hello pythonanywhere with bottle!</div>
+
+
+
+
+
+
+  </div>
+
+
+
+
+
+
+</body></html>
