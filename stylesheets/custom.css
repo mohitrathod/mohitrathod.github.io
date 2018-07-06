@@ -21,12 +21,13 @@ pre {font-family: Inconsolata}
 .code_container {
     width: 1000px;
     padding: 2em;
-    background-color: #f6f8fa
+    background-color: #f6f8fa;
 }
 
 pre div {
     padding: 2em;
-    background-color: #f6f8fa
+    background-color: #f6f8fa;
+    color: #106cc8
 }
 
 /* top menu starts */
