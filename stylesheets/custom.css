@@ -20,8 +20,13 @@ pre {font-family: Inconsolata}
 
 .code_container {
     width: 1000px;
-    border: 1px dotted black;
     padding: 2em;
+    background-color: #f6f8fa
+}
+
+pre div {
+    padding: 2em;
+    background-color: #f6f8fa
 }
 
 /* top menu starts */
@@ -93,5 +98,7 @@ div.scrollmenu a:hover {
 .dropdown:hover .dropbtn {
 
 }
+
+
 
 /* side menu floating ends */
