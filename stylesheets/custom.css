@@ -16,18 +16,18 @@ td {
 
 tr:nth-child(even){background-color: #f2f2f2}
 
-pre {font-family: Menlo Regular, Inconsolata}
+pre {
 
-.code_container {
-    width: 1000px;
-    padding: 2em;
-    background-color: #f6f8fa;
+  font-family: Menlo Regular, Inconsolata;
+  white-space: pre-wrap;
 }
 
-pre div {
-    padding: 2em;
-    background-color: #f6f8fa;
-    color: #106cc8
+
+pre code {
+    font-family: Menlo Regular, Inconsolata;
+    /* padding: 2em; */
+    /* background-color: #f6f8fa; */
+    color: #106cc8;
 }
 
 /* top menu starts */

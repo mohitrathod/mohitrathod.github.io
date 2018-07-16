@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <title>Java Blog</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="https://material.angularjs.org/1.1.1/docs.css" rel='stylesheet' type='text/css' ></link>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inconsolata" />
+	  <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Inconsolata" />
     <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
 	<link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
@@ -97,7 +95,7 @@ A RecursiveAction may still need to break up its work into smaller chunks which 
 
 You implement a RecursiveAction by subclassing it. Here is a RecursiveAction example:
 
-<div class="code_container">
+<code>
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
@@ -195,7 +193,7 @@ public class MyRecursiveAction extends RecursiveAction {
 
 }
 
-</div>
+</code>
 
 
 
@@ -2188,7 +2186,7 @@ In general we follow below steps to create a singleton class:
     2) Declare a private static instance of the same class
     3) Provide a public static method that will return the singleton class instance variable. If the variable is not initialized then initialize it or else simply return the instance variable.
 
-<div>
+<code>
 
 package com.journaldev.designpatterns;
 
@@ -2208,7 +2206,7 @@ public class ASingleton {
 
 }
 
-</div>
+</code>
 
 In the above code, getInstance() method is not thread safe. Multiple threads can access it at the same time and for the first few threads when the instance variable is not initialized, multiple threads can enters the if loop and create multiple instances and break our singleton implementation.
 
@@ -2248,34 +2246,34 @@ There are three ways through which we can achieve thread safety.
 
 Looking at all the three ways to achieve thread safety, I think third one is the best option and in that case the modified class will look like:
 
-<div>
+<code>
 
 package com.journaldev.designpatterns;
 
 public class ASingleton {
 
-	private static volatile ASingleton instance;
-	private static Object mutex = new Object();
+private static volatile ASingleton instance;
+private static Object mutex = new Object();
 
-	private ASingleton() {
-	}
+private ASingleton() {
+}
 
-	public static ASingleton getInstance() {
-		ASingleton result = instance;
-		if (result == null) {
-			synchronized (mutex) {
-				result = instance;
-				if (result == null)
-					instance = result = new ASingleton();
-			}
+public static ASingleton getInstance() {
+	ASingleton result = instance;
+	if (result == null) {
+		synchronized (mutex) {
+			result = instance;
+			if (result == null)
+				instance = result = new ASingleton();
 		}
-		return result;
 	}
+	return result;
+}
 
 }
 
 
-</div>
+</code>
 
 Local variable result seems unnecessary. But it’s there to improve performance of our code. In cases where instance is already initialized (most of the time), the volatile field is only accessed once (due to “return result;” instead of “return instance;”). This can improve the method’s overall performance by as much as 25 percent.
 
