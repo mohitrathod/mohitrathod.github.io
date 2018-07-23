@@ -31,12 +31,14 @@ tr:nth-child(even){background-color: #f2f2f2}
 pre {
   font-family: 'menlo regular webfont', Inconsolata;
   white-space: pre-wrap;
+  font-size: 0.9em;
 }
 
 
 pre code {
     font-family: 'menlo regular webfont', Inconsolata;
     color: #106cc8;
+    font-size: 0.9em;
 }
 
 /* top menu starts */
