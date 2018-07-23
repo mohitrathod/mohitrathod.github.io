@@ -1,3 +1,15 @@
+@font-face {
+  font-family: "menlo regular webfont";
+  src: local("menlo regular webfont"), local("menlo-regular-webfont"), url("/font/menlo-regular-webfont.woff2") format("woff2");
+  font-style: normal;
+
+}
+
+
+h1 {
+  font-family: 'menlo regular webfont', Inconsolata;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -17,16 +29,13 @@ td {
 tr:nth-child(even){background-color: #f2f2f2}
 
 pre {
-
-  font-family: Menlo Regular, Inconsolata;
+  font-family: 'menlo regular webfont', Inconsolata;
   white-space: pre-wrap;
 }
 
 
 pre code {
-    font-family: Menlo Regular, Inconsolata;
-    /* padding: 2em; */
-    /* background-color: #f6f8fa; */
+    font-family: 'menlo regular webfont', Inconsolata;
     color: #106cc8;
 }
 
