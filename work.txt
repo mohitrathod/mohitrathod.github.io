@@ -1,8 +1,0 @@
-General format
-
-<a name="CSSPadding" href="#CSSPadding" >CSS Padding</a>
-
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
