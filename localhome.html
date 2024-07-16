@@ -164,7 +164,7 @@
                 bookmarks.forEach(bookmark => {
                     const li = document.createElement('li');
                     li.innerHTML = `
-                        <span><a href="${bookmark.url}" target="_blank">${bookmark.name}</a></span>
+                        <span><a href="${bookmark.url}" target="_self">${bookmark.name}</a></span>
                     `;
                     bookmarkList.appendChild(li);
                 });
