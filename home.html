@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="url"] {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #f4f4f4;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .import-btn {
+            display: inline-block;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .import-btn:hover {
+            background-color: #0056b3;
+        }
+
+        #import-file {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="bookmark-form">
+            <input type="text" id="bookmark-name" placeholder="Bookmark Name" required>
+            <input type="url" id="bookmark-url" placeholder="Bookmark URL" required>
+            <button type="submit">Add Bookmark</button>
+        </form>
+        <ul id="bookmark-list"></ul>
+        <button id="export-btn">Export Bookmarks</button>
+        <input type="file" id="import-file" style="display:none;">
+        <label for="import-file" class="import-btn">Import Bookmarks</label>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookmarkForm = document.getElementById('bookmark-form');
+            const bookmarkList = document.getElementById('bookmark-list');
+            const exportBtn = document.getElementById('export-btn');
+            const importFile = document.getElementById('import-file');
+
+            bookmarkForm.addEventListener('submit', addBookmark);
+            exportBtn.addEventListener('click', exportBookmarks);
+            importFile.addEventListener('change', importBookmarks);
+
+            loadBookmarks();
+
+            function addBookmark(event) {
+                event.preventDefault();
+                const name = document.getElementById('bookmark-name').value;
+                const url = document.getElementById('bookmark-url').value;
+                const bookmark = { name, url };
+
+                let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                bookmarks.push(bookmark);
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+
+                document.getElementById('bookmark-form').reset();
+                loadBookmarks();
+            }
+
+            function loadBookmarks() {
+                bookmarkList.innerHTML = '';
+                let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                bookmarks.forEach(bookmark => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${bookmark.name}</span>
+                        <a href="${bookmark.url}" target="_blank">${bookmark.url}</a>
+                    `;
+                    bookmarkList.appendChild(li);
+                });
+            }
+
+            function exportBookmarks() {
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                const blob = new Blob([JSON.stringify(bookmarks, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'bookmarks.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function importBookmarks(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const bookmarks = JSON.parse(e.target.result);
+                        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                        loadBookmarks();
+                    };
+                    reader.readAsText(file);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
