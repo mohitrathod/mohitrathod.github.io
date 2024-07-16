@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Editor and Viewer</title>
+    <title>Simple Notepad</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,45 +25,18 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
         }
 
         textarea {
             width: 100%;
-            height: 200px;
+            height: 300px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-family: monospace;
             font-size: 16px;
             box-sizing: border-box;
-            display: none;
-        }
-
-        #json-viewer {
-            background: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            overflow: auto;
-            height: 200px;
-            box-sizing: border-box;
-            display: none;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
         }
 
         button, .import-btn {
@@ -74,16 +47,46 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         button:hover, .import-btn:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        button:active, .import-btn:active {
+            background-color: #004494;
+            transform: translateY(0);
         }
 
         .import-btn {
             display: inline-block;
-            margin-top: 10px;
             text-align: center;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .notification.show {
+            display: block;
+            opacity: 1;
         }
 
         @media (max-width: 600px) {
@@ -96,10 +99,10 @@
                 padding: 8px;
             }
 
-            textarea, #json-viewer {
+            textarea {
                 font-size: 14px;
                 padding: 8px;
-                height: 150px;
+                height: 200px;
             }
         }
 
@@ -113,130 +116,80 @@
                 padding: 6px;
             }
 
-            textarea, #json-viewer {
+            textarea {
                 font-size: 12px;
                 padding: 6px;
-                height: 120px;
+                height: 150px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <textarea id="json-editor" placeholder="Edit your JSON here..."></textarea>
-        <div id="json-viewer"></div>
-        <button id="edit-btn">Edit</button>
-        <button id="view-btn" style="display: none;">View</button>
-        <button id="save-btn">Save to Local Storage</button>
-        <button id="load-btn">Load from Local Storage</button>
-        <button id="clear-btn">Clear Local Storage</button>
-        <button id="export-btn">Export JSON</button>
-        <input type="file" id="import-file" style="display:none;">
-        <label for="import-file" class="import-btn">Import JSON</label>
+        <textarea id="notepad" placeholder="Write your notes here..."></textarea>
+        <button id="save-btn">Save</button>
+        <button id="load-btn">Load</button>
+        <button id="clear-btn">Clear</button>
+        <button id="export-btn">Export</button>
+        <input type="file" id="import-file" />
+        <label for="import-file" class="import-btn">Import</label>
     </div>
+    <div id="notification" class="notification"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const editor = document.getElementById('json-editor');
-            const viewer = document.getElementById('json-viewer');
-            const editBtn = document.getElementById('edit-btn');
-            const viewBtn = document.getElementById('view-btn');
+            const notepad = document.getElementById('notepad');
             const saveBtn = document.getElementById('save-btn');
             const loadBtn = document.getElementById('load-btn');
             const clearBtn = document.getElementById('clear-btn');
             const exportBtn = document.getElementById('export-btn');
             const importFile = document.getElementById('import-file');
+            const notification = document.getElementById('notification');
 
-            function updateViewer() {
-                try {
-                    const json = JSON.parse(editor.value);
-                    if (Array.isArray(json)) {
-                        viewer.innerHTML = generateTableHTML(json);
-                    } else {
-                        viewer.textContent = 'JSON is not an array';
-                    }
-                } catch (error) {
-                    viewer.textContent = 'Invalid JSON';
-                }
+            function showNotification(message, duration = 3000) {
+                notification.textContent = message;
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
             }
 
-            function generateTableHTML(jsonArray) {
-                if (jsonArray.length === 0) {
-                    return '<p>Array is empty</p>';
-                }
-
-                let table = '<table><tbody>';
-
-                jsonArray.forEach(item => {
-                    table += '<tr>';
-                    table += `<td>${item}</td>`;
-                    table += '</tr>';
-                });
-
-                table += '</tbody></table>';
-                return table;
-            }
-
-            function loadJsonFromLocalStorage() {
-                const json = localStorage.getItem('jsonData');
-                if (json) {
-                    editor.value = json;
-                    updateViewer();
-                    editor.style.display = 'none';
-                    viewer.style.display = 'block';
-                    viewBtn.style.display = 'none';
-                    editBtn.style.display = 'block';
+            function loadNotesFromLocalStorage() {
+                const savedNotes = localStorage.getItem('notepadData');
+                if (savedNotes) {
+                    notepad.value = savedNotes;
                 }
             }
-
-            editor.addEventListener('input', updateViewer);
-
-            editBtn.addEventListener('click', () => {
-                viewer.style.display = 'none';
-                editor.style.display = 'block';
-                editBtn.style.display = 'none';
-                viewBtn.style.display = 'block';
-            });
-
-            viewBtn.addEventListener('click', () => {
-                editor.style.display = 'none';
-                viewer.style.display = 'block';
-                viewBtn.style.display = 'none';
-                editBtn.style.display = 'block';
-                updateViewer();
-            });
 
             saveBtn.addEventListener('click', () => {
-                try {
-                    const json = JSON.parse(editor.value);
-                    localStorage.setItem('jsonData', JSON.stringify(json));
-                    alert('JSON saved to local storage');
-                } catch (error) {
-                    alert('Invalid JSON');
-                }
+                localStorage.setItem('notepadData', notepad.value);
+                showNotification('Notes saved');
             });
 
-            loadBtn.addEventListener('click', loadJsonFromLocalStorage);
+            loadBtn.addEventListener('click', () => {
+                loadNotesFromLocalStorage();
+                showNotification('Notes loaded');
+            });
 
             clearBtn.addEventListener('click', () => {
-                localStorage.removeItem('jsonData');
-                editor.value = '';
-                viewer.innerHTML = '';
-                alert('Local storage cleared');
+                localStorage.removeItem('notepadData');
+                notepad.value = '';
+                showNotification('Notes cleared');
             });
 
             exportBtn.addEventListener('click', () => {
-                const json = localStorage.getItem('jsonData');
-                if (json) {
-                    const blob = new Blob([json], { type: 'application/json' });
+                const notes = localStorage.getItem('notepadData');
+                if (notes) {
+                    const blob = new Blob([notes], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'data.json';
+                    a.download = 'notes.txt';
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
+                    showNotification('Notes exported');
                 } else {
-                    alert('No JSON found in local storage');
+                    showNotification('No notes found to export');
                 }
             });
 
@@ -245,19 +198,16 @@
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        editor.value = e.target.result;
-                        updateViewer();
-                        editor.style.display = 'none';
-                        viewer.style.display = 'block';
-                        viewBtn.style.display = 'none';
-                        editBtn.style.display = 'block';
+                        notepad.value = e.target.result;
+                        localStorage.setItem('notepadData', notepad.value);
+                        showNotification('Notes imported');
                     };
                     reader.readAsText(file);
                 }
             });
 
-            // Load JSON from local storage on page load
-            loadJsonFromLocalStorage();
+            // Load notes from local storage on page load
+            loadNotesFromLocalStorage();
         });
     </script>
 </body>
