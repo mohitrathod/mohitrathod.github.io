@@ -3,90 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
+    <title>JSON Editor and Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-        }
-
-        #todoList {
-            max-width: 400px;
-            margin: 20px auto;
-        }
-
-        ul {
-            list-style-type: none;
+            background-color: #f0f0f0;
+            margin: 0;
             padding: 0;
-        }
-
-        li {
-            margin-bottom: 10px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
-        .delete-btn {
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 16px;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        #json-viewer {
+            background: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: auto;
+            height: 200px;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button, .import-btn {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            color: red;
+            font-size: 16px;
+        }
+
+        button:hover, .import-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .import-btn {
+            display: inline-block;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            button, .import-btn {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            textarea, #json-viewer {
+                font-size: 14px;
+                padding: 8px;
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 10px;
+            }
+
+            button, .import-btn {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            textarea, #json-viewer {
+                font-size: 12px;
+                padding: 6px;
+                height: 120px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <textarea id="json-editor" placeholder="Edit your JSON here..."></textarea>
+        <div id="json-viewer"></div>
+        <button id="edit-btn">Edit</button>
+        <button id="view-btn" style="display: none;">View</button>
+        <button id="save-btn">Save to Local Storage</button>
+        <button id="load-btn">Load from Local Storage</button>
+        <button id="clear-btn">Clear Local Storage</button>
+        <button id="export-btn">Export JSON</button>
+        <input type="file" id="import-file" style="display:none;">
+        <label for="import-file" class="import-btn">Import JSON</label>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.getElementById('json-editor');
+            const viewer = document.getElementById('json-viewer');
+            const editBtn = document.getElementById('edit-btn');
+            const viewBtn = document.getElementById('view-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const loadBtn = document.getElementById('load-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const importFile = document.getElementById('import-file');
 
-<div id="todoList">
-    <h2>To-Do List</h2>
-    <input type="text" id="taskInput" placeholder="New task...">
-    <button onclick="addTask()">Add Task</button>
-    <ul id="tasks"></ul>
-</div>
+            function updateViewer() {
+                try {
+                    const json = JSON.parse(editor.value);
+                    if (Array.isArray(json)) {
+                        viewer.innerHTML = generateTableHTML(json);
+                    } else {
+                        viewer.textContent = 'JSON is not an array';
+                    }
+                } catch (error) {
+                    viewer.textContent = 'Invalid JSON';
+                }
+            }
 
-<script>
-    // Function to add a new task
-    function addTask() {
-        var taskInput = document.getElementById("taskInput");
-        var taskText = taskInput.value.trim();
+            function generateTableHTML(jsonArray) {
+                if (jsonArray.length === 0) {
+                    return '<p>Array is empty</p>';
+                }
 
-        if (taskText === "") {
-            alert("Please enter a task!");
-            return;
-        }
+                let table = '<table><tbody>';
 
-        var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        tasks.push(taskText);
-        localStorage.setItem("tasks", JSON.stringify(tasks));
+                jsonArray.forEach(item => {
+                    table += '<tr>';
+                    table += `<td>${item}</td>`;
+                    table += '</tr>';
+                });
 
-        showTasks();
-        taskInput.value = "";
-    }
+                table += '</tbody></table>';
+                return table;
+            }
 
-    // Function to show tasks
-    function showTasks() {
-        var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        var tasksList = document.getElementById("tasks");
+            function loadJsonFromLocalStorage() {
+                const json = localStorage.getItem('jsonData');
+                if (json) {
+                    editor.value = json;
+                    updateViewer();
+                    editor.style.display = 'none';
+                    viewer.style.display = 'block';
+                    viewBtn.style.display = 'none';
+                    editBtn.style.display = 'block';
+                }
+            }
 
-        // Clear the existing tasks
-        tasksList.innerHTML = "";
+            editor.addEventListener('input', updateViewer);
 
-        // Display tasks
-        tasks.forEach(function (task, index) {
-            var li = document.createElement("li");
-            li.innerHTML = task + ' <span class="delete-btn" onclick="deleteTask(' + index + ')">Delete</span>';
-            tasksList.appendChild(li);
+            editBtn.addEventListener('click', () => {
+                viewer.style.display = 'none';
+                editor.style.display = 'block';
+                editBtn.style.display = 'none';
+                viewBtn.style.display = 'block';
+            });
+
+            viewBtn.addEventListener('click', () => {
+                editor.style.display = 'none';
+                viewer.style.display = 'block';
+                viewBtn.style.display = 'none';
+                editBtn.style.display = 'block';
+                updateViewer();
+            });
+
+            saveBtn.addEventListener('click', () => {
+                try {
+                    const json = JSON.parse(editor.value);
+                    localStorage.setItem('jsonData', JSON.stringify(json));
+                    alert('JSON saved to local storage');
+                } catch (error) {
+                    alert('Invalid JSON');
+                }
+            });
+
+            loadBtn.addEventListener('click', loadJsonFromLocalStorage);
+
+            clearBtn.addEventListener('click', () => {
+                localStorage.removeItem('jsonData');
+                editor.value = '';
+                viewer.innerHTML = '';
+                alert('Local storage cleared');
+            });
+
+            exportBtn.addEventListener('click', () => {
+                const json = localStorage.getItem('jsonData');
+                if (json) {
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'data.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } else {
+                    alert('No JSON found in local storage');
+                }
+            });
+
+            importFile.addEventListener('change', event => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        editor.value = e.target.result;
+                        updateViewer();
+                        editor.style.display = 'none';
+                        viewer.style.display = 'block';
+                        viewBtn.style.display = 'none';
+                        editBtn.style.display = 'block';
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            // Load JSON from local storage on page load
+            loadJsonFromLocalStorage();
         });
-    }
-
-    // Function to delete a task
-    function deleteTask(index) {
-        var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        tasks.splice(index, 1);
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        showTasks();
-    }
-
-    // Initial display of tasks
-    showTasks();
-</script>
-
+    </script>
 </body>
 </html>
