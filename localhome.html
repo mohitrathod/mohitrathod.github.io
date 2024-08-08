@@ -25,7 +25,7 @@
             background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba{0, 0, 0, 0.1};
             max-width: 400px;
             width: 100%;
         }
@@ -128,6 +128,7 @@
             <button type="submit">Add Bookmark</button>
         </form>
         <button id="export-btn">Export Bookmarks</button>
+        <button id="export-clipboard-btn">Export to Clipboard</button>
         <input type="file" id="import-file" style="display:none;">
         <label for="import-file" class="import-btn">Import Bookmarks</label>
         <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
@@ -137,11 +138,13 @@
             const bookmarkForm = document.getElementById('bookmark-form');
             const bookmarkList = document.getElementById('bookmark-list');
             const exportBtn = document.getElementById('export-btn');
+            const exportClipboardBtn = document.getElementById('export-clipboard-btn');
             const importFile = document.getElementById('import-file');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
 
             bookmarkForm.addEventListener('submit', addBookmark);
             exportBtn.addEventListener('click', exportBookmarks);
+            exportClipboardBtn.addEventListener('click', exportBookmarksToClipboard);
             importFile.addEventListener('change', importBookmarks);
             importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
 
@@ -183,6 +186,16 @@
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
+            }
+
+            function exportBookmarksToClipboard() {
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                const bookmarksText = JSON.stringify(bookmarks, null, 2);
+                navigator.clipboard.writeText(bookmarksText).then(() => {
+                    alert('Bookmarks exported to clipboard successfully.');
+                }).catch(err => {
+                    console.error('Failed to copy bookmarks to clipboard', err);
+                });
             }
 
             function importBookmarks(event) {
