@@ -130,6 +130,7 @@
         <button id="export-btn">Export Bookmarks</button>
         <input type="file" id="import-file" style="display:none;">
         <label for="import-file" class="import-btn">Import Bookmarks</label>
+        <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -137,10 +138,12 @@
             const bookmarkList = document.getElementById('bookmark-list');
             const exportBtn = document.getElementById('export-btn');
             const importFile = document.getElementById('import-file');
+            const importClipboardBtn = document.getElementById('import-clipboard-btn');
 
             bookmarkForm.addEventListener('submit', addBookmark);
             exportBtn.addEventListener('click', exportBookmarks);
             importFile.addEventListener('change', importBookmarks);
+            importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
 
             loadBookmarks();
 
@@ -192,6 +195,18 @@
                         loadBookmarks();
                     };
                     reader.readAsText(file);
+                }
+            }
+
+            async function importBookmarksFromClipboard() {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    const bookmarks = JSON.parse(text);
+                    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                    loadBookmarks();
+                } catch (error) {
+                    alert('Failed to import bookmarks from clipboard. Make sure the clipboard contains valid JSON.');
+                    console.error(error);
                 }
             }
         });
