@@ -25,7 +25,7 @@
             background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 15px rgba{0, 0, 0, 0.1};
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
         }
@@ -73,6 +73,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        li:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        li:nth-child(even) {
+            background-color: #f0f0f0;
         }
 
         li a {
@@ -167,10 +175,10 @@
             function loadBookmarks() {
                 bookmarkList.innerHTML = '';
                 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                bookmarks.forEach(bookmark => {
+                bookmarks.forEach((bookmark, index) => {
                     const li = document.createElement('li');
                     li.innerHTML = `
-                        <span><a href="${bookmark.url}" target="_self">${bookmark.name}</a></span>
+                        <a href="${bookmark.url}" target="_self">${index + 1}.  ${bookmark.name}</a>
                     `;
                     bookmarkList.appendChild(li);
                 });
