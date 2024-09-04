@@ -13,7 +13,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh; /* Changed from height to min-height */
+            box-sizing: border-box; /* Added to ensure padding and borders are included in height calculation */
+            padding-top: env(safe-area-inset-top); /* Consider safe area inset for iPhones with notches */
         }
 
         h1 {
