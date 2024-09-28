@@ -132,47 +132,19 @@
 <body>
     <div class="container">
         <ul id="bookmark-list"></ul>
-        <form id="bookmark-form">
-            <input type="text" id="bookmark-name" placeholder="Bookmark Name" required>
-            <input type="url" id="bookmark-url" placeholder="Bookmark URL" required>
-            <button type="submit">Add Bookmark</button>
-        </form>
-        <button id="export-btn">Export Bookmarks</button>
         <button id="export-clipboard-btn">Export to Clipboard</button>
-        <input type="file" id="import-file" style="display:none;">
-        <label for="import-file" class="import-btn">Import Bookmarks</label>
         <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const bookmarkForm = document.getElementById('bookmark-form');
             const bookmarkList = document.getElementById('bookmark-list');
-            const exportBtn = document.getElementById('export-btn');
             const exportClipboardBtn = document.getElementById('export-clipboard-btn');
-            const importFile = document.getElementById('import-file');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
 
-            bookmarkForm.addEventListener('submit', addBookmark);
-            exportBtn.addEventListener('click', exportBookmarks);
             exportClipboardBtn.addEventListener('click', exportBookmarksToClipboard);
-            importFile.addEventListener('change', importBookmarks);
             importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
 
             loadBookmarks();
-
-            function addBookmark(event) {
-                event.preventDefault();
-                const name = document.getElementById('bookmark-name').value;
-                const url = document.getElementById('bookmark-url').value;
-                const bookmark = { name, url };
-
-                let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                bookmarks.push(bookmark);
-                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-
-                document.getElementById('bookmark-form').reset();
-                loadBookmarks();
-            }
 
             function loadBookmarks() {
                 bookmarkList.innerHTML = '';
@@ -186,18 +158,6 @@
                 });
             }
 
-            function exportBookmarks() {
-                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                const blob = new Blob([JSON.stringify(bookmarks, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'bookmarks.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }
-
             function exportBookmarksToClipboard() {
                 const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
                 const bookmarksText = JSON.stringify(bookmarks, null, 2);
@@ -208,19 +168,22 @@
                 });
             }
 
-            function importBookmarks(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const bookmarks = JSON.parse(e.target.result);
-                        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-                        loadBookmarks();
-                    };
-                    reader.readAsText(file);
-                }
-            }
+            /*
 
+            example json:
+
+            [
+              {
+                "name": "y combinator Hacker News",
+                "url": "https://news.ycombinator.com/news"
+              },
+              {
+                "name": "verge",
+                "url": "https://www.theverge.com/"
+              }
+            ]
+
+            */
             async function importBookmarksFromClipboard() {
                 try {
                     const text = await navigator.clipboard.readText();
