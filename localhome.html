@@ -177,10 +177,10 @@
             function loadBookmarks() {
                 bookmarkList.innerHTML = '';
                 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                bookmarks.forEach((bookmark, index) => {
+                bookmarks.forEach((bookmark) => {
                     const li = document.createElement('li');
                     li.innerHTML = `
-                        <a href="${bookmark.url}" target="_self">${index + 1}.  ${bookmark.name}</a>
+                        <a href="${bookmark.url}" target="_self">${bookmark.name}</a>
                     `;
                     bookmarkList.appendChild(li);
                 });
