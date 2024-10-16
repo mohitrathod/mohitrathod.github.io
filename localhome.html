@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookmark Manager</title>
     <style>
+        /* Styles remain unchanged */
         body {
             font-family: Arial, sans-serif;
             background-color: #f6f6ef;
@@ -128,6 +129,24 @@
             border-color: #aaa; /* Subtle hover effect on border */
         }
 
+        /* Add Bookmark button */
+        .add-bookmark-btn {
+            display: none;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .add-bookmark-btn:hover {
+            background-color: #45a049;
+        }
+
         /* Modal styles */
         .modal {
             display: none;
@@ -196,6 +215,7 @@
 <body>
     <div class="container">
         <input type="text" id="search-box" placeholder="Search bookmarks..." autofocus>
+        <button id="add-bookmark-btn" class="add-bookmark-btn">Add Bookmark</button> <!-- New Button -->
         <ul id="bookmark-list"></ul>
         <div class="button-container">
             <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
@@ -223,6 +243,7 @@
             const exportClipboardBtn = document.getElementById('export-clipboard-btn');
             const toggleEditBtn = document.getElementById('toggle-edit-btn');
             const searchBox = document.getElementById('search-box');
+            const addBookmarkBtn = document.getElementById('add-bookmark-btn'); // Add Bookmark Button
             const modalOverlay = document.getElementById('modal-overlay');
             const editModal = document.getElementById('edit-modal');
             const editNameInput = document.getElementById('edit-name');
@@ -239,6 +260,7 @@
             searchBox.addEventListener('input', handleSearch);
             saveBtn.addEventListener('click', saveEditedBookmark);
             cancelBtn.addEventListener('click', closeModal);
+            addBookmarkBtn.addEventListener('click', addNewBookmark); // Add Bookmark Event
 
             loadBookmarks();
 
@@ -281,6 +303,7 @@
             function toggleEditMode() {
                 editMode = !editMode;
                 toggleEditBtn.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
+                addBookmarkBtn.style.display = editMode ? 'block' : 'none'; // Show/Hide "Add Bookmark" button
                 loadBookmarks(); // Reload bookmarks with edit/delete buttons visible if in edit mode
             }
 
@@ -371,6 +394,19 @@
                 bookmarks.splice(index, 1);
                 localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
                 loadBookmarks();
+            }
+
+            function addNewBookmark() {
+                const newBookmark = {
+                    name: 'New Bookmark',
+                    url: 'https://example.com'
+                };
+
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                bookmarks.push(newBookmark);
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                loadBookmarks();
+                window.editBookmark(bookmarks.length - 1); // Open edit modal for new bookmark
             }
         });
     </script>
