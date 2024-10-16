@@ -13,9 +13,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Changed from height to min-height */
-            box-sizing: border-box; /* Added to ensure padding and borders are included in height calculation */
-            padding-top: env(safe-area-inset-top); /* Consider safe area inset for iPhones with notches */
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top);
         }
 
         h1 {
@@ -32,34 +32,6 @@
             width: 100%;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-        }
-
-        input[type="text"], input[type="url"] {
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        button {
-            padding: 10px;
-            background-color: #28a745;
-            border: none;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-
         ul {
             list-style: none;
             padding: 0;
@@ -68,31 +40,38 @@
         }
 
         li {
-            background: #f6f6ef;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 4px;
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        li:nth-child(odd) {
-            background-color: #f6f6ef;
-        }
-
-        li:nth-child(even) {
-            background-color: #f6f6ef;
+            transition: box-shadow 0.2s ease;
         }
 
         li a {
-            color: #000000;
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            font-size: 16px;
+            color: inherit;
+            width: 100%;
         }
 
-        li a:hover {
-            text-decoration: underline;
+        li:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        li img {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+
+        li span {
+            font-size: 16px;
+            color: #000;
         }
 
         .import-btn {
@@ -117,14 +96,22 @@
                 padding: 15px;
             }
 
-            button, .import-btn {
+            .import-btn {
                 font-size: 14px;
                 padding: 8px;
             }
 
-            input[type="text"], input[type="url"] {
+            li {
+                padding: 10px;
+            }
+
+            li img {
+                width: 20px;
+                height: 20px;
+            }
+
+            li span {
                 font-size: 14px;
-                padding: 8px;
             }
         }
     </style>
@@ -132,16 +119,13 @@
 <body>
     <div class="container">
         <ul id="bookmark-list"></ul>
-        <button id="export-clipboard-btn">Export to Clipboard</button>
         <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const bookmarkList = document.getElementById('bookmark-list');
-            const exportClipboardBtn = document.getElementById('export-clipboard-btn');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
 
-            exportClipboardBtn.addEventListener('click', exportBookmarksToClipboard);
             importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
 
             loadBookmarks();
@@ -151,39 +135,27 @@
                 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
                 bookmarks.forEach((bookmark) => {
                     const li = document.createElement('li');
+                    const faviconUrl = getFaviconUrl(bookmark.url);
                     li.innerHTML = `
-                        <a href="${bookmark.url}" target="_self">${bookmark.name}</a>
+                        <a href="${bookmark.url}" target="_blank">
+                            <img src="${faviconUrl}" alt="Favicon" onerror="this.src='https://via.placeholder.com/16'">
+                            <span>${bookmark.name}</span>
+                        </a>
                     `;
                     bookmarkList.appendChild(li);
                 });
             }
 
-            function exportBookmarksToClipboard() {
-                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                const bookmarksText = JSON.stringify(bookmarks, null, 2);
-                navigator.clipboard.writeText(bookmarksText).then(() => {
-                    alert('Bookmarks exported to clipboard successfully.');
-                }).catch(err => {
-                    console.error('Failed to copy bookmarks to clipboard', err);
-                });
+            function getFaviconUrl(url) {
+                try {
+                    const urlObj = new URL(url);
+                    return `${urlObj.origin}/favicon.ico`;
+                } catch (error) {
+                    console.error('Invalid URL', error);
+                    return 'https://via.placeholder.com/16';
+                }
             }
 
-            /*
-
-            example json:
-
-            [
-              {
-                "name": "y combinator Hacker News",
-                "url": "https://news.ycombinator.com/news"
-              },
-              {
-                "name": "verge",
-                "url": "https://www.theverge.com/"
-              }
-            ]
-
-            */
             async function importBookmarksFromClipboard() {
                 try {
                     const text = await navigator.clipboard.readText();
