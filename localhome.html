@@ -58,6 +58,7 @@
             border: 1px solid #ccc;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             transition: box-shadow 0.2s ease;
         }
 
@@ -83,10 +84,23 @@
         li span {
             font-size: 16px;
             color: #000;
+            flex-grow: 1;
         }
 
         .highlight {
             background-color: yellow;
+        }
+
+        .edit-btn, .delete-btn {
+            margin-left: 10px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .edit-btn img, .delete-btn img {
+            width: 16px;
+            height: 16px;
         }
 
         .button-container {
@@ -95,7 +109,7 @@
             gap: 10px; /* Space between buttons */
         }
 
-        .import-btn, .export-btn {
+        .import-btn, .export-btn, .toggle-edit-btn {
             display: inline-block;
             padding: 8px; /* Reduced padding */
             background-color: #d3d3d3; /* A neutral, gray color */
@@ -108,10 +122,50 @@
             opacity: 0.8; /* Slightly reduced opacity */
         }
 
-        .import-btn:hover, .export-btn:hover {
+        .import-btn:hover, .export-btn:hover, .toggle-edit-btn:hover {
             background-color: #c0c0c0; /* Less dramatic hover effect */
             color: #333; /* Slightly darker on hover */
             border-color: #aaa; /* Subtle hover effect on border */
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            width: 300px;
+        }
+
+        .modal input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9;
         }
 
         @media (max-width: 400px) {
@@ -119,7 +173,7 @@
                 padding: 15px;
             }
 
-            .import-btn, .export-btn {
+            .import-btn, .export-btn, .toggle-edit-btn {
                 font-size: 12px;
                 padding: 6px;
             }
@@ -146,18 +200,45 @@
         <div class="button-container">
             <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
             <button id="export-clipboard-btn" class="export-btn">Export to Clipboard</button>
+            <button id="toggle-edit-btn" class="toggle-edit-btn">Edit Mode</button>
         </div>
     </div>
+
+    <!-- Modal for editing bookmark -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal" id="edit-modal">
+        <h3>Edit Bookmark</h3>
+        <input type="text" id="edit-name" placeholder="Bookmark Name">
+        <input type="text" id="edit-url" placeholder="Bookmark URL">
+        <div class="modal-buttons">
+            <button id="save-btn" class="import-btn">Save</button>
+            <button id="cancel-btn" class="import-btn">Cancel</button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const bookmarkList = document.getElementById('bookmark-list');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
             const exportClipboardBtn = document.getElementById('export-clipboard-btn');
+            const toggleEditBtn = document.getElementById('toggle-edit-btn');
             const searchBox = document.getElementById('search-box');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const editModal = document.getElementById('edit-modal');
+            const editNameInput = document.getElementById('edit-name');
+            const editUrlInput = document.getElementById('edit-url');
+            const saveBtn = document.getElementById('save-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+
+            let currentEditIndex = null; // To keep track of which bookmark is being edited
+            let editMode = false; // To track if the edit mode is active
 
             importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
             exportClipboardBtn.addEventListener('click', exportBookmarksToClipboard);
-            searchBox.addEventListener('input', handleSearch); // Trigger search on input
+            toggleEditBtn.addEventListener('click', toggleEditMode);
+            searchBox.addEventListener('input', handleSearch);
+            saveBtn.addEventListener('click', saveEditedBookmark);
+            cancelBtn.addEventListener('click', closeModal);
 
             loadBookmarks();
 
@@ -168,7 +249,7 @@
                 bookmarkList.innerHTML = '';
                 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
 
-                bookmarks.forEach((bookmark) => {
+                bookmarks.forEach((bookmark, index) => {
                     const lowerCaseName = bookmark.name.toLowerCase();
                     const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
@@ -177,15 +258,30 @@
                         const faviconUrl = getFaviconUrl(bookmark.url);
                         const highlightedName = highlightText(bookmark.name, searchTerm);
 
-                        li.innerHTML = `
-                            <a href="${bookmark.url}">
-                                <img src="${faviconUrl}" alt="Favicon" onerror="this.src='https://via.placeholder.com/16'">
+                        if (editMode) {
+                            li.innerHTML = `
                                 <span>${highlightedName}</span>
-                            </a>
-                        `;
+                                <button class="edit-btn" onclick="editBookmark(${index})"><img src="https://cdn-icons-png.flaticon.com/512/1159/1159633.png" alt="Edit"></button>
+                                <button class="delete-btn" onclick="deleteBookmark(${index})"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="Delete"></button>
+                            `;
+                        } else {
+                            li.innerHTML = `
+                                <a href="${bookmark.url}">
+                                    <img src="${faviconUrl}" alt="Favicon" onerror="this.src='https://via.placeholder.com/16'">
+                                    <span>${highlightedName}</span>
+                                </a>
+                            `;
+                        }
+
                         bookmarkList.appendChild(li);
                     }
                 });
+            }
+
+            function toggleEditMode() {
+                editMode = !editMode;
+                toggleEditBtn.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
+                loadBookmarks(); // Reload bookmarks with edit/delete buttons visible if in edit mode
             }
 
             function highlightText(text, term) {
@@ -235,6 +331,46 @@
             function handleSearch() {
                 const searchTerm = searchBox.value;
                 loadBookmarks(searchTerm);
+            }
+
+            window.editBookmark = function(index) {
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                const bookmark = bookmarks[index];
+
+                currentEditIndex = index;
+                editNameInput.value = bookmark.name;
+                editUrlInput.value = bookmark.url;
+
+                openModal();
+            }
+
+            function saveEditedBookmark() {
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                bookmarks[currentEditIndex] = {
+                    name: editNameInput.value,
+                    url: editUrlInput.value,
+                };
+
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                loadBookmarks();
+                closeModal();
+            }
+
+            function openModal() {
+                modalOverlay.style.display = 'block';
+                editModal.style.display = 'block';
+            }
+
+            function closeModal() {
+                modalOverlay.style.display = 'none';
+                editModal.style.display = 'none';
+            }
+
+            window.deleteBookmark = function(index) {
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                bookmarks.splice(index, 1);
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                loadBookmarks();
             }
         });
     </script>
