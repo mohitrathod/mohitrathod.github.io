@@ -92,14 +92,14 @@
             background-color: yellow;
         }
 
-        .edit-btn, .delete-btn {
+        .edit-btn, .delete-btn, .up-btn, .down-btn {
             margin-left: 10px;
             cursor: pointer;
             border: none;
             background: none;
         }
 
-        .edit-btn img, .delete-btn img {
+        .edit-btn img, .delete-btn img, .up-btn img, .down-btn img {
             width: 16px;
             height: 16px;
         }
@@ -283,8 +283,10 @@
                         if (editMode) {
                             li.innerHTML = `
                                 <span>${highlightedName}</span>
-                                <button class="edit-btn" onclick="editBookmark(${index})"><img src="https://cdn-icons-png.flaticon.com/512/1159/1159633.png" alt="Edit"></button>
-                                <button class="delete-btn" onclick="deleteBookmark(${index})"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="Delete"></button>
+                                <button class="up-btn" onclick="moveBookmark(${index}, 'up')">&uarr;</button>
+                                <button class="down-btn" onclick="moveBookmark(${index}, 'down')">&darr;</button>
+                                <button class="edit-btn" onclick="editBookmark(${index})">&#128393;</button>
+                                <button class="delete-btn" onclick="deleteBookmark(${index})">&#128473;</button>
                             `;
                         } else {
                             li.innerHTML = `
@@ -304,7 +306,7 @@
                 editMode = !editMode;
                 toggleEditBtn.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
                 addBookmarkBtn.style.display = editMode ? 'block' : 'none'; // Show/Hide "Add Bookmark" button
-                loadBookmarks(); // Reload bookmarks with edit/delete buttons visible if in edit mode
+                loadBookmarks(); // Reload bookmarks with edit/delete/move buttons visible if in edit mode
             }
 
             function highlightText(text, term) {
@@ -392,6 +394,17 @@
             window.deleteBookmark = function(index) {
                 const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
                 bookmarks.splice(index, 1);
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                loadBookmarks();
+            }
+
+            window.moveBookmark = function(index, direction) {
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                if (direction === 'up' && index > 0) {
+                    [bookmarks[index - 1], bookmarks[index]] = [bookmarks[index], bookmarks[index - 1]]; // Swap with previous
+                } else if (direction === 'down' && index < bookmarks.length - 1) {
+                    [bookmarks[index + 1], bookmarks[index]] = [bookmarks[index], bookmarks[index + 1]]; // Swap with next
+                }
                 localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
                 loadBookmarks();
             }
