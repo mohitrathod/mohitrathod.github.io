@@ -283,10 +283,10 @@
                         if (editMode) {
                             li.innerHTML = `
                                 <span>${highlightedName}</span>
-                                <button class="up-btn" onclick="moveBookmark(${index}, 'up')">&uarr;</button>
-                                <button class="down-btn" onclick="moveBookmark(${index}, 'down')">&darr;</button>
+                                <button class="up-btn" style="color: blue" onclick="moveBookmark(${index}, 'up')">&#708;</button>
+                                <button class="down-btn" style="color: green" onclick="moveBookmark(${index}, 'down')">&#709;</button>
                                 <button class="edit-btn" onclick="editBookmark(${index})">&#128393;</button>
-                                <button class="delete-btn" onclick="deleteBookmark(${index})">&#128473;</button>
+                                <button class="delete-btn" style="color: red" onclick="deleteBookmark(${index})">&#128473;</button>
                             `;
                         } else {
                             li.innerHTML = `
