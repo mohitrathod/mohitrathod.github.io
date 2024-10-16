@@ -89,7 +89,13 @@
             background-color: yellow;
         }
 
-        .import-btn {
+        .button-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px; /* Space between buttons */
+        }
+
+        .import-btn, .export-btn {
             display: inline-block;
             padding: 8px; /* Reduced padding */
             background-color: #d3d3d3; /* A neutral, gray color */
@@ -99,11 +105,10 @@
             cursor: pointer;
             text-align: center;
             font-size: 14px; /* Smaller text size */
-            margin-top: 10px;
             opacity: 0.8; /* Slightly reduced opacity */
         }
 
-        .import-btn:hover {
+        .import-btn:hover, .export-btn:hover {
             background-color: #c0c0c0; /* Less dramatic hover effect */
             color: #333; /* Slightly darker on hover */
             border-color: #aaa; /* Subtle hover effect on border */
@@ -114,7 +119,7 @@
                 padding: 15px;
             }
 
-            .import-btn {
+            .import-btn, .export-btn {
                 font-size: 12px;
                 padding: 6px;
             }
@@ -138,15 +143,20 @@
     <div class="container">
         <input type="text" id="search-box" placeholder="Search bookmarks..." autofocus>
         <ul id="bookmark-list"></ul>
-        <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
+        <div class="button-container">
+            <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
+            <button id="export-clipboard-btn" class="export-btn">Export to Clipboard</button>
+        </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const bookmarkList = document.getElementById('bookmark-list');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
+            const exportClipboardBtn = document.getElementById('export-clipboard-btn');
             const searchBox = document.getElementById('search-box');
 
             importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
+            exportClipboardBtn.addEventListener('click', exportBookmarksToClipboard);
             searchBox.addEventListener('input', handleSearch); // Trigger search on input
 
             loadBookmarks();
@@ -203,6 +213,21 @@
                     loadBookmarks();
                 } catch (error) {
                     alert('Failed to import bookmarks from clipboard. Make sure the clipboard contains valid JSON.');
+                    console.error(error);
+                }
+            }
+
+            async function exportBookmarksToClipboard() {
+                try {
+                    const bookmarks = localStorage.getItem('bookmarks');
+                    if (!bookmarks) {
+                        alert('No bookmarks to export.');
+                        return;
+                    }
+                    await navigator.clipboard.writeText(bookmarks);
+                    alert('Bookmarks copied to clipboard.');
+                } catch (error) {
+                    alert('Failed to export bookmarks to clipboard.');
                     console.error(error);
                 }
             }
