@@ -28,8 +28,18 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            max-width: 1200px; /* Increased width to accommodate grid layout */
+            max-width: 1200px;
             width: 100%;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
         }
 
         ul {
@@ -75,21 +85,28 @@
             color: #000;
         }
 
+        .highlight {
+            background-color: yellow;
+        }
+
         .import-btn {
             display: inline-block;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
+            padding: 8px; /* Reduced padding */
+            background-color: #d3d3d3; /* A neutral, gray color */
+            color: #555; /* Darker gray text */
+            border: 1px solid #bbb; /* Softer border */
             border-radius: 4px;
             cursor: pointer;
             text-align: center;
-            font-size: 16px;
+            font-size: 14px; /* Smaller text size */
             margin-top: 10px;
+            opacity: 0.8; /* Slightly reduced opacity */
         }
 
         .import-btn:hover {
-            background-color: #0056b3;
+            background-color: #c0c0c0; /* Less dramatic hover effect */
+            color: #333; /* Slightly darker on hover */
+            border-color: #aaa; /* Subtle hover effect on border */
         }
 
         @media (max-width: 400px) {
@@ -98,8 +115,8 @@
             }
 
             .import-btn {
-                font-size: 14px;
-                padding: 8px;
+                font-size: 12px;
+                padding: 6px;
             }
 
             li {
@@ -119,6 +136,7 @@
 </head>
 <body>
     <div class="container">
+        <input type="text" id="search-box" placeholder="Search bookmarks..." autofocus>
         <ul id="bookmark-list"></ul>
         <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
     </div>
@@ -126,25 +144,45 @@
         document.addEventListener('DOMContentLoaded', function() {
             const bookmarkList = document.getElementById('bookmark-list');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
+            const searchBox = document.getElementById('search-box');
 
             importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
+            searchBox.addEventListener('input', handleSearch); // Trigger search on input
 
             loadBookmarks();
 
-            function loadBookmarks() {
+            // Focus on search input by default
+            searchBox.focus();
+
+            function loadBookmarks(searchTerm = '') {
                 bookmarkList.innerHTML = '';
                 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
                 bookmarks.forEach((bookmark) => {
-                    const li = document.createElement('li');
-                    const faviconUrl = getFaviconUrl(bookmark.url);
-                    li.innerHTML = `
-                        <a href="${bookmark.url}" target="_blank">
-                            <img src="${faviconUrl}" alt="Favicon" onerror="this.src='https://via.placeholder.com/16'">
-                            <span>${bookmark.name}</span>
-                        </a>
-                    `;
-                    bookmarkList.appendChild(li);
+                    const lowerCaseName = bookmark.name.toLowerCase();
+                    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+                    if (lowerCaseName.includes(lowerCaseSearchTerm)) {
+                        const li = document.createElement('li');
+                        const faviconUrl = getFaviconUrl(bookmark.url);
+                        const highlightedName = highlightText(bookmark.name, searchTerm);
+
+                        li.innerHTML = `
+                            <a href="${bookmark.url}">
+                                <img src="${faviconUrl}" alt="Favicon" onerror="this.src='https://via.placeholder.com/16'">
+                                <span>${highlightedName}</span>
+                            </a>
+                        `;
+                        bookmarkList.appendChild(li);
+                    }
                 });
+            }
+
+            function highlightText(text, term) {
+                if (!term) return text; // If there's no search term, return original text
+
+                const regex = new RegExp(`(${term})`, 'gi');
+                return text.replace(regex, '<span class="highlight">$1</span>'); // Highlight matching part
             }
 
             function getFaviconUrl(url) {
@@ -167,6 +205,11 @@
                     alert('Failed to import bookmarks from clipboard. Make sure the clipboard contains valid JSON.');
                     console.error(error);
                 }
+            }
+
+            function handleSearch() {
+                const searchTerm = searchBox.value;
+                loadBookmarks(searchTerm);
             }
         });
     </script>
