@@ -16,6 +16,7 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+            position: relative; /* Ensure position context for note */
         }
 
         h1 {
@@ -297,6 +298,15 @@
             background-color: darkred;
         }
 
+        .footer-note {
+            color: #555;
+            text-decoration: none;
+            text-align:right;position:absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+
 
     </style>
 </head>
@@ -319,8 +329,12 @@
         </div>
     </div>
 
+    <div class="footer-note">
+        destroyable, privacy-oriented, open-source To-Do list.
+    </div>
+
     <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
     const todoList = document.getElementById('todo-list');
     const addTaskBtn = document.getElementById('add-task-btn');
     const toggleEditBtn = document.getElementById('toggle-edit-btn');
