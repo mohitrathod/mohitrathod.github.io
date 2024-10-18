@@ -3,212 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Notepad</title>
+    <title>To-Do List Manager</title>
     <style>
+        /* Styles remain unchanged */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f6f6ef;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
         }
 
         .container {
-            background: #fff;
+            background: #f6f6ef;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             max-width: 800px;
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
-        textarea {
+        input[type="text"] {
             width: 100%;
-            height: 300px;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-family: monospace;
             font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
             box-sizing: border-box;
         }
 
-        button, .import-btn {
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsive grid */
+            gap: 10px; /* Space between items */
+        }
+
+        li {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: box-shadow 0.2s ease;
+        }
+
+        li span {
+            font-size: 16px;
+            color: #000;
+            flex-grow: 1;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+
+        .edit-btn, .delete-btn, .up-btn, .down-btn {
+            margin-left: 10px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border: 1px solid #bbb; /* Softer border */
+            border-radius: 4px;
+        }
+
+        .button-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .import-btn, .export-btn, .toggle-edit-btn {
+            display: inline-block;
+            padding: 8px;
+            background-color: #d3d3d3;
+            color: #555;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .import-btn:hover, .export-btn:hover, .toggle-edit-btn:hover {
+            background-color: #c0c0c0;
+            color: #333;
+        }
+
+        .add-task-btn {
+            display: none; /* Initially hidden */
             padding: 10px;
-            background-color: #007bff;
+            margin-bottom: 15px;
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s, transform 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        button:hover, .import-btn:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-
-        button:active, .import-btn:active {
-            background-color: #004494;
-            transform: translateY(0);
-        }
-
-        .import-btn {
-            display: inline-block;
             text-align: center;
+            font-size: 16px;
         }
 
-        input[type="file"] {
+        .add-task-btn:hover {
+            background-color: #45a049;
+        }
+
+        .modal {
             display: none;
-        }
-
-        .notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            width: 300px;
+        }
+
+        .modal input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-overlay {
             display: none;
-            opacity: 0;
-            transition: opacity 0.5s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9;
         }
 
-        .notification.show {
+        /* Show Add Task button when in edit mode */
+        .edit-mode .add-task-btn {
             display: block;
-            opacity: 1;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-
-            button, .import-btn {
-                font-size: 14px;
-                padding: 8px;
-            }
-
-            textarea {
-                font-size: 14px;
-                padding: 8px;
-                height: 200px;
-            }
+        /* Show action buttons in edit mode */
+        .edit-mode ul li span {
+            margin-right: 30px;
         }
 
-        @media (max-width: 400px) {
-            .container {
-                padding: 10px;
-            }
+        .edit-mode ul li .edit-btn,
+        .edit-mode ul li .delete-btn,
+        .edit-mode ul li .up-btn,
+        .edit-mode ul li .down-btn {
+            display: inline-block;
+        }
 
-            button, .import-btn {
-                font-size: 12px;
-                padding: 6px;
-            }
-
-            textarea {
-                font-size: 12px;
-                padding: 6px;
-                height: 150px;
-            }
+        /* Hide action buttons in view mode */
+        ul li .edit-btn,
+        ul li .delete-btn,
+        ul li .up-btn,
+        ul li .down-btn {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <textarea id="notepad" placeholder="Write your notes here..."></textarea>
-        <button id="save-btn">Save</button>
-        <button id="load-btn">Load</button>
-        <button id="export-btn">Export</button>
-        <input type="file" id="import-file" />
-        <label for="import-file" class="import-btn">Import</label>
-        <button id="clear-btn">Clear</button>
+        <input type="text" id="search-box" placeholder="Search tasks..." autofocus>
+        <button id="add-task-btn" class="add-task-btn">Add New Task</button>
+        <ul id="todo-list"></ul>
+        <div class="button-container">
+            <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
+            <button id="export-clipboard-btn" class="export-btn">Export to Clipboard</button>
+            <button id="toggle-edit-btn" class="toggle-edit-btn">Edit Mode</button>
+        </div>
     </div>
-    <div id="notification" class="notification"></div>
+
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal" id="edit-modal">
+        <h3>Edit Task</h3>
+        <input type="text" id="edit-task-name" placeholder="Task Name">
+        <div class="modal-buttons">
+            <button id="save-btn" class="import-btn">Save</button>
+            <button id="cancel-btn" class="import-btn">Cancel</button>
+        </div>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const notepad = document.getElementById('notepad');
-            const saveBtn = document.getElementById('save-btn');
-            const loadBtn = document.getElementById('load-btn');
-            const clearBtn = document.getElementById('clear-btn');
-            const exportBtn = document.getElementById('export-btn');
-            const importFile = document.getElementById('import-file');
-            const notification = document.getElementById('notification');
+    document.addEventListener('DOMContentLoaded', function () {
+        const todoList = document.getElementById('todo-list');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const toggleEditBtn = document.getElementById('toggle-edit-btn');
+        const searchBox = document.getElementById('search-box');
+        let editMode = false;
 
-            function showNotification(message, duration = 3000) {
-                notification.textContent = message;
-                notification.classList.add('show');
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, duration);
+        // Load tasks from localStorage or initialize with a default sample
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // Function to render the tasks
+        function renderTasks() {
+            todoList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${task}</span>
+                    <button style="color: green" class="up-btn">up</button>
+                    <button style="color: blue" class="down-btn">down</button>
+                    <button  class="edit-btn">edit</button>
+                    <button style="color: red" class="delete-btn">delete</button>
+                `;
+                todoList.appendChild(li);
+
+                // Event listeners for edit, delete, up, and down buttons
+                const editBtn = li.querySelector('.edit-btn');
+                const deleteBtn = li.querySelector('.delete-btn');
+                const upBtn = li.querySelector('.up-btn');
+                const downBtn = li.querySelector('.down-btn');
+
+                editBtn.addEventListener('click', () => editTask(index));
+                deleteBtn.addEventListener('click', () => deleteTask(index));
+                upBtn.addEventListener('click', () => moveTaskUp(index));
+                downBtn.addEventListener('click', () => moveTaskDown(index));
+            });
+        }
+
+        // Function to add a new task
+        function addTask(task) {
+            tasks.push(task);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        // Event listener for "Add New Task" button
+        addTaskBtn.addEventListener('click', function () {
+            const taskName = prompt('Enter a new task:');
+            if (taskName) {
+                addTask(taskName);
             }
-
-            function loadNotesFromLocalStorage() {
-                const savedNotes = localStorage.getItem('notepadData');
-                if (savedNotes) {
-                    notepad.value = savedNotes;
-                }
-            }
-
-            saveBtn.addEventListener('click', () => {
-                localStorage.setItem('notepadData', notepad.value);
-                showNotification('Notes saved');
-            });
-
-            loadBtn.addEventListener('click', () => {
-                loadNotesFromLocalStorage();
-                showNotification('Notes loaded');
-            });
-
-            clearBtn.addEventListener('click', () => {
-                localStorage.removeItem('notepadData');
-                notepad.value = '';
-                showNotification('Notes cleared');
-            });
-
-            exportBtn.addEventListener('click', () => {
-                const notes = localStorage.getItem('notepadData');
-                if (notes) {
-                    const blob = new Blob([notes], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'notes.txt';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    showNotification('Notes exported');
-                } else {
-                    showNotification('No notes found to export');
-                }
-            });
-
-            importFile.addEventListener('change', event => {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        notepad.value = e.target.result;
-                        localStorage.setItem('notepadData', notepad.value);
-                        showNotification('Notes imported');
-                    };
-                    reader.readAsText(file);
-                }
-            });
-
-            // Load notes from local storage on page load
-            loadNotesFromLocalStorage();
         });
-    </script>
+
+        // Function to toggle edit mode
+        toggleEditBtn.addEventListener('click', function () {
+            document.body.classList.toggle('edit-mode');
+            editMode = !editMode;
+            toggleEditBtn.textContent = editMode ? 'View Mode' : 'Edit Mode';
+        });
+
+        // Load initial tasks
+        renderTasks();
+
+        // Function to edit a task
+        function editTask(index) {
+            const newTaskName = prompt('Edit task:', tasks[index]);
+            if (newTaskName) {
+                tasks[index] = newTaskName;
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                renderTasks();
+            }
+        }
+
+        // Function to delete a task
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        // Function to move a task up
+        function moveTaskUp(index) {
+            if (index > 0) {
+                [tasks[index], tasks[index - 1]] = [tasks[index - 1], tasks[index]];
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                renderTasks();
+            }
+        }
+
+        // Function to move a task down
+        function moveTaskDown(index) {
+            if (index < tasks.length - 1) {
+                [tasks[index], tasks[index + 1]] = [tasks[index + 1], tasks[index]];
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                renderTasks();
+            }
+        }
+
+    });
+</script>
+
 </body>
 </html>
