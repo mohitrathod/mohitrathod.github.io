@@ -108,15 +108,16 @@
 
         .add-task-btn {
             display: none; /* Initially hidden */
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 8px;
+            margin-bottom: 10px;
+            margin-top: 10px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             text-align: center;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .add-task-btn:hover {
@@ -312,8 +313,11 @@
 </head>
 <body>
     <div class="container">
-        <button id="add-task-btn" class="add-task-btn">Add New Task</button>
+
         <ul id="todo-list"></ul>
+        <div class="button-container">
+            <button id="add-task-btn" class="add-task-btn">Add New Task</button>
+        </div>
         <div class="button-container">
             <button id="toggle-edit-btn" class="toggle-edit-btn">Edit Mode</button>
         </div>
