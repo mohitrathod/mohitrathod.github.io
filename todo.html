@@ -185,130 +185,272 @@
         ul li .down-btn {
             display: none;
         }
+
+        .task-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: 300px;
+        }
+
+        .task-modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .task-modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .task-modal-buttons button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .save-task-btn {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .cancel-task-btn {
+            background-color: #f44336;
+            color: #fff;
+        }
+
+        .task-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 500;
+        }
+
+        /* Styles for buttons */
+        .up-btn {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .down-btn {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background-color: grey;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Button hover effects */
+        .up-btn:hover {
+            background-color: darkgreen;
+        }
+
+        .down-btn:hover {
+            background-color: darkblue;
+        }
+
+        .edit-btn:hover {
+            background-color: darkgrey;
+        }
+
+        .delete-btn:hover {
+            background-color: darkred;
+        }
+
+
     </style>
 </head>
 <body>
     <div class="container">
-        <!--<input type="text" id="search-box" placeholder="Search tasks..." autofocus>-->
         <button id="add-task-btn" class="add-task-btn">Add New Task</button>
         <ul id="todo-list"></ul>
         <div class="button-container">
-            <!--<button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
-            <button id="export-clipboard-btn" class="export-btn">Export to Clipboard</button>-->
             <button id="toggle-edit-btn" class="toggle-edit-btn">Edit Mode</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal-overlay"></div>
-    <div class="modal" id="edit-modal">
-        <h3>Edit Task</h3>
-        <input type="text" id="edit-task-name" placeholder="Task Name">
-        <div class="modal-buttons">
-            <button id="save-btn" class="import-btn">Save</button>
-            <button id="cancel-btn" class="import-btn">Cancel</button>
+    <div class="task-modal-overlay" id="task-modal-overlay"></div>
+    <div class="task-modal" id="task-modal">
+        <h3>Add New Task</h3>
+        <input type="text" id="task-input" placeholder="Task Name" />
+        <div class="task-modal-buttons">
+            <button class="save-task-btn" id="save-task-btn">Save</button>
+            <button class="cancel-task-btn" id="cancel-task-btn">Cancel</button>
         </div>
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const todoList = document.getElementById('todo-list');
-        const addTaskBtn = document.getElementById('add-task-btn');
-        const toggleEditBtn = document.getElementById('toggle-edit-btn');
-        const searchBox = document.getElementById('search-box');
-        let editMode = false;
+document.addEventListener('DOMContentLoaded', function () {
+    const todoList = document.getElementById('todo-list');
+    const addTaskBtn = document.getElementById('add-task-btn');
+    const toggleEditBtn = document.getElementById('toggle-edit-btn');
+    const taskModal = document.getElementById('task-modal');
+    const taskModalOverlay = document.getElementById('task-modal-overlay');
+    const saveTaskBtn = document.getElementById('save-task-btn');
+    const cancelTaskBtn = document.getElementById('cancel-task-btn');
+    const taskInput = document.getElementById('task-input');
 
-        // Load tasks from localStorage or initialize with a default sample
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    let editMode = false;
+    let isEditing = false; // Flag to determine if we're adding or editing a task
+    let currentEditIndex = null; // Stores the index of the task being edited
 
-        // Function to render the tasks
-        function renderTasks() {
-            todoList.innerHTML = '';
-            tasks.forEach((task, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${task}</span>
-                    <button style="color: green" class="up-btn">up</button>
-                    <button style="color: blue" class="down-btn">down</button>
-                    <button  class="edit-btn">edit</button>
-                    <button style="color: red" class="delete-btn">delete</button>
-                `;
-                todoList.appendChild(li);
+    // Function to render tasks
+    function renderTasks() {
+        todoList.innerHTML = '';
+        tasks.forEach((task, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${task}</span>
+                <button class="up-btn" style="display: ${editMode ? 'inline-block' : 'none'};">Up</button>
+                <button class="down-btn" style="display: ${editMode ? 'inline-block' : 'none'};">Down</button>
+                <button class="edit-btn" style="display: ${editMode ? 'inline-block' : 'none'};">Edit</button>
+                <button class="delete-btn" style="display: ${editMode ? 'inline-block' : 'none'};">Delete</button>
+            `;
+            todoList.appendChild(li);
 
-                // Event listeners for edit, delete, up, and down buttons
-                const editBtn = li.querySelector('.edit-btn');
-                const deleteBtn = li.querySelector('.delete-btn');
-                const upBtn = li.querySelector('.up-btn');
-                const downBtn = li.querySelector('.down-btn');
+            const editBtn = li.querySelector('.edit-btn');
+            const deleteBtn = li.querySelector('.delete-btn');
+            const upBtn = li.querySelector('.up-btn');
+            const downBtn = li.querySelector('.down-btn');
 
-                editBtn.addEventListener('click', () => editTask(index));
-                deleteBtn.addEventListener('click', () => deleteTask(index));
-                upBtn.addEventListener('click', () => moveTaskUp(index));
-                downBtn.addEventListener('click', () => moveTaskDown(index));
-            });
-        }
-
-        // Function to add a new task
-        function addTask(task) {
-            tasks.push(task);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            renderTasks();
-        }
-
-        // Event listener for "Add New Task" button
-        addTaskBtn.addEventListener('click', function () {
-            const taskName = prompt('Enter a new task:');
-            if (taskName) {
-                addTask(taskName);
-            }
+            editBtn.addEventListener('click', () => editTask(index));
+            deleteBtn.addEventListener('click', () => deleteTask(index));
+            upBtn.addEventListener('click', () => moveTaskUp(index));
+            downBtn.addEventListener('click', () => moveTaskDown(index));
         });
+    }
 
-        // Function to toggle edit mode
-        toggleEditBtn.addEventListener('click', function () {
-            document.body.classList.toggle('edit-mode');
-            editMode = !editMode;
-            toggleEditBtn.textContent = editMode ? 'View Mode' : 'Edit Mode';
-        });
+    // Function to show the modal
+    function showModal() {
+        taskModal.style.display = 'block';
+        taskModalOverlay.style.display = 'block';
+        taskInput.focus();
+    }
 
-        // Load initial tasks
-        renderTasks();
+    // Function to hide the modal
+    function hideModal() {
+        taskModal.style.display = 'none';
+        taskModalOverlay.style.display = 'none';
+        taskInput.value = ''; // Clear the input field after hiding the modal
+        isEditing = false; // Reset the editing flag
+        currentEditIndex = null; // Reset the current edit index
+    }
 
-        // Function to edit a task
-        function editTask(index) {
-            const newTaskName = prompt('Edit task:', tasks[index]);
-            if (newTaskName) {
-                tasks[index] = newTaskName;
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                renderTasks();
-            }
-        }
-
-        // Function to delete a task
-        function deleteTask(index) {
-            tasks.splice(index, 1);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            renderTasks();
-        }
-
-        // Function to move a task up
-        function moveTaskUp(index) {
-            if (index > 0) {
-                [tasks[index], tasks[index - 1]] = [tasks[index - 1], tasks[index]];
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                renderTasks();
-            }
-        }
-
-        // Function to move a task down
-        function moveTaskDown(index) {
-            if (index < tasks.length - 1) {
-                [tasks[index], tasks[index + 1]] = [tasks[index + 1], tasks[index]];
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                renderTasks();
-            }
-        }
-
+    // Event listener for adding a new task
+    addTaskBtn.addEventListener('click', function () {
+        isEditing = false; // We're adding a new task, not editing
+        showModal();
     });
+
+    // Event listener for saving a task (either add or edit)
+    saveTaskBtn.addEventListener('click', function () {
+        const taskName = taskInput.value.trim();
+        if (taskName) {
+            if (isEditing) {
+                // If we're editing, update the task at the current index
+                tasks[currentEditIndex] = taskName;
+            } else {
+                // Otherwise, add a new task
+                tasks.push(taskName);
+            }
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+            hideModal();
+        }
+    });
+
+    cancelTaskBtn.addEventListener('click', hideModal);
+    taskModalOverlay.addEventListener('click', hideModal);
+
+    // Function to toggle edit mode
+    toggleEditBtn.addEventListener('click', function () {
+        editMode = !editMode;
+        toggleEditBtn.textContent = editMode ? 'View Mode' : 'Edit Mode';
+        document.body.classList.toggle('edit-mode', editMode);
+        renderTasks(); // Re-render tasks to show/hide buttons
+    });
+
+    // Function to edit a task
+    function editTask(index) {
+        isEditing = true; // We're in edit mode
+        currentEditIndex = index; // Store the index of the task being edited
+        taskInput.value = tasks[index]; // Pre-fill the input with the task name
+        showModal(); // Show the modal to edit the task
+    }
+
+    // Function to delete a task
+    function deleteTask(index) {
+        tasks.splice(index, 1);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        renderTasks();
+    }
+
+    // Function to move a task up
+    function moveTaskUp(index) {
+        if (index > 0) {
+            [tasks[index], tasks[index - 1]] = [tasks[index - 1], tasks[index]];
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+    }
+
+    // Function to move a task down
+    function moveTaskDown(index) {
+        if (index < tasks.length - 1) {
+            [tasks[index], tasks[index + 1]] = [tasks[index + 1], tasks[index]];
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+    }
+
+    // Initial render of tasks
+    renderTasks();
+});
 </script>
+
+
+
 
 </body>
 </html>
