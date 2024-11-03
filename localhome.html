@@ -217,8 +217,10 @@
 <body>
     <div class="container">
         <input type="text" id="search-box" placeholder="Search bookmarks..." autofocus>
-        <button id="add-bookmark-btn" class="add-bookmark-btn">Add Bookmark</button> <!-- New Button -->
         <ul id="bookmark-list"></ul>
+        <div class="button-container">
+            <button id="add-bookmark-btn" class="add-bookmark-btn">Add Bookmark</button>
+        </div>
         <div class="button-container">
             <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
             <button id="export-clipboard-btn" class="export-btn">Export to Clipboard</button>
@@ -279,7 +281,6 @@
 
                     if (lowerCaseName.includes(lowerCaseSearchTerm)) {
                         const li = document.createElement('li');
-                        const faviconUrl = getFaviconUrl(bookmark.url);
                         const highlightedName = highlightText(bookmark.name, searchTerm);
 
                         if (editMode) {
@@ -293,7 +294,7 @@
                         } else {
                             li.innerHTML = `
                                 <a href="${bookmark.url}">
-                                    <img src="${faviconUrl}" alt="Favicon" onerror="this.src='https://via.placeholder.com/16'">
+                                    <img class="favicon" alt="Favicon" data-url="${bookmark.url}">
                                     <span>${highlightedName}</span>
                                 </a>
                             `;
@@ -302,7 +303,32 @@
                         bookmarkList.appendChild(li);
                     }
                 });
+
+                // Delay favicon loading to after DOM is updated
+                requestAnimationFrame(loadFavicons);
             }
+
+            function loadFavicons() {
+                const faviconElements = document.querySelectorAll('.favicon');
+                faviconElements.forEach(img => {
+                    const url = img.getAttribute('data-url');
+                    img.src = getFaviconUrl(url);
+                    img.onerror = function () {
+                        img.src = 'https://via.placeholder.com/16';
+                    };
+                });
+            }
+
+            function getFaviconUrl(url) {
+                try {
+                    const urlObj = new URL(url);
+                    return `${urlObj.origin}/favicon.ico`;
+                } catch (error) {
+                    console.error('Invalid URL', error);
+                    return 'https://via.placeholder.com/16';
+                }
+            }
+
 
             function toggleEditMode() {
                 editMode = !editMode;
@@ -316,16 +342,6 @@
 
                 const regex = new RegExp(`(${term})`, 'gi');
                 return text.replace(regex, '<span class="highlight">$1</span>'); // Highlight matching part
-            }
-
-            function getFaviconUrl(url) {
-                try {
-                    const urlObj = new URL(url);
-                    return `${urlObj.origin}/favicon.ico`;
-                } catch (error) {
-                    console.error('Invalid URL', error);
-                    return 'https://via.placeholder.com/16';
-                }
             }
 
             async function importBookmarksFromClipboard() {
