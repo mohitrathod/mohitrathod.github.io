@@ -460,7 +460,7 @@
                 }
 
                 const blob = new Blob([bookmarks], { type: 'application/json' });
-                const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD format
+                const date = new Date().toISOString(); // YYYY-MM-DD format
                 const filename = `bookmarks_${date}.json`;
 
                 const link = document.createElement('a');
