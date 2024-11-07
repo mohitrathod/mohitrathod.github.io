@@ -305,7 +305,7 @@
                         } else {
                             li.innerHTML = `
                                 <a href="${bookmark.url}">
-                                    <img class="favicon" alt="Favicon" data-url="${bookmark.url}">
+<!--                                    <img class="favicon" alt="Favicon" data-url="${bookmark.url}">-->
                                     <span>${highlightedName}</span>
                                 </a>
                             `;
@@ -316,7 +316,7 @@
                 });
 
                 // Delay favicon loading to after DOM is updated
-                requestAnimationFrame(loadFavicons);
+<!--                requestAnimationFrame(loadFavicons);-->
             }
 
             function loadFavicons() {
