@@ -356,6 +356,9 @@
             <button id="add-task-btn" class="add-task-btn">Add New Task</button>
         </div>
         <div class="button-container">
+            <button id="import-file-btn" class="import-btn">Import from File</button>
+            <input type="file" id="file-input" style="display:none" accept=".json">
+            <button id="export-file-btn" class="export-btn">Export to File</button>
             <button id="toggle-edit-btn" class="toggle-edit-btn">Edit Mode</button>
         </div>
     </div>
@@ -386,10 +389,18 @@
         const cancelTaskBtn = document.getElementById('cancel-task-btn');
         const taskInput = document.getElementById('task-input');
 
+        const importFileBtn = document.getElementById('import-file-btn');
+        const exportFileBtn = document.getElementById('export-file-btn');
+        const fileInput = document.getElementById('file-input');
+
         let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         let editMode = false;
         let isEditing = false;
         let currentEditIndex = null;
+
+        importFileBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', importTasksFromFile);
+        exportFileBtn.addEventListener('click', exportTasksToFile);
 
         // Detect URLs in the task text
         function parseTaskText(text) {
@@ -504,6 +515,44 @@
                 renderTasks();
             }
         }
+
+        // New function to export tasks as a file with the current date in the filename
+            function exportTasksToFile() {
+                const tasks = localStorage.getItem('tasks');
+                if (!tasks) {
+                    alert('No tasks to export.');
+                    return;
+                }
+
+                const blob = new Blob([tasks], { type: 'application/json' });
+                const date = new Date().toISOString(); // YYYY-MM-DD format
+                const filename = `tasks_${date}.json`;
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+
+            // New function to import tasks from a JSON file
+            function importTasksFromFile(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const tasks = JSON.parse(e.target.result);
+                        localStorage.setItem('tasks', JSON.stringify(tasks));
+                        renderTasks();
+                    } catch (error) {
+                        alert('Failed to import tasks. Make sure the file is valid JSON.');
+                        console.error(error);
+                    }
+                };
+                reader.readAsText(file);
+            }
 
         // Initial render of tasks
         renderTasks();
