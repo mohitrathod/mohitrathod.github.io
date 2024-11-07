@@ -224,6 +224,9 @@
         <div class="button-container">
             <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
             <button id="export-clipboard-btn" class="export-btn">Export to Clipboard</button>
+            <button id="import-file-btn" class="import-btn">Import from File</button>
+            <input type="file" id="file-input" style="display:none" accept=".json">
+            <button id="export-file-btn" class="export-btn">Export to File</button>
             <button id="toggle-edit-btn" class="toggle-edit-btn">Edit Mode</button>
         </div>
     </div>
@@ -245,6 +248,9 @@
             const bookmarkList = document.getElementById('bookmark-list');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
             const exportClipboardBtn = document.getElementById('export-clipboard-btn');
+            const importFileBtn = document.getElementById('import-file-btn');
+            const exportFileBtn = document.getElementById('export-file-btn');
+            const fileInput = document.getElementById('file-input');
             const toggleEditBtn = document.getElementById('toggle-edit-btn');
             const searchBox = document.getElementById('search-box');
             const addBookmarkBtn = document.getElementById('add-bookmark-btn'); // Add Bookmark Button
@@ -257,6 +263,11 @@
 
             let currentEditIndex = null; // To keep track of which bookmark is being edited
             let editMode = false; // To track if the edit mode is active
+
+
+            importFileBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', importBookmarksFromFile);
+            exportFileBtn.addEventListener('click', exportBookmarksToFile);
 
             importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
             exportClipboardBtn.addEventListener('click', exportBookmarksToClipboard);
@@ -439,6 +450,45 @@
                 loadBookmarks();
                 window.editBookmark(bookmarks.length - 1); // Open edit modal for new bookmark
             }
+
+            // New function to export bookmarks as a file with the current date in the filename
+            function exportBookmarksToFile() {
+                const bookmarks = localStorage.getItem('bookmarks');
+                if (!bookmarks) {
+                    alert('No bookmarks to export.');
+                    return;
+                }
+
+                const blob = new Blob([bookmarks], { type: 'application/json' });
+                const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD format
+                const filename = `bookmarks_${date}.json`;
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+
+            // New function to import bookmarks from a JSON file
+            function importBookmarksFromFile(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const bookmarks = JSON.parse(e.target.result);
+                        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                        loadBookmarks();
+                    } catch (error) {
+                        alert('Failed to import bookmarks. Make sure the file is valid JSON.');
+                        console.error(error);
+                    }
+                };
+                reader.readAsText(file);
+            }
+
         });
     </script>
 </body>
