@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookmark Manager</title>
+    <meta http-equiv="Cache-Control" content="public, max-age=604800">
+
+    <title>Bookmark Manager, Web Launcher, Browser Home, very fast</title>
     <style>
         /* Styles remain unchanged */
         body {
@@ -212,6 +214,15 @@
                 font-size: 14px;
             }
         }
+
+        .footer-note {
+            color: #555;
+            text-decoration: none;
+            text-align:right;position:absolute;
+            bottom: 0;
+            right: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -231,7 +242,6 @@
         </div>
     </div>
 
-    <!-- Modal for editing bookmark -->
     <div class="modal-overlay" id="modal-overlay"></div>
     <div class="modal" id="edit-modal">
         <h3>Edit Bookmark</h3>
@@ -241,6 +251,10 @@
             <button id="save-btn" class="import-btn">Save</button>
             <button id="cancel-btn" class="import-btn">Cancel</button>
         </div>
+    </div>
+
+    <div class="footer-note">
+        web launcher / bookmark manager / browser home, under 20kb, very fast
     </div>
 
     <script>
@@ -451,7 +465,6 @@
                 window.editBookmark(bookmarks.length - 1); // Open edit modal for new bookmark
             }
 
-            // New function to export bookmarks as a file with the current date in the filename
             function exportBookmarksToFile() {
                 const bookmarks = localStorage.getItem('bookmarks');
                 if (!bookmarks) {
@@ -470,7 +483,6 @@
                 URL.revokeObjectURL(link.href);
             }
 
-            // New function to import bookmarks from a JSON file
             function importBookmarksFromFile(event) {
                 const file = event.target.files[0];
                 if (!file) return;
@@ -490,6 +502,13 @@
             }
 
         });
+
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-82393887-1', 'auto');
+      ga('send', 'pageview');
     </script>
 </body>
 </html>
