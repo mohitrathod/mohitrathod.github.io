@@ -113,7 +113,8 @@
             gap: 10px; /* Space between buttons */
         }
 
-        .import-btn, .export-btn, .toggle-edit-btn {
+
+        .toggle-edit-btn {
             display: inline-block;
             padding: 8px; /* Reduced padding */
             background-color: #d3d3d3; /* A neutral, gray color */
@@ -124,6 +125,20 @@
             text-align: center;
             font-size: 14px; /* Smaller text size */
             opacity: 0.8; /* Slightly reduced opacity */
+        }
+
+        .import-btn, .export-btn {
+            display: none;
+            padding: 8px; /* Reduced padding */
+            background-color: #d3d3d3; /* A neutral, gray color */
+            color: #555; /* Darker gray text */
+            border: 1px solid #bbb; /* Softer border */
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px; /* Smaller text size */
+            opacity: 0.8; /* Slightly reduced opacity */
+            margin-bottom: 15px;
         }
 
         .import-btn:hover, .export-btn:hover, .toggle-edit-btn:hover {
@@ -222,13 +237,13 @@
         <ul id="bookmark-list"></ul>
         <div class="button-container">
             <button id="add-bookmark-btn" class="add-bookmark-btn">Add Bookmark</button>
-        </div>
-        <div class="button-container">
             <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
             <button id="export-clipboard-btn" class="export-btn">Export to Clipboard</button>
             <button id="import-file-btn" class="import-btn">Import from File</button>
             <input type="file" id="file-input" style="display:none" accept=".json">
             <button id="export-file-btn" class="export-btn">Export to File</button>
+        </div>
+        <div class="button-container">
             <button id="toggle-edit-btn" class="toggle-edit-btn">Edit Mode</button>
         </div>
     </div>
@@ -345,7 +360,12 @@
             function toggleEditMode() {
                 editMode = !editMode;
                 toggleEditBtn.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
-                addBookmarkBtn.style.display = editMode ? 'block' : 'none'; // Show/Hide "Add Bookmark" button
+                addBookmarkBtn.style.display = editMode ? 'block' : 'none';
+                importClipboardBtn.style.display = editMode ? 'block' : 'none';
+                exportClipboardBtn.style.display = editMode ? 'block' : 'none';
+                importFileBtn.style.display = editMode ? 'block' : 'none';
+                exportFileBtn.style.display = editMode ? 'block' : 'none';
+
                 loadBookmarks(); // Reload bookmarks with edit/delete/move buttons visible if in edit mode
             }
 
