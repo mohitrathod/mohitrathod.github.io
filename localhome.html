@@ -259,6 +259,21 @@
     </div>
 
     <script>
+
+        const defaultBookmarks = [
+            { name: "Google", url: "https://www.google.com" },
+            { name: "YouTube", url: "https://www.youtube.com" },
+            { name: "Wikipedia", url: "https://www.wikipedia.org" },
+            { name: "Amazon", url: "https://www.amazon.in" },
+            { name: "Gmail", url: "https://mail.google.com" },
+            { name: "Reddit", url: "https://www.reddit.com" },
+            { name: "LinkedIn", url: "https://www.linkedin.com" },
+            { name: "Twitter / X", url: "https://x.com" },
+            { name: "Stack Overflow", url: "https://stackoverflow.com" },
+            { name: "GitHub", url: "https://github.com" }
+        ];
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const bookmarkList = document.getElementById('bookmark-list');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
@@ -299,6 +314,12 @@
             saveBtn.addEventListener('click', saveEditedBookmark);
             cancelBtn.addEventListener('click', closeModal);
             addBookmarkBtn.addEventListener('click', addNewBookmark); // Add Bookmark Event
+
+            // Initialize bookmarks if localStorage is empty
+            if (!localStorage.getItem('bookmarks')) {
+                localStorage.setItem('bookmarks', JSON.stringify(defaultBookmarks));
+                updateLastUpdatedTime();
+            }
 
             loadBookmarks();
             displayLastUpdatedTime();
@@ -546,6 +567,8 @@
                 };
                 reader.readAsText(file);
             }
+
+
 
         });
 
