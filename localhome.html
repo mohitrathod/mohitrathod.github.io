@@ -195,12 +195,12 @@
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9;
+            top: 0,
+            left: 0,
+            width: 100%,
+            height: 100%,
+            background: rgba(0, 0, 0, 0.5),
+            z-index: 9,
         }
 
         @media (max-width: 400px) {
@@ -259,7 +259,6 @@
     </div>
 
     <script>
-
         const defaultBookmarks = [
             { name: "Google", url: "https://www.google.com" },
             { name: "YouTube", url: "https://www.youtube.com" },
@@ -273,7 +272,6 @@
             { name: "GitHub", url: "https://github.com" }
         ];
 
-
         document.addEventListener('DOMContentLoaded', function() {
             const bookmarkList = document.getElementById('bookmark-list');
             const importClipboardBtn = document.getElementById('import-clipboard-btn');
@@ -283,7 +281,7 @@
             const fileInput = document.getElementById('file-input');
             const toggleEditBtn = document.getElementById('toggle-edit-btn');
             const searchBox = document.getElementById('search-box');
-            const addBookmarkBtn = document.getElementById('add-bookmark-btn'); // Add Bookmark Button
+            const addBookmarkBtn = document.getElementById('add-bookmark-btn');
             const modalOverlay = document.getElementById('modal-overlay');
             const editModal = document.getElementById('edit-modal');
             const editNameInput = document.getElementById('edit-name');
@@ -291,9 +289,8 @@
             const saveBtn = document.getElementById('save-btn');
             const cancelBtn = document.getElementById('cancel-btn');
 
-            let currentEditIndex = null; // To keep track of which bookmark is being edited
-            let editMode = false; // To track if the edit mode is active
-
+            let currentEditIndex = null;
+            let editMode = false;
 
             importFileBtn.addEventListener('click', () => fileInput.click());
             fileInput.addEventListener('change', importBookmarksFromFile);
@@ -307,13 +304,17 @@
                 if (event.key === 'Enter') {
                     const firstLink = bookmarkList.querySelector('li a');
                     if (firstLink) {
+                        const idx = parseInt(firstLink.getAttribute('data-index'), 10);
+                        if (!isNaN(idx)) {
+                            window.recordBookmarkClick(idx);
+                        }
                         window.open(firstLink.href, '_blank');
                     }
                 }
             });
             saveBtn.addEventListener('click', saveEditedBookmark);
             cancelBtn.addEventListener('click', closeModal);
-            addBookmarkBtn.addEventListener('click', addNewBookmark); // Add Bookmark Event
+            addBookmarkBtn.addEventListener('click', addNewBookmark);
 
             // Initialize bookmarks if localStorage is empty
             if (!localStorage.getItem('bookmarks')) {
@@ -331,10 +332,41 @@
                 bookmarkList.innerHTML = '';
                 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
 
-                bookmarks.forEach((bookmark, index) => {
-                    const lowerCaseName = bookmark.name.toLowerCase();
-                    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+                // Ensure click tracking fields exist
+                let mutated = false;
+                bookmarks = bookmarks.map(b => {
+                    const nb = { ...b };
+                    if (typeof nb.clicks !== 'number') { nb.clicks = 0; mutated = true; }
+                    if (typeof nb.lastClicked !== 'number') { nb.lastClicked = 0; mutated = true; }
+                    return nb;
+                });
+                if (mutated) {
+                    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                }
 
+                // Work with pairs of { bookmark, originalIndex }
+                let list = bookmarks.map((b, i) => ({ b, i }));
+
+                // Sort only in non-edit mode and only for the first 10 items:
+                // bring the most-clicked (and most-recent on ties) to the front (top 10),
+                // leave the rest in their original order.
+                if (!editMode && !searchTerm) {
+                    const sortedByClicks = [...list].sort((x, y) => {
+                        const a = x.b, b = y.b;
+                        const byClicks = (b.clicks || 0) - (a.clicks || 0);
+                        if (byClicks !== 0) return byClicks;
+                        return (b.lastClicked || 0) - (a.lastClicked || 0);
+                    });
+                    const top = sortedByClicks.slice(0, 10);
+                    const topSet = new Set(top.map(x => x.i));
+                    const rest = list.filter(x => !topSet.has(x.i));
+                    list = [...top, ...rest];
+                }
+
+                const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+                list.forEach(({ b: bookmark, i }) => {
+                    const lowerCaseName = bookmark.name.toLowerCase();
                     if (lowerCaseName.includes(lowerCaseSearchTerm)) {
                         const li = document.createElement('li');
                         const highlightedName = highlightText(bookmark.name, searchTerm);
@@ -342,15 +374,14 @@
                         if (editMode) {
                             li.innerHTML = `
                                 <span>${highlightedName}</span>
-                                <button class="up-btn" style="color: blue" onclick="moveBookmark(${index}, 'up')">up</button>
-                                <button class="down-btn" style="color: green" onclick="moveBookmark(${index}, 'down')">down</button>
-                                <button class="edit-btn" onclick="editBookmark(${index})">edit</button>
-                                <button class="delete-btn" style="color: red" onclick="deleteBookmark(${index})">del</button>
+                                <button class="up-btn" style="color: blue" onclick="moveBookmark(${i}, 'up')">up</button>
+                                <button class="down-btn" style="color: green" onclick="moveBookmark(${i}, 'down')">down</button>
+                                <button class="edit-btn" onclick="editBookmark(${i})">edit</button>
+                                <button class="delete-btn" style="color: red" onclick="deleteBookmark(${i})">del</button>
                             `;
                         } else {
                             li.innerHTML = `
-                                <a href="${bookmark.url}">
-<!--                                    <img class="favicon" alt="Favicon" data-url="${bookmark.url}">-->
+                                <a href="${bookmark.url}" data-index="${i}" onclick="return handleBookmarkClick(event, ${i})">
                                     <span>${highlightedName}</span>
                                 </a>
                             `;
@@ -361,7 +392,7 @@
                 });
 
                 // Delay favicon loading to after DOM is updated
-<!--                requestAnimationFrame(loadFavicons);-->
+                // requestAnimationFrame(loadFavicons);
             }
 
             function loadFavicons() {
@@ -385,7 +416,6 @@
                 }
             }
 
-
             function toggleEditMode() {
                 editMode = !editMode;
                 toggleEditBtn.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
@@ -401,10 +431,9 @@
             }
 
             function highlightText(text, term) {
-                if (!term) return text; // If there's no search term, return original text
-
+                if (!term) return text;
                 const regex = new RegExp(`(${term})`, 'gi');
-                return text.replace(regex, '<span class="highlight">$1</span>'); // Highlight matching part
+                return text.replace(regex, '<span class="highlight">$1</span>');
             }
 
             async function importBookmarksFromClipboard() {
@@ -413,7 +442,6 @@
                     const bookmarks = JSON.parse(text);
                     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
                     updateLastUpdatedTime();
-
                     loadBookmarks();
                 } catch (error) {
                     alert('Failed to import bookmarks from clipboard. Make sure the clipboard contains valid JSON.');
@@ -455,6 +483,7 @@
             function saveEditedBookmark() {
                 const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
                 bookmarks[currentEditIndex] = {
+                    ...bookmarks[currentEditIndex],
                     name: editNameInput.value,
                     url: editUrlInput.value,
                 };
@@ -488,9 +517,9 @@
             window.moveBookmark = function(index, direction) {
                 const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
                 if (direction === 'up' && index > 0) {
-                    [bookmarks[index - 1], bookmarks[index]] = [bookmarks[index], bookmarks[index - 1]]; // Swap with previous
+                    [bookmarks[index - 1], bookmarks[index]] = [bookmarks[index], bookmarks[index - 1]];
                 } else if (direction === 'down' && index < bookmarks.length - 1) {
-                    [bookmarks[index + 1], bookmarks[index]] = [bookmarks[index], bookmarks[index + 1]]; // Swap with next
+                    [bookmarks[index + 1], bookmarks[index]] = [bookmarks[index], bookmarks[index + 1]];
                 }
                 localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
                 updateLastUpdatedTime();
@@ -501,7 +530,9 @@
             function addNewBookmark() {
                 const newBookmark = {
                     name: '',
-                    url: ''
+                    url: '',
+                    clicks: 0,
+                    lastClicked: 0
                 };
 
                 const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
@@ -521,7 +552,7 @@
                 }
 
                 const blob = new Blob([bookmarks], { type: 'application/json' });
-                const date = new Date().toISOString(); // YYYY-MM-DD format
+                const date = new Date().toISOString(); // YYYY-MM-DDTHH:mm:ss.sssZ
                 const filename = `bookmarks_${date}.json`;
 
                 const link = document.createElement('a');
@@ -547,7 +578,6 @@
                 }
             }
 
-
             function importBookmarksFromFile(event) {
                 const file = event.target.files[0];
                 if (!file) return;
@@ -568,16 +598,29 @@
                 reader.readAsText(file);
             }
 
+            // Record a click (increments count and updates recency)
+            window.recordBookmarkClick = function(index) {
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                if (!bookmarks[index]) return;
+                bookmarks[index].clicks = (bookmarks[index].clicks || 0) + 1;
+                bookmarks[index].lastClicked = Date.now();
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                // Do not update "Last updated" timestamp for click reordering
+            };
 
-
+            // Handle anchor click: record and allow navigation to proceed
+            window.handleBookmarkClick = function(event, index) {
+                window.recordBookmarkClick(index);
+                return true; // proceed with default navigation
+            };
         });
 
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-82393887-1', 'auto');
-      ga('send', 'pageview');
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-82393887-1', 'auto');
+        ga('send', 'pageview');
     </script>
 </body>
 </html>
