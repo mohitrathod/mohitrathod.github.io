@@ -488,6 +488,13 @@
     <div class="container">
         <input type="text" id="search-box" placeholder="Search bookmarks..." autofocus>
         <ul id="bookmark-list"></ul>
+        <div id="json-editor-container" style="display:none;">
+            <textarea id="json-editor-textarea" spellcheck="false" style="width:100%;height:400px;font-family:monospace;font-size:13px;border:1px solid #ccc;border-radius:4px;padding:10px;box-sizing:border-box;resize:vertical;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:6px;">
+                <button id="save-json-btn" class="import-btn" style="display:block;">Save JSON</button>
+                <button id="format-json-btn" class="import-btn" style="display:block;">Format</button>
+            </div>
+        </div>
         <div class="button-container">
             <button id="add-bookmark-btn" class="add-bookmark-btn">Add Bookmark</button>
             <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
@@ -521,6 +528,13 @@
             <label for="open-in-new-tab">Open Links in New Tab</label>
             <label class="toggle-switch">
                 <input type="checkbox" id="open-in-new-tab">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-item">
+            <label for="json-editor-mode">JSON Editor Mode</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="json-editor-mode">
                 <span class="slider"></span>
             </label>
         </div>
@@ -564,6 +578,11 @@
             const settingsModal = document.getElementById('settings-modal');
             const openInNewTabCheckbox = document.getElementById('open-in-new-tab');
             const closeSettingsBtn = document.getElementById('close-settings-btn');
+            const jsonEditorModeCheckbox = document.getElementById('json-editor-mode');
+            const jsonEditorContainer = document.getElementById('json-editor-container');
+            const jsonEditorTextarea = document.getElementById('json-editor-textarea');
+            const saveJsonBtn = document.getElementById('save-json-btn');
+            const formatJsonBtn = document.getElementById('format-json-btn');
 
             let currentEditIndex = null;
             let editMode = false;
@@ -606,6 +625,27 @@
             closeSettingsBtn.addEventListener('click', closeSettingsModal);
             settingsModalOverlay.addEventListener('click', closeSettingsModal);
             openInNewTabCheckbox.addEventListener('change', saveSettings);
+            jsonEditorModeCheckbox.addEventListener('change', saveSettings);
+
+            saveJsonBtn.addEventListener('click', function() {
+                try {
+                    const parsed = JSON.parse(jsonEditorTextarea.value);
+                    localStorage.setItem('bookmarks', JSON.stringify(parsed));
+                    updateLastUpdatedTime();
+                    alert('JSON saved successfully.');
+                } catch(e) {
+                    alert('Invalid JSON: ' + e.message);
+                }
+            });
+
+            formatJsonBtn.addEventListener('click', function() {
+                try {
+                    const parsed = JSON.parse(jsonEditorTextarea.value);
+                    jsonEditorTextarea.value = JSON.stringify(parsed, null, 2);
+                } catch(e) {
+                    alert('Invalid JSON: ' + e.message);
+                }
+            });
 
             // Initialize bookmarks if localStorage is empty
             if (!localStorage.getItem('bookmarks')) {
@@ -732,15 +772,35 @@
                 editMode = !editMode;
                 toggleEditBtn.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
                 settingsBtn.style.display = editMode ? 'block' : 'none';
-                addBookmarkBtn.style.display = editMode ? 'block' : 'none';
-                importClipboardBtn.style.display = editMode ? 'block' : 'none';
-                exportClipboardBtn.style.display = editMode ? 'block' : 'none';
-                importFileBtn.style.display = editMode ? 'block' : 'none';
-                exportFileBtn.style.display = editMode ? 'block' : 'none';
-                saveBtn.style.display = editMode ? 'block' : 'none';
-                cancelBtn.style.display = editMode ? 'block' : 'none';
 
-                loadBookmarks(); // Reload bookmarks with edit/delete/move buttons visible if in edit mode
+                const jsonMode = localStorage.getItem('jsonEditorMode') === 'true';
+
+                if (editMode && jsonMode) {
+                    // JSON editor mode: hide normal UI, show raw JSON editor
+                    bookmarkList.style.display = 'none';
+                    addBookmarkBtn.style.display = 'none';
+                    importClipboardBtn.style.display = 'none';
+                    exportClipboardBtn.style.display = 'none';
+                    importFileBtn.style.display = 'none';
+                    exportFileBtn.style.display = 'none';
+                    saveBtn.style.display = 'none';
+                    cancelBtn.style.display = 'none';
+                    jsonEditorContainer.style.display = 'block';
+                    const raw = localStorage.getItem('bookmarks') || '[]';
+                    jsonEditorTextarea.value = JSON.stringify(JSON.parse(raw), null, 2);
+                } else {
+                    // Normal edit/view mode
+                    jsonEditorContainer.style.display = 'none';
+                    bookmarkList.style.display = '';
+                    addBookmarkBtn.style.display = editMode ? 'block' : 'none';
+                    importClipboardBtn.style.display = editMode ? 'block' : 'none';
+                    exportClipboardBtn.style.display = editMode ? 'block' : 'none';
+                    importFileBtn.style.display = editMode ? 'block' : 'none';
+                    exportFileBtn.style.display = editMode ? 'block' : 'none';
+                    saveBtn.style.display = editMode ? 'block' : 'none';
+                    cancelBtn.style.display = editMode ? 'block' : 'none';
+                    loadBookmarks();
+                }
             }
 
             function highlightText(text, term) {
@@ -830,13 +890,13 @@
             }
 
             function saveSettings() {
-                const openInNewTab = openInNewTabCheckbox.checked;
-                localStorage.setItem('openLinksInNewTab', openInNewTab);
+                localStorage.setItem('openLinksInNewTab', openInNewTabCheckbox.checked);
+                localStorage.setItem('jsonEditorMode', jsonEditorModeCheckbox.checked);
             }
 
             function loadSettings() {
-                const openInNewTab = localStorage.getItem('openLinksInNewTab') === 'true';
-                openInNewTabCheckbox.checked = openInNewTab;
+                openInNewTabCheckbox.checked = localStorage.getItem('openLinksInNewTab') === 'true';
+                jsonEditorModeCheckbox.checked = localStorage.getItem('jsonEditorMode') === 'true';
             }
 
             window.deleteBookmark = function(index) {
