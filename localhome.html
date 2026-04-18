@@ -496,29 +496,13 @@
             </div>
         </div>
         <div class="button-container">
-            <button id="add-bookmark-btn" class="add-bookmark-btn">Add Bookmark</button>
-            <button id="import-clipboard-btn" class="import-btn">Import from Clipboard</button>
-            <button id="export-clipboard-btn" class="export-btn">Export to Clipboard</button>
-            <button id="import-file-btn" class="import-btn">Import from File</button>
-            <input type="file" id="file-input" style="display:none" accept=".json">
-            <button id="export-file-btn" class="export-btn">Export to File</button>
+            <button id="export-file-btn" class="export-btn">Export to Disk</button>
         </div>
         <div class="button-container">
-            <button id="toggle-edit-btn" class="toggle-edit-btn">Edit Mode</button>
+            <button id="toggle-edit-btn" class="toggle-edit-btn">Exit Edit Mode</button>
             <button id="settings-btn" class="settings-btn">⚙ Settings</button>
         </div>
         <p id="last-updated" style="text-align: center; font-size: 12px; color: #888; margin: 20px 0 10px;"></p>
-    </div>
-
-    <div class="modal-overlay" id="modal-overlay"></div>
-    <div class="modal" id="edit-modal">
-        <h3>Edit Bookmark</h3>
-        <input type="text" id="edit-name" placeholder="Bookmark Name">
-        <input type="text" id="edit-url" placeholder="Bookmark URL">
-        <div class="modal-buttons">
-            <button id="save-btn" class="import-btn">Save</button>
-            <button id="cancel-btn" class="import-btn">Cancel</button>
-        </div>
     </div>
 
     <div class="modal-overlay" id="settings-modal-overlay"></div>
@@ -531,15 +515,17 @@
                 <span class="slider"></span>
             </label>
         </div>
-        <div class="setting-item">
-            <label for="json-editor-mode">JSON Editor Mode</label>
-            <label class="toggle-switch">
-                <input type="checkbox" id="json-editor-mode">
-                <span class="slider"></span>
-            </label>
-        </div>
         <div class="settings-modal-buttons">
             <button id="close-settings-btn">Close</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="success-modal-overlay"></div>
+    <div class="settings-modal" id="success-modal">
+        <h3>Success</h3>
+        <p id="success-message" style="color: #333; margin: 15px 0; text-align: center;">JSON saved successfully.</p>
+        <div class="settings-modal-buttons">
+            <button id="close-success-btn">Close</button>
         </div>
     </div>
 
@@ -559,33 +545,24 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const bookmarkList = document.getElementById('bookmark-list');
-            const importClipboardBtn = document.getElementById('import-clipboard-btn');
-            const exportClipboardBtn = document.getElementById('export-clipboard-btn');
-            const importFileBtn = document.getElementById('import-file-btn');
             const exportFileBtn = document.getElementById('export-file-btn');
-            const fileInput = document.getElementById('file-input');
             const toggleEditBtn = document.getElementById('toggle-edit-btn');
             const settingsBtn = document.getElementById('settings-btn');
             const searchBox = document.getElementById('search-box');
-            const addBookmarkBtn = document.getElementById('add-bookmark-btn');
-            const modalOverlay = document.getElementById('modal-overlay');
-            const editModal = document.getElementById('edit-modal');
-            const editNameInput = document.getElementById('edit-name');
-            const editUrlInput = document.getElementById('edit-url');
-            const saveBtn = document.getElementById('save-btn');
-            const cancelBtn = document.getElementById('cancel-btn');
             const settingsModalOverlay = document.getElementById('settings-modal-overlay');
             const settingsModal = document.getElementById('settings-modal');
             const openInNewTabCheckbox = document.getElementById('open-in-new-tab');
             const closeSettingsBtn = document.getElementById('close-settings-btn');
-            const jsonEditorModeCheckbox = document.getElementById('json-editor-mode');
             const jsonEditorContainer = document.getElementById('json-editor-container');
             const jsonEditorTextarea = document.getElementById('json-editor-textarea');
             const saveJsonBtn = document.getElementById('save-json-btn');
             const formatJsonBtn = document.getElementById('format-json-btn');
+            const successModalOverlay = document.getElementById('success-modal-overlay');
+            const successModal = document.getElementById('success-modal');
+            const closeSuccessBtn = document.getElementById('close-success-btn');
 
             let currentEditIndex = null;
-            let editMode = false;
+            let editMode = true; // Start in edit mode by default
             let draggedIndex = null;
             let dragAndDropSupported = false;
 
@@ -596,43 +573,27 @@
                 return dragAndDropSupported;
             }
 
-            importFileBtn.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', importBookmarksFromFile);
             exportFileBtn.addEventListener('click', exportBookmarksToFile);
 
-            importClipboardBtn.addEventListener('click', importBookmarksFromClipboard);
-            exportClipboardBtn.addEventListener('click', exportBookmarksToClipboard);
             toggleEditBtn.addEventListener('click', toggleEditMode);
             searchBox.addEventListener('input', handleSearch);
-            searchBox.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter') {
-                    const firstLink = bookmarkList.querySelector('li a');
-                    if (firstLink) {
-                        const idx = parseInt(firstLink.getAttribute('data-index'), 10);
-                        if (!isNaN(idx)) {
-                            window.recordBookmarkClick(idx);
-                        }
-                        window.open(firstLink.href, window.getOpenLinkTarget());
-                    }
-                }
-            });
-            saveBtn.addEventListener('click', saveEditedBookmark);
-            cancelBtn.addEventListener('click', closeModal);
-            addBookmarkBtn.addEventListener('click', addNewBookmark);
 
             // Settings Modal Events
             settingsBtn.addEventListener('click', openSettingsModal);
             closeSettingsBtn.addEventListener('click', closeSettingsModal);
             settingsModalOverlay.addEventListener('click', closeSettingsModal);
             openInNewTabCheckbox.addEventListener('change', saveSettings);
-            jsonEditorModeCheckbox.addEventListener('change', saveSettings);
+
+            // Success Modal Events
+            closeSuccessBtn.addEventListener('click', closeSuccessModal);
+            successModalOverlay.addEventListener('click', closeSuccessModal);
 
             saveJsonBtn.addEventListener('click', function() {
                 try {
                     const parsed = JSON.parse(jsonEditorTextarea.value);
                     localStorage.setItem('bookmarks', JSON.stringify(parsed));
                     updateLastUpdatedTime();
-                    alert('JSON saved successfully.');
+                    openSuccessModal('JSON saved successfully.');
                 } catch(e) {
                     alert('Invalid JSON: ' + e.message);
                 }
@@ -658,93 +619,30 @@
             displayLastUpdatedTime();
             checkDragDropSupport();
 
-            // Focus on search input by default
-            searchBox.focus();
+            // Start in edit mode (JSON editor)
+            toggleEditMode();
 
             function loadBookmarks(searchTerm = '') {
                 bookmarkList.innerHTML = '';
                 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
 
-                // Ensure click tracking fields exist
-                let mutated = false;
-                bookmarks = bookmarks.map(b => {
-                    const nb = { ...b };
-                    if (typeof nb.clicks !== 'number') { nb.clicks = 0; mutated = true; }
-                    if (typeof nb.lastClicked !== 'number') { nb.lastClicked = 0; mutated = true; }
-                    return nb;
-                });
-                if (mutated) {
-                    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-                }
-
-                // Work with pairs of { bookmark, originalIndex }
-                let list = bookmarks.map((b, i) => ({ b, i }));
-
-                // Sort only in non-edit mode and only for the first 10 items:
-                // bring the most-clicked (and most-recent on ties) to the front (top 10),
-                // leave the rest in their original order.
-                if (!editMode && !searchTerm) {
-                    const sortedByClicks = [...list].sort((x, y) => {
-                        const a = x.b, b = y.b;
-                        const byClicks = (b.clicks || 0) - (a.clicks || 0);
-                        if (byClicks !== 0) return byClicks;
-                        return (b.lastClicked || 0) - (a.lastClicked || 0);
-                    });
-                    const top = sortedByClicks.slice(0, 10);
-                    const topSet = new Set(top.map(x => x.i));
-                    const rest = list.filter(x => !topSet.has(x.i));
-                    list = [...top, ...rest];
-                }
-
                 const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
-                list.forEach(({ b: bookmark, i }) => {
+                bookmarks.forEach((bookmark, i) => {
                     const lowerCaseName = bookmark.name.toLowerCase();
                     if (lowerCaseName.includes(lowerCaseSearchTerm)) {
                         const li = document.createElement('li');
                         const highlightedName = highlightText(bookmark.name, searchTerm);
 
-                        if (editMode) {
-                            li.innerHTML = `
+                        li.innerHTML = `
+                            <a href="${bookmark.url}" data-index="${i}">
                                 <span>${highlightedName}</span>
-                                <div class="edit-buttons-container">
-                                    <button class="up-btn ${dragAndDropSupported ? 'hidden' : ''}" style="color: blue" onclick="moveBookmark(${i}, 'up')">up</button>
-                                    <button class="down-btn ${dragAndDropSupported ? 'hidden' : ''}" style="color: green" onclick="moveBookmark(${i}, 'down')">down</button>
-                                    <button class="edit-btn" onclick="editBookmark(${i})">edit</button>
-                                    <button class="delete-btn" style="color: red" onclick="deleteBookmark(${i})">del</button>
-                                </div>
-                            `;
-                            if (dragAndDropSupported) {
-                                li.draggable = true;
-                                li.setAttribute('data-index', i);
-                            }
-                        } else {
-                            li.innerHTML = `
-                                <a href="${bookmark.url}" data-index="${i}" onclick="return handleBookmarkClick(event, ${i})">
-                                    <span>${highlightedName}</span>
-                                </a>
-                            `;
-                        }
+                            </a>
+                        `;
 
                         bookmarkList.appendChild(li);
                     }
                 });
-
-                // Add drag and drop event listeners
-                if (editMode && dragAndDropSupported) {
-                    const items = bookmarkList.querySelectorAll('li[draggable="true"]');
-                    items.forEach(item => {
-                        item.addEventListener('dragstart', handleDragStart);
-                        item.addEventListener('dragover', handleDragOver);
-                        item.addEventListener('drop', handleDrop);
-                        item.addEventListener('dragend', handleDragEnd);
-                        item.addEventListener('dragenter', handleDragEnter);
-                        item.addEventListener('dragleave', handleDragLeave);
-                    });
-                }
-
-                // Delay favicon loading to after DOM is updated
-                // requestAnimationFrame(loadFavicons);
             }
 
             function loadFavicons() {
@@ -772,34 +670,21 @@
                 editMode = !editMode;
                 toggleEditBtn.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
                 settingsBtn.style.display = editMode ? 'block' : 'none';
+                exportFileBtn.style.display = editMode ? 'block' : 'none';
 
-                const jsonMode = localStorage.getItem('jsonEditorMode') === 'true';
-
-                if (editMode && jsonMode) {
-                    // JSON editor mode: hide normal UI, show raw JSON editor
+                if (editMode) {
+                    // Show JSON editor
                     bookmarkList.style.display = 'none';
-                    addBookmarkBtn.style.display = 'none';
-                    importClipboardBtn.style.display = 'none';
-                    exportClipboardBtn.style.display = 'none';
-                    importFileBtn.style.display = 'none';
-                    exportFileBtn.style.display = 'none';
-                    saveBtn.style.display = 'none';
-                    cancelBtn.style.display = 'none';
                     jsonEditorContainer.style.display = 'block';
                     const raw = localStorage.getItem('bookmarks') || '[]';
                     jsonEditorTextarea.value = JSON.stringify(JSON.parse(raw), null, 2);
+                    jsonEditorTextarea.focus();
                 } else {
-                    // Normal edit/view mode
+                    // Show bookmark list
                     jsonEditorContainer.style.display = 'none';
                     bookmarkList.style.display = '';
-                    addBookmarkBtn.style.display = editMode ? 'block' : 'none';
-                    importClipboardBtn.style.display = editMode ? 'block' : 'none';
-                    exportClipboardBtn.style.display = editMode ? 'block' : 'none';
-                    importFileBtn.style.display = editMode ? 'block' : 'none';
-                    exportFileBtn.style.display = editMode ? 'block' : 'none';
-                    saveBtn.style.display = editMode ? 'block' : 'none';
-                    cancelBtn.style.display = editMode ? 'block' : 'none';
                     loadBookmarks();
+                    searchBox.focus();
                 }
             }
 
@@ -809,73 +694,9 @@
                 return text.replace(regex, '<span class="highlight">$1</span>');
             }
 
-            async function importBookmarksFromClipboard() {
-                try {
-                    const text = await navigator.clipboard.readText();
-                    const bookmarks = JSON.parse(text);
-                    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-                    updateLastUpdatedTime();
-                    loadBookmarks();
-                } catch (error) {
-                    alert('Failed to import bookmarks from clipboard. Make sure the clipboard contains valid JSON.');
-                    console.error(error);
-                }
-            }
-
-            async function exportBookmarksToClipboard() {
-                try {
-                    const bookmarks = localStorage.getItem('bookmarks');
-                    if (!bookmarks) {
-                        alert('No bookmarks to export.');
-                        return;
-                    }
-                    await navigator.clipboard.writeText(bookmarks);
-                    alert('Bookmarks copied to clipboard.');
-                } catch (error) {
-                    alert('Failed to export bookmarks to clipboard.');
-                    console.error(error);
-                }
-            }
-
             function handleSearch() {
                 const searchTerm = searchBox.value;
                 loadBookmarks(searchTerm);
-            }
-
-            window.editBookmark = function(index) {
-                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                const bookmark = bookmarks[index];
-
-                currentEditIndex = index;
-                editNameInput.value = bookmark.name;
-                editUrlInput.value = bookmark.url;
-
-                openModal();
-            }
-
-            function saveEditedBookmark() {
-                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                bookmarks[currentEditIndex] = {
-                    ...bookmarks[currentEditIndex],
-                    name: editNameInput.value,
-                    url: editUrlInput.value,
-                };
-
-                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-                updateLastUpdatedTime();
-
-                loadBookmarks();
-                closeModal();
-            }
-
-            function openModal() {
-                modalOverlay.style.display = 'block';
-                editModal.style.display = 'block';
-            }
-
-            function closeModal() {
-                modalOverlay.style.display = 'none';
-                editModal.style.display = 'none';
             }
 
             function openSettingsModal() {
@@ -889,14 +710,23 @@
                 settingsModal.style.display = 'none';
             }
 
+            function openSuccessModal(message) {
+                document.getElementById('success-message').textContent = message;
+                successModalOverlay.style.display = 'block';
+                successModal.style.display = 'block';
+            }
+
+            function closeSuccessModal() {
+                successModalOverlay.style.display = 'none';
+                successModal.style.display = 'none';
+            }
+
             function saveSettings() {
                 localStorage.setItem('openLinksInNewTab', openInNewTabCheckbox.checked);
-                localStorage.setItem('jsonEditorMode', jsonEditorModeCheckbox.checked);
             }
 
             function loadSettings() {
                 openInNewTabCheckbox.checked = localStorage.getItem('openLinksInNewTab') === 'true';
-                jsonEditorModeCheckbox.checked = localStorage.getItem('jsonEditorMode') === 'true';
             }
 
             window.deleteBookmark = function(index) {
@@ -924,9 +754,7 @@
             function addNewBookmark() {
                 const newBookmark = {
                     name: '',
-                    url: '',
-                    clicks: 0,
-                    lastClicked: 0
+                    url: ''
                 };
 
                 const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
@@ -972,54 +800,7 @@
                 }
             }
 
-            function importBookmarksFromFile(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const bookmarks = JSON.parse(e.target.result);
-                        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-                        updateLastUpdatedTime();
-
-                        loadBookmarks();
-                    } catch (error) {
-                        alert('Failed to import bookmarks. Make sure the file is valid JSON.');
-                        console.error(error);
-                    }
-                };
-                reader.readAsText(file);
-            }
-
-            // Record a click (increments count and updates recency)
-            window.recordBookmarkClick = function(index) {
-                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                if (!bookmarks[index]) return;
-                bookmarks[index].clicks = (bookmarks[index].clicks || 0) + 1;
-                bookmarks[index].lastClicked = Date.now();
-                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-                // Do not update "Last updated" timestamp for click reordering
-            };
-
-            // Get the target for opening links based on settings
-            window.getOpenLinkTarget = function() {
-                const openInNewTab = localStorage.getItem('openLinksInNewTab') === 'true';
-                return openInNewTab ? '_blank' : '_self';
-            };
-
-            // Handle anchor click: record and allow navigation to proceed
-            window.handleBookmarkClick = function(event, index) {
-                window.recordBookmarkClick(index);
-                const target = window.getOpenLinkTarget();
-                if (target === '_blank') {
-                    event.preventDefault();
-                    window.open(event.currentTarget.href, '_blank');
-                }
-                return true; // proceed with default navigation
-            };
-
-            // Drag and drop handlers
+            // Drag and drop handlers (kept for reference, not used in JSON edit mode)
             function handleDragStart(e) {
                 draggedIndex = parseInt(e.currentTarget.getAttribute('data-index'), 10);
                 e.currentTarget.classList.add('dragging');
