@@ -150,28 +150,28 @@
 
         .toggle-edit-btn {
             display: inline-block;
-            padding: 8px; /* Reduced padding */
-            background-color: #d3d3d3; /* A neutral, gray color */
-            color: #555; /* Darker gray text */
-            border: 1px solid #bbb; /* Softer border */
+            padding: 8px;
+            background-color: #d3d3d3;
+            color: #555;
+            border: 1px solid #bbb;
             border-radius: 4px;
             cursor: pointer;
             text-align: center;
-            font-size: 14px; /* Smaller text size */
-            opacity: 0.8; /* Slightly reduced opacity */
+            font-size: 14px;
+            opacity: 0.8;
         }
 
         .import-btn, .export-btn {
             display: none;
-            padding: 8px; /* Reduced padding */
-            background-color: #d3d3d3; /* A neutral, gray color */
-            color: #555; /* Darker gray text */
-            border: 1px solid #bbb; /* Softer border */
+            padding: 8px;
+            background-color: #d3d3d3;
+            color: #555;
+            border: 1px solid #bbb;
             border-radius: 4px;
             cursor: pointer;
             text-align: center;
-            font-size: 14px; /* Smaller text size */
-            opacity: 0.8; /* Slightly reduced opacity */
+            font-size: 14px;
+            opacity: 0.8;
             margin-bottom: 15px;
         }
 
@@ -390,9 +390,11 @@
             }
 
             li span {
-                font-size: 14px;
-                word-break: break-word;
-            }
+                font-size: 16px;
+                color: #4d5156;
+                font-weight: normal;
+                flex-grow: 1;
+        /* removed custom placeholder font size */
 
             .edit-btn, .delete-btn, .up-btn, .down-btn {
                 width: 20px;
@@ -627,19 +629,20 @@
                 let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
 
                 const lowerCaseSearchTerm = searchTerm.toLowerCase();
+                // Check setting for opening in new tab
+                const openInNewTab = localStorage.getItem('openLinksInNewTab') === 'true';
 
                 bookmarks.forEach((bookmark, i) => {
                     const lowerCaseName = bookmark.name.toLowerCase();
                     if (lowerCaseName.includes(lowerCaseSearchTerm)) {
                         const li = document.createElement('li');
                         const highlightedName = highlightText(bookmark.name, searchTerm);
-
-                        li.innerHTML = `
-                            <a href="${bookmark.url}" data-index="${i}">
-                                <span>${highlightedName}</span>
-                            </a>
-                        `;
-
+                        let aTag = `<a href="${bookmark.url}" data-index="${i}"`;
+                        if (openInNewTab) {
+                            aTag += ' target="_blank" rel="noopener"';
+                        }
+                        aTag += `><span>${highlightedName}</span></a>`;
+                        li.innerHTML = aTag;
                         bookmarkList.appendChild(li);
                     }
                 });
