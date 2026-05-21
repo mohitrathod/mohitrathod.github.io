@@ -59,7 +59,7 @@
             justify-content: space-between;
             transition: box-shadow 0.2s ease;
             margin: 0.3em;
-            padding: 0.7em;
+            padding: 0;
         }
 
         li a {
@@ -68,6 +68,10 @@
             text-decoration: none;
             color: inherit;
             width: 100%;
+            height: 100%;
+            padding: 0.7em;
+            box-sizing: border-box;
+            border-radius: 8px;
         }
 
         li:hover {
@@ -82,7 +86,7 @@
         }
 
         li span {
-            font-size: 16px;
+            font-size: 18px;
             color: #4d5156;
             flex-grow: 1;
         }
@@ -369,7 +373,7 @@
             }
 
             li {
-                padding: 0.4em;
+                padding: 0;
                 margin: 0;
                 flex-direction: column;
                 justify-content: center;
@@ -380,6 +384,8 @@
             li a {
                 flex-direction: column;
                 align-items: center;
+                padding: 0.6em 0.4em;
+                justify-content: center;
             }
 
             li img {
@@ -390,7 +396,7 @@
             }
 
             li span {
-                font-size: 16px;
+                font-size: 18px;
                 color: #4d5156;
                 font-weight: normal;
                 flex-grow: 1;
@@ -422,11 +428,15 @@
         /* Extra large screens */
         @media (min-width: 1200px) {
             ul {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
             }
 
             li {
-                padding: 0.3em;
+                padding: 0;
+            }
+
+            li a {
+                padding: 0.5em 0.3em;
             }
 
             li img {
@@ -435,7 +445,7 @@
             }
 
             li span {
-                font-size: 13px;
+                font-size: 15px;
             }
 
             .edit-buttons-container {
@@ -460,6 +470,10 @@
             }
 
             li {
+                padding: 0;
+            }
+
+            li a {
                 padding: 10px;
             }
 
@@ -469,7 +483,7 @@
             }
 
             li span {
-                font-size: 14px;
+                font-size: 16px;
             }
 
             .edit-buttons-container {
