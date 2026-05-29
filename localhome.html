@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="public, max-age=604800">
     <title>Bookmark Manager, Web Launcher, Browser Home, under 20kb, very fast</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         /* Styles remain unchanged */
         body {
@@ -498,10 +499,298 @@
             }
         }
 
+        /* === Clock === */
+        #retro-clock {
+            position: fixed;
+            top: 10px;
+            right: 15px;
+            font-size: 13px;
+            font-family: monospace;
+            color: #333;
+            background: rgba(255,255,255,0.88);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 10px;
+            z-index: 100;
+            letter-spacing: 1px;
+            text-align: right;
+            line-height: 1.5;
+        }
+
+        /* === Top Note === */
+        #top-note-display {
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 14px;
+            color: #555;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        #top-note-display:empty { display: none; }
+        #top-note {
+            display: none;
+            width: 100%;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 14px;
+            border: 1px dashed #bbb;
+            background: #fffef8;
+            border-radius: 4px;
+            padding: 8px 10px;
+            cursor: text;
+            resize: vertical;
+            min-height: 60px;
+            color: #333;
+            outline: none;
+            box-sizing: border-box;
+            line-height: 1.5;
+        }
+        #top-note.editable { display: block; }
+        #top-note::placeholder { color: #ccc; font-style: italic; }
+
+        .settings-section-title {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .theme-options { display: flex; flex-direction: column; gap: 6px; }
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            font-size: 13px;
+            color: #444;
+            background: #f9f9f9;
+        }
+        .theme-option:hover { background: #f0f0f0; }
+        .theme-option.active {
+            border-color: #4CAF50;
+            background: #f0fff0;
+            color: #2a6a2a;
+        }
+        .theme-option input[type="radio"] { accent-color: #4CAF50; margin: 0; }
+
+        /* === Retro Nokia Theme (Pure B&W) === */
+        body.theme-nokia * {
+            box-shadow: none !important;
+            text-shadow: none !important;
+            transition: none !important;
+            border-radius: 0 !important;
+            background-image: none !important;
+        }
+        body.theme-nokia {
+            background: #ffffff !important;
+            font-family: 'VT323', monospace !important;
+            color: #000000 !important;
+        }
+        body.theme-nokia .container {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+        }
+        body.theme-nokia h1 {
+            color: #000000 !important;
+            font-family: 'VT323', monospace !important;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 1px solid #000000;
+        }
+        body.theme-nokia li {
+            background: #ffffff !important;
+            border: 1px solid #000000 !important;
+        }
+        body.theme-nokia li:hover { box-shadow: none !important; }
+        body.theme-nokia li a { color: #000000 !important; }
+        body.theme-nokia li span {
+            color: #000000 !important;
+            font-family: 'VT323', monospace !important;
+            font-size: 19px !important;
+        }
+        body.theme-nokia input[type="text"],
+        body.theme-nokia textarea {
+            background: #ffffff !important;
+            border: 1px solid #000000 !important;
+            color: #000000 !important;
+            font-family: 'VT323', monospace !important;
+            font-size: 18px !important;
+        }
+        body.theme-nokia button {
+            font-family: 'VT323', monospace !important;
+            font-size: 17px !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #000000 !important;
+        }
+        body.theme-nokia .toggle-edit-btn,
+        body.theme-nokia .import-btn,
+        body.theme-nokia .export-btn,
+        body.theme-nokia .settings-btn {
+            background: #000000 !important;
+            color: #ffffff !important;
+            border: 1px solid #000000 !important;
+        }
+        body.theme-nokia .settings-modal,
+        body.theme-nokia .modal {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+        }
+        body.theme-nokia .settings-modal h3,
+        body.theme-nokia .setting-item label,
+        body.theme-nokia .settings-section-title {
+            color: #000000 !important;
+            font-family: 'VT323', monospace !important;
+            border-color: #000000 !important;
+        }
+        body.theme-nokia .settings-modal-buttons button {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #000000 !important;
+        }
+        body.theme-nokia #retro-clock {
+            background: #000000 !important;
+            border: 2px solid #000000 !important;
+            color: #ffffff !important;
+            font-family: 'VT323', monospace !important;
+            font-size: 18px !important;
+            letter-spacing: 2px;
+            line-height: 1.5;
+        }
+        body.theme-nokia .theme-option {
+            background: #ffffff !important;
+            border: 1px solid #000000 !important;
+            color: #000000 !important;
+            font-family: 'VT323', monospace !important;
+        }
+        body.theme-nokia .theme-option.active {
+            background: #000000 !important;
+            color: #ffffff !important;
+            border: 1px solid #000000 !important;
+        }
+        body.theme-nokia #top-note-display {
+            color: #000000 !important;
+            font-family: 'VT323', monospace !important;
+            font-size: 17px !important;
+        }
+        body.theme-nokia #top-note {
+            background: #ffffff !important;
+            border: 1px solid #000000 !important;
+            color: #000000 !important;
+            font-family: 'VT323', monospace !important;
+            font-size: 17px !important;
+        }
+
+        /* === Paper Theme === */
+        body.theme-paper {
+            background-color: #f0e6d0 !important;
+            background-image:
+                linear-gradient(rgba(180,150,100,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(180,150,100,0.04) 1px, transparent 1px) !important;
+            background-size: 100% 28px, 28px 100% !important;
+            font-family: 'Lora', Georgia, serif !important;
+            color: #3a2410 !important;
+        }
+        body.theme-paper .container {
+            background: #fdf6e8 !important;
+            border: 1px solid #c8b090 !important;
+            border-radius: 2px !important;
+            box-shadow: 0 4px 20px rgba(100,70,30,0.2), 3px 3px 0 #e0d0b0 !important;
+        }
+        body.theme-paper h1 {
+            color: #3a2410 !important;
+            font-family: 'Lora', Georgia, serif !important;
+            font-style: italic;
+            border-bottom: 1px solid #c8b090;
+            padding-bottom: 8px;
+        }
+        body.theme-paper li {
+            background: #fdf6e8 !important;
+            border: 1px solid #d4c0a0 !important;
+            border-radius: 2px !important;
+        }
+        body.theme-paper li:hover {
+            box-shadow: 0 2px 8px rgba(100,70,30,0.3) !important;
+        }
+        body.theme-paper li a { color: #3a2410 !important; }
+        body.theme-paper li span {
+            color: #4a3420 !important;
+            font-family: 'Lora', Georgia, serif !important;
+        }
+        body.theme-paper input[type="text"],
+        body.theme-paper textarea {
+            background: #fef9f0 !important;
+            border: 1px solid #c8b090 !important;
+            border-radius: 2px !important;
+            color: #3a2410 !important;
+            font-family: 'Lora', Georgia, serif !important;
+        }
+        body.theme-paper button {
+            font-family: 'Lora', Georgia, serif !important;
+            border-radius: 2px !important;
+        }
+        body.theme-paper .toggle-edit-btn,
+        body.theme-paper .import-btn,
+        body.theme-paper .export-btn,
+        body.theme-paper .settings-btn {
+            background-color: #e8d8b8 !important;
+            color: #3a2410 !important;
+            border: 1px solid #c8b090 !important;
+        }
+        body.theme-paper .settings-modal,
+        body.theme-paper .modal {
+            background-color: #fdf6e8 !important;
+            border: 1px solid #c8b090 !important;
+            border-radius: 2px !important;
+        }
+        body.theme-paper .settings-modal h3,
+        body.theme-paper .setting-item label {
+            color: #3a2410 !important;
+            font-family: 'Lora', Georgia, serif !important;
+        }
+        body.theme-paper .settings-modal-buttons button {
+            background-color: #e8d8b8 !important;
+            color: #3a2410 !important;
+            border: 1px solid #c8b090 !important;
+        }
+        body.theme-paper #retro-clock {
+            background: rgba(253,246,232,0.92) !important;
+            border: 1px solid #c8b090 !important;
+            color: #3a2410 !important;
+            font-family: 'Lora', Georgia, serif !important;
+            font-style: italic;
+        }
+        body.theme-paper .settings-section-title {
+            color: #3a2410 !important;
+            font-family: 'Lora', Georgia, serif !important;
+        }
+        body.theme-paper .theme-option {
+            background: #f5edd8 !important;
+            border-color: #d4c0a0 !important;
+            color: #3a2410 !important;
+            font-family: 'Lora', Georgia, serif !important;
+            border-radius: 2px !important;
+        }
+        body.theme-paper .theme-option.active {
+            background: #e8d8b8 !important;
+            border-color: #a09060 !important;
+        }
+        body.theme-paper #top-note-display { color: #4a3420 !important; font-family: 'Lora', Georgia, serif !important; font-style: italic; }
+        body.theme-paper #top-note { background: #fef9f0 !important; border-color: #c8b090 !important; border-style: dashed !important; color: #4a3420 !important; font-family: 'Lora', Georgia, serif !important; }
+
     </style>
 </head>
 <body>
+    <!-- Clock -->
+    <div id="retro-clock"></div>
+
     <div class="container">
+        <div id="top-note-display"></div>
+        <textarea id="top-note" placeholder="Add a note..."></textarea>
         <input type="text" id="search-box" placeholder="Search bookmarks..." autofocus>
         <ul id="bookmark-list"></ul>
         <div id="json-editor-container" style="display:none;">
@@ -530,6 +819,20 @@
                 <input type="checkbox" id="open-in-new-tab">
                 <span class="slider"></span>
             </label>
+        </div>
+        <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+            <div class="settings-section-title" style="margin-bottom: 0;">Theme</div>
+            <div class="theme-options" style="width: 100%;">
+                <label class="theme-option active" id="theme-default-opt">
+                    <input type="radio" name="theme" value="default" checked> Default
+                </label>
+                <label class="theme-option" id="theme-nokia-opt">
+                    <input type="radio" name="theme" value="nokia"> &#128241; Retro Nokia
+                </label>
+                <label class="theme-option" id="theme-paper-opt">
+                    <input type="radio" name="theme" value="paper"> &#128218; Paper
+                </label>
+            </div>
         </div>
         <div class="settings-modal-buttons">
             <button id="close-settings-btn">Close</button>
@@ -689,7 +992,11 @@
                 settingsBtn.style.display = editMode ? 'block' : 'none';
                 exportFileBtn.style.display = editMode ? 'block' : 'none';
 
+                var topNote = document.getElementById('top-note');
+                var topNoteDisplay = document.getElementById('top-note-display');
                 if (editMode) {
+                    topNoteDisplay.style.display = 'none';
+                    topNote.classList.add('editable');
                     // Show JSON editor
                     bookmarkList.style.display = 'none';
                     jsonEditorContainer.style.display = 'block';
@@ -697,6 +1004,9 @@
                     jsonEditorTextarea.value = JSON.stringify(JSON.parse(raw), null, 2);
                     jsonEditorTextarea.focus();
                 } else {
+                    topNote.classList.remove('editable');
+                    topNoteDisplay.textContent = topNote.value;
+                    topNoteDisplay.style.display = '';
                     // Show bookmark list
                     jsonEditorContainer.style.display = 'none';
                     bookmarkList.style.display = '';
@@ -883,6 +1193,62 @@
             window.handleDragLeave = handleDragLeave;
             window.handleDrop = handleDrop;
             window.handleDragEnd = handleDragEnd;
+
+            // === Top Note ===
+            var topNoteEl = document.getElementById('top-note');
+            var topNoteDisplay = document.getElementById('top-note-display');
+            var saved = localStorage.getItem('topNote') || '';
+            topNoteEl.value = saved;
+            topNoteDisplay.textContent = saved;
+            topNoteEl.addEventListener('input', function() {
+                localStorage.setItem('topNote', this.value);
+            });
+            function autoResizeNote(el) {
+                el.style.height = 'auto';
+                el.style.height = el.scrollHeight + 'px';
+            }
+
+            // === Clock ===
+            function updateClock() {
+                var now = new Date();
+                var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                var dayName = days[now.getDay()];
+                var date = String(now.getDate()).padStart(2, '0');
+                var month = months[now.getMonth()];
+                var h = String(now.getHours()).padStart(2, '0');
+                var m = String(now.getMinutes()).padStart(2, '0');
+                var s = String(now.getSeconds()).padStart(2, '0');
+                document.getElementById('retro-clock').innerHTML =
+                    '<span style="display:block;font-size:0.82em;opacity:0.75;">' + dayName + ' ' + date + ' ' + month + '</span>' +
+                    h + ':' + m + ':' + s;
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // === Theme ===
+            function applyTheme(theme) {
+                document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
+                if (theme !== 'default') {
+                    document.body.classList.add('theme-' + theme);
+                }
+                document.querySelectorAll('.theme-option').forEach(function(opt) {
+                    opt.classList.remove('active');
+                });
+                var activeOpt = document.getElementById('theme-' + theme + '-opt');
+                if (activeOpt) activeOpt.classList.add('active');
+                var radio = document.querySelector('input[name="theme"][value="' + theme + '"]');
+                if (radio) radio.checked = true;
+                localStorage.setItem('theme', theme);
+            }
+            var savedTheme = localStorage.getItem('theme') || 'default';
+            applyTheme(savedTheme);
+
+            document.querySelectorAll('input[name="theme"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    applyTheme(this.value);
+                });
+            });
         });
 
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
