@@ -499,24 +499,6 @@
             }
         }
 
-        /* === Clock === */
-        #retro-clock {
-            position: fixed;
-            top: 10px;
-            right: 15px;
-            font-size: 13px;
-            font-family: monospace;
-            color: #333;
-            background: rgba(255,255,255,0.88);
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 5px 10px;
-            z-index: 100;
-            letter-spacing: 1px;
-            text-align: right;
-            line-height: 1.5;
-        }
-
         /* === Top Note === */
         #top-note-display {
             font-size: 14px;
@@ -652,15 +634,6 @@
             color: #000000 !important;
             border: 1px solid #000000 !important;
         }
-        body.theme-nokia #retro-clock {
-            background: #000000 !important;
-            border: 2px solid #000000 !important;
-            color: #ffffff !important;
-            font-family: 'VT323', monospace !important;
-            font-size: 18px !important;
-            letter-spacing: 2px;
-            line-height: 1.5;
-        }
         body.theme-nokia .theme-option {
             background: #ffffff !important;
             border: 1px solid #000000 !important;
@@ -757,13 +730,6 @@
             color: #3a2410 !important;
             border: 1px solid #c8b090 !important;
         }
-        body.theme-paper #retro-clock {
-            background: rgba(253,246,232,0.92) !important;
-            border: 1px solid #c8b090 !important;
-            color: #3a2410 !important;
-            font-family: 'Lora', Georgia, serif !important;
-            font-style: italic;
-        }
         body.theme-paper .settings-section-title {
             color: #3a2410 !important;
             font-family: 'Lora', Georgia, serif !important;
@@ -785,9 +751,7 @@
     </style>
 </head>
 <body>
-    <!-- Clock -->
-    <div id="retro-clock"></div>
-
+    <!-- Clock removed -->
     <div class="container">
         <div id="top-note-display"></div>
         <textarea id="top-note" placeholder="Add a note..."></textarea>
@@ -1207,24 +1171,6 @@
                 el.style.height = 'auto';
                 el.style.height = el.scrollHeight + 'px';
             }
-
-            // === Clock ===
-            function updateClock() {
-                var now = new Date();
-                var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-                var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                var dayName = days[now.getDay()];
-                var date = String(now.getDate()).padStart(2, '0');
-                var month = months[now.getMonth()];
-                var h = String(now.getHours()).padStart(2, '0');
-                var m = String(now.getMinutes()).padStart(2, '0');
-                var s = String(now.getSeconds()).padStart(2, '0');
-                document.getElementById('retro-clock').innerHTML =
-                    '<span style="display:block;font-size:0.82em;opacity:0.75;">' + dayName + ' ' + date + ' ' + month + '</span>' +
-                    h + ':' + m + ':' + s;
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
 
             // === Theme ===
             function applyTheme(theme) {
