@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Nokia-style Snake — B/W</title>
+	<style>
+		:root{--bg:#000;--fg:#fff;--accent:#fff}
+		html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Arial,Helvetica,sans-serif}
+		.wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;padding:12px}
+		.screen{background:#9BCB3C;border:6px solid #222;box-shadow:0 6px 18px rgba(0,0,0,.6);width:320px;max-width:92vw}
+		canvas{display:block;width:100%;height:auto;background:#9BCB3C}
+		.hud{display:flex;justify-content:space-between;padding:6px 8px;font-size:14px}
+		.controls{display:flex;gap:10px;align-items:center}
+		.dpad{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:48px 48px 48px;gap:6px}
+		.btn{width:48px;height:48px;background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:center;border-radius:6px;user-select:none;touch-action:none}
+		.invisible{visibility:hidden}
+		.big-controls{display:flex;gap:10px;align-items:center}
+		.action{padding:8px 12px;border-radius:6px;background:#111;color:var(--fg);border:1px solid #444}
+		@media (min-width:600px){.dpad .btn{width:56px;height:56px}}
+		.note{font-size:12px;color:#bbb;text-align:center;margin-top:6px}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<div class="screen">
+			<div class="hud">
+				<div>Score: <span id="score">0</span></div>
+				<div id="state">Ready</div>
+			</div>
+			<canvas id="game" width="160" height="160"></canvas>
+		</div>
+
+		<div class="big-controls">
+			<div class="controls">
+				<div class="dpad" id="dpad">
+					<div class="invisible"></div>
+					<div class="btn" data-dir="up">▲</div>
+					<div class="invisible"></div>
+					<div class="btn" data-dir="left">◀</div>
+					<div class="invisible"></div>
+					<div class="btn" data-dir="right">▶</div>
+					<div class="invisible"></div>
+					<div class="btn" data-dir="down">▼</div>
+					<div class="invisible"></div>
+				</div>
+			</div>
+
+			<div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+				<button id="start" class="action">Start</button>
+				<button id="pause" class="action">Pause</button>
+				<button id="restart" class="action">Restart</button>
+			</div>
+		</div>
+
+		<div class="note">Use arrow keys or touchscreen D-pad. Classic monochrome look.</div>
+	</div>
+
+	<script>
+		// Nokia-style monochrome snake
+		const canvas = document.getElementById('game');
+		const ctx = canvas.getContext('2d');
+		const scoreEl = document.getElementById('score');
+		const stateEl = document.getElementById('state');
+
+		// grid configuration
+		const CELLS = 20; // 20x20 grid
+		function getPIX(){ return canvas.width / CELLS; }
+		let prevSnake = [];
+		let stepStart = 0;
+
+		let snake = [{x:9,y:9}];
+		let dir = {x:0,y:0};
+		let nextDir = {x:0,y:0};
+		let apple = null;
+		let tickMs = 120; // speed (ms per move)
+		let lastTick = 0;
+		let running = false;
+		let score = 0;
+
+		function reset(){
+			snake = [{x:9,y:9}];
+			dir = {x:0,y:0};
+			nextDir = {x:0,y:0};
+			placeApple();
+			score = 0;
+			tickMs = 120;
+			scoreEl.textContent = score;
+			stateEl.textContent = 'Ready';
+			// set previous snake for interpolation
+			prevSnake = snake.map(s=>({x:s.x,y:s.y}));
+			stepStart = 0;
+			draw(1);
+		}
+
+		function placeApple(){
+			while(true){
+				const x = Math.floor(Math.random()*CELLS);
+				const y = Math.floor(Math.random()*CELLS);
+				if(!snake.some(s=>s.x===x && s.y===y)){
+					apple = {x,y};
+					return;
+				}
+			}
+		}
+
+		function step(){
+			if(!running) return;
+			// prevent reverse
+			if(nextDir.x!==-dir.x || nextDir.y!==-dir.y) dir = (nextDir.x||nextDir.y)? nextDir:dir;
+			if(dir.x===0 && dir.y===0) return;
+			const head = {x:snake[0].x + dir.x, y:snake[0].y + dir.y};
+			// wrap around
+			head.x = (head.x + CELLS) % CELLS;
+			head.y = (head.y + CELLS) % CELLS;
+
+			// collision with self
+			if(snake.some(s=>s.x===head.x && s.y===head.y)){
+				running = false;
+				stateEl.textContent = 'Game Over';
+				return;
+			}
+
+			snake.unshift(head);
+			if(apple && head.x===apple.x && head.y===apple.y){
+				score += 1;
+				scoreEl.textContent = score;
+				placeApple();
+				if(tickMs>40) tickMs -= 3; // speed up a bit
+			} else {
+				snake.pop();
+			}
+		}
+
+		function draw(t){
+			if(t===undefined) t = 1;
+			const PIX = getPIX();
+			// sharp pixel look (darker green screen with black pixels)
+			ctx.fillStyle = '#7A9A2A';
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+
+			// draw apple (black pixel)
+			if(apple){
+				ctx.fillStyle = '#000';
+				ctx.fillRect(apple.x*PIX, apple.y*PIX, PIX, PIX);
+			}
+
+			// draw snake interpolated between prevSnake and snake
+			ctx.fillStyle = '#000';
+			for(let i=0;i<snake.length;i++){
+				const curr = snake[i];
+				let prev = prevSnake[i];
+				if(!prev){ // if grew, use last prev
+					prev = prevSnake[prevSnake.length-1] || curr;
+				}
+				// handle wrapping for interpolation
+				let dx = curr.x - prev.x;
+				let dy = curr.y - prev.y;
+				if(dx > CELLS/2) dx -= CELLS;
+				if(dx < -CELLS/2) dx += CELLS;
+				if(dy > CELLS/2) dy -= CELLS;
+				if(dy < -CELLS/2) dy += CELLS;
+				const ix = (prev.x + dx * t);
+				const iy = (prev.y + dy * t);
+				// convert to pixel space and wrap
+				let px = ((ix % CELLS) + CELLS) % CELLS * PIX;
+				let py = ((iy % CELLS) + CELLS) % CELLS * PIX;
+				ctx.fillRect(px, py, PIX, PIX);
+			}
+		}
+
+		// game loop using RAF but stepping based on tickMs
+		function loop(ts){
+			if(!lastTick) lastTick = ts;
+			if(!stepStart) stepStart = ts;
+			if(ts - lastTick >= tickMs){
+				// capture prev positions for interpolation
+				prevSnake = snake.map(s=>({x:s.x,y:s.y}));
+				step();
+				lastTick = ts;
+				stepStart = ts;
+			}
+			const t = Math.min(1, (ts - stepStart)/tickMs);
+			draw(t);
+			requestAnimationFrame(loop);
+		}
+
+		// controls
+		function setDirection(d){
+			// map string to direction
+			const map = {up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
+			if(map[d]) nextDir = map[d];
+		}
+
+		window.addEventListener('keydown',e=>{
+			const key = e.key;
+			if(key==='ArrowUp' || key==='w' || key==='W') setDirection('up');
+			else if(key==='ArrowDown' || key==='s' || key==='S') setDirection('down');
+			else if(key==='ArrowLeft' || key==='a' || key==='A') setDirection('left');
+			else if(key==='ArrowRight' || key==='d' || key==='D') setDirection('right');
+			else if(key===' '){ // space to toggle
+				toggleRunning();
+			}
+		},{passive:true});
+
+		// touch / pointer for D-pad
+		document.getElementById('dpad').addEventListener('pointerdown',e=>{
+			const btn = e.target.closest('.btn');
+			if(!btn) return;
+			const dir = btn.dataset.dir;
+			setDirection(dir);
+			// give immediate tactile feedback via press visual
+			btn.style.transform = 'scale(.95)';
+		});
+		document.getElementById('dpad').addEventListener('pointerup',e=>{
+			const btn = e.target.closest('.btn');
+			if(btn) btn.style.transform = '';
+		});
+		document.getElementById('dpad').addEventListener('pointercancel',e=>{
+			const btn = e.target.closest('.btn');
+			if(btn) btn.style.transform = '';
+		});
+
+		// start/pause/restart
+		document.getElementById('start').addEventListener('click',()=>{
+			running = true; stateEl.textContent = 'Running';
+		});
+		document.getElementById('pause').addEventListener('click',()=>{
+			running = false; stateEl.textContent = 'Paused';
+		});
+		document.getElementById('restart').addEventListener('click',()=>{ reset(); running=true; stateEl.textContent='Running'; });
+
+		function toggleRunning(){ running = !running; stateEl.textContent = running? 'Running':'Paused'; }
+
+		// initialize
+		reset();
+		requestAnimationFrame(loop);
+
+		// ensure canvas stays crisp on high-DPI
+		function adjustCanvas(){
+			const ratio = window.devicePixelRatio || 1;
+			const displayWidth = canvas.clientWidth;
+			const displayHeight = canvas.clientHeight;
+			canvas.width = Math.floor(displayWidth * ratio);
+			canvas.height = Math.floor(displayHeight * ratio);
+			// recalc PIX based on logical canvas size
+			// Keep logical grid square by dividing by CELLS
+			// NOTE: We adjust PIX used for drawing based on canvas.width
+			// but keep the grid count constant.
+			// For simplicity in this small demo, don't change CELLS.
+		}
+		window.addEventListener('resize', ()=>{ adjustCanvas(); draw(); });
+		adjustCanvas();
+	</script>
+</body>
+</html>
+
