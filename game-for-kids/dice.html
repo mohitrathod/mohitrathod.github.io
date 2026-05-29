@@ -5,25 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dice Roller - Game for Kids</title>
     <style>
+                #dice.rolling {
+                    animation: shake 0.5s;
+                }
+                @keyframes shake {
+                    0% { transform: rotate(0deg) scale(1); }
+                    20% { transform: rotate(-10deg) scale(1.08); }
+                    40% { transform: rotate(10deg) scale(1.12); }
+                    60% { transform: rotate(-8deg) scale(1.06); }
+                    80% { transform: rotate(8deg) scale(1.04); }
+                    100% { transform: rotate(0deg) scale(1); }
+                }
         body { font-family: Arial, sans-serif; background: #f0f8ff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
         h1 { margin-bottom: 10px; }
-        #dice { font-size: 5rem; margin: 30px 0; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; background: #fff; border: 3px solid #333; border-radius: 16px; box-shadow: 2px 4px 12px #b0c4de; transition: background 0.2s; }
+        #dice {
+            margin: 30px 0;
+            width: 160px;
+            height: 160px;
+            display: grid;
+            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            background: #1976d2;
+            border: 5px solid #1565c0;
+            border-radius: 24px;
+            box-shadow: 2px 4px 18px #b0c4de;
+            transition: background 0.2s;
+            position: relative;
+        }
+        .dot {
+            width: 32px;
+            height: 32px;
+            background: #fff;
+            border-radius: 50%;
+            margin: auto;
+            box-shadow: 0 1px 4px #1565c044;
+        }
         #roll-btn { padding: 10px 28px; font-size: 1.2rem; border-radius: 8px; border: none; background: #4caf50; color: #fff; cursor: pointer; transition: background 0.2s; }
         #roll-btn:hover { background: #388e3c; }
     </style>
 </head>
 <body>
     <h1>Dice Roller</h1>
-    <div id="dice">🎲</div>
+    <div id="dice"></div>
     <button id="roll-btn">Roll Dice</button>
     <script>
         const diceDiv = document.getElementById('dice');
         const rollBtn = document.getElementById('roll-btn');
-        const diceFaces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-        rollBtn.addEventListener('click', () => {
-            const n = Math.floor(Math.random() * 6);
-            diceDiv.textContent = diceFaces[n];
-        });
+        // Dot positions for each face (1-6)
+        const faces = [
+            [4], // 1
+            [0,8], // 2
+            [0,4,8], // 3
+            [0,2,6,8], // 4
+            [0,2,4,6,8], // 5
+            [0,2,3,5,6,8] // 6
+        ];
+        function renderDice(face) {
+            diceDiv.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                const dot = document.createElement('div');
+                if (faces[face].includes(i)) {
+                    dot.className = 'dot';
+                } else {
+                    dot.style.width = '32px';
+                    dot.style.height = '32px';
+                    dot.style.visibility = 'hidden';
+                }
+                diceDiv.appendChild(dot);
+            }
+        }
+        function rollDice() {
+            diceDiv.classList.add('rolling');
+            setTimeout(() => {
+                const n = Math.floor(Math.random() * 6);
+                renderDice(n);
+                diceDiv.classList.remove('rolling');
+            }, 500);
+        }
+        rollBtn.addEventListener('click', rollDice);
+        // Initial render
+        renderDice(0);
     </script>
 </body>
 </html>
