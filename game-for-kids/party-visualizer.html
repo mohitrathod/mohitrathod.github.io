@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Party Visualizer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    h1 {
+      color: #ff00ff;
+      font-size: 1.1rem;
+      letter-spacing: 4px;
+      text-shadow: 0 0 10px #ff00ff, 0 0 30px #ff00ff;
+      margin-bottom: 10px;
+      animation: flicker 3s infinite;
+      text-transform: uppercase;
+    }
+
+    @keyframes flicker {
+      0%, 95%, 100% { opacity: 1; }
+      96% { opacity: 0.4; }
+      97% { opacity: 1; }
+      98% { opacity: 0.2; }
+      99% { opacity: 1; }
+    }
+
+    #canvas-wrapper {
+      position: relative;
+      border: 2px solid #0ff;
+      box-shadow: 0 0 20px #0ff, 0 0 60px #0ff3, inset 0 0 20px #0002;
+    }
+
+    canvas { display: block; image-rendering: pixelated; }
+
+    #scanlines {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px
+      );
+    }
+
+    /* ── analog VU row ── */
+    #vu-row {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .vu-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .vu-label {
+      color: #ffaa00;
+      font-size: 0.38rem;
+      letter-spacing: 3px;
+      text-shadow: 0 0 8px #ff8800;
+    }
+    .vu-canvas { display: block; border-radius: 4px; }
+
+    /* ── controls ── */
+    #controls {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      padding: 9px 16px;
+      background: #000;
+      color: #0ff;
+      border: 2px solid #0ff;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 0 8px #0ff;
+      transition: background 0.1s, color 0.1s;
+    }
+    button:hover { background: #0ff; color: #000; }
+    button:disabled { color: #333; border-color: #333; box-shadow: none; cursor: not-allowed; }
+
+    #mode-btn { color: #ff0; border-color: #ff0; box-shadow: 0 0 8px #ff0; }
+    #mode-btn:hover { background: #ff0; color: #000; }
+    #fs-btn   { color: #f0f; border-color: #f0f; box-shadow: 0 0 8px #f0f; }
+    #fs-btn:hover { background: #f0f; color: #000; }
+
+    #status {
+      margin-top: 8px;
+      font-size: 0.45rem;
+      color: #0f0;
+      text-shadow: 0 0 6px #0f0;
+      letter-spacing: 2px;
+      min-height: 1em;
+      text-align: center;
+      padding: 0 8px;
+    }
+    #status.error { color: #f00; text-shadow: 0 0 6px #f00; }
+
+    /* ── mobile ── */
+    body { overflow-y: auto; justify-content: flex-start; padding: 10px 6px 18px; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 0.62rem; letter-spacing: 2px; margin-bottom: 8px; }
+      #vu-row { gap: 6px; margin-top: 8px; }
+      .vu-label { font-size: 0.3rem; }
+      #controls { gap: 6px; margin-top: 8px; }
+      button { font-size: 0.38rem; padding: 10px 10px; letter-spacing: 1px; min-height: 44px; }
+      #status { font-size: 0.35rem; }
+    }
+  </style>
+</head>
+<body>
+  <h1>&#9670; Party Visualizer &#9670;</h1>
+
+  <div id="canvas-wrapper">
+    <canvas id="viz" width="760" height="290"></canvas>
+    <div id="scanlines"></div>
+  </div>
+
+  <div id="vu-row">
+    <div class="vu-wrap">
+      <canvas class="vu-canvas" id="vu-bass"   width="372" height="148"></canvas>
+      <div class="vu-label">BASS</div>
+    </div>
+    <div class="vu-wrap">
+      <canvas class="vu-canvas" id="vu-treble" width="372" height="148"></canvas>
+      <div class="vu-label">TREBLE</div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <button id="start-btn">&#9654; Start Mic</button>
+    <button id="stop-btn" disabled>&#9646;&#9646; Stop</button>
+    <button id="mode-btn">Mode: Bars</button>
+    <button id="fs-btn">&#9633; Fullscreen</button>
+  </div>
+
+  <div id="status">READY — PRESS START MIC</div>
+
+  <script>
+    // ── refs ────────────────────────────────────────────────────────────────
+    const canvas   = document.getElementById('viz');
+    const ctx      = canvas.getContext('2d');
+    const vuBassC  = document.getElementById('vu-bass');
+    const vuTrebC  = document.getElementById('vu-treble');
+    const vuBassX  = vuBassC.getContext('2d');
+    const vuTrebX  = vuTrebC.getContext('2d');
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn  = document.getElementById('stop-btn');
+    const modeBtn  = document.getElementById('mode-btn');
+    const fsBtn    = document.getElementById('fs-btn');
+    const status   = document.getElementById('status');
+
+    let W = canvas.width, H = canvas.height;
+    const NORMAL_W = 760, NORMAL_H = 290;
+
+    // ── responsive sizing ────────────────────────────────────────────────────
+    function resizeAll(isFS) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const mobile = vw < 600;
+
+      if (isFS) {
+        // fullscreen: big canvas, VU meters side by side below
+        const vuH = Math.round(vh * 0.22);
+        const vuW = Math.round((vw - 12) / 2);
+        canvas.width  = vw;
+        canvas.height = vh - vuH - 80;
+        vuBassC.width  = vuW;  vuBassC.height  = vuH;
+        vuTrebC.width  = vuW;  vuTrebC.height  = vuH;
+      } else if (mobile) {
+        const cw = vw - 12;
+        canvas.width  = cw;
+        canvas.height = Math.round(cw * 0.48);
+        const vuW = Math.round((cw - 6) / 2);
+        const vuH = Math.round(vuW * 0.38);
+        vuBassC.width  = vuW; vuBassC.height  = vuH;
+        vuTrebC.width  = vuW; vuTrebC.height  = vuH;
+      } else {
+        canvas.width  = NORMAL_W; canvas.height = NORMAL_H;
+        vuBassC.width  = 372; vuBassC.height  = 148;
+        vuTrebC.width  = 372; vuTrebC.height  = 148;
+      }
+      W = canvas.width; H = canvas.height;
+    }
+
+    const MODES = ['Bars', 'Wave', 'Rings', 'Tunnel'];
+    let modeIndex = 0;
+    let audioCtx = null, analyser = null, source = null, stream = null;
+    let hue = 0, tick = 0;
+
+    // ── needle physics ──────────────────────────────────────────────────────
+    // VU scale: -60 dB (left) → +6 dB (right), 120° total sweep
+    const NL = (210 * Math.PI) / 180;   // left extreme  (~-60 dB)
+    const NR = (330 * Math.PI) / 180;   // right extreme (~+6 dB)
+    const NW = NR - NL;                 // sweep width in radians
+
+    // Spring-damper constants — tuned for snappy physical feel
+    const SPRING  = 0.22;   // stiffness
+    const DAMP    = 0.68;   // velocity bleed per frame
+
+    let bAng = NL, bVel = 0, bTgt = NL;   // bass needle
+    let tAng = NL, tVel = 0, tTgt = NL;   // treble needle
+    let bPeak = NL, tPeak = NL;            // peak-hold needles
+
+    function stepNeedle(ang, vel, tgt) {
+      vel  = vel * DAMP + (tgt - ang) * SPRING;
+      ang += vel;
+      ang  = Math.max(NL - 0.03, Math.min(NR + 0.03, ang));
+      return [ang, vel];
+    }
+
+    // ── draw analog VU meter ────────────────────────────────────────────────
+    function drawVU(c, mc, needle, peak) {
+      const mW = c.width, mH = c.height;
+      const cx = mW / 2;
+      // Pivot sits just below canvas bottom so needles fan upward naturally
+      const pivY   = mH + mH * 0.12;
+      const armLen = pivY * 0.97;   // full needle length
+
+      // ── dark housing ──
+      mc.fillStyle = '#110e07';
+      mc.fillRect(0, 0, mW, mH);
+
+      // ── amber backlight gradient ──
+      const grd = mc.createRadialGradient(cx, pivY * 0.55, mH * 0.05, cx, pivY * 0.55, mH * 1.15);
+      grd.addColorStop(0,    'rgba(255,175,30,0.62)');
+      grd.addColorStop(0.4,  'rgba(210,105,10,0.42)');
+      grd.addColorStop(0.75, 'rgba(130,55,0,0.22)');
+      grd.addColorStop(1,    'rgba(40,15,0,0.08)');
+      mc.fillStyle = grd;
+      mc.fillRect(0, 0, mW, mH);
+
+      // ── inner bezel ──
+      mc.strokeStyle = '#b07018';
+      mc.lineWidth   = 2;
+      mc.strokeRect(5, 5, mW - 10, mH - 10);
+
+      // ── scale: tick arcs ──
+      const arcR = armLen * 0.91;
+      const DB_MIN = -60, DB_MAX = 6, DB_RNG = DB_MAX - DB_MIN;
+
+      // minor ticks every 2 dB
+      for (let db = DB_MIN; db <= DB_MAX; db += 2) {
+        const frac  = (db - DB_MIN) / DB_RNG;
+        const ang   = NL + frac * NW;
+        const major = (db % 10 === 0 || db === 4 || db === 6);
+        const tlen  = major ? 12 : 6;
+        mc.beginPath();
+        mc.moveTo(cx + (arcR - tlen) * Math.cos(ang), pivY + (arcR - tlen) * Math.sin(ang));
+        mc.lineTo(cx +  arcR        * Math.cos(ang), pivY +  arcR        * Math.sin(ang));
+        mc.strokeStyle = db >= 0 ? '#ff5533' : '#c8a050';
+        mc.lineWidth   = major ? 1.6 : 0.8;
+        mc.stroke();
+      }
+
+      // label text
+      const lbls = [
+        [-60,'-60'],[-50,'-50'],[-40,'-40'],[-30,'-30'],
+        [-20,'-20'],[-10,'-10'],[0,'0'],[4,'+4'],[6,'+6']
+      ];
+      mc.font         = `bold ${mW > 320 ? 9 : 7}px sans-serif`;
+      mc.textAlign    = 'center';
+      mc.textBaseline = 'middle';
+      for (const [db, lbl] of lbls) {
+        const frac = (db - DB_MIN) / DB_RNG;
+        const ang  = NL + frac * NW;
+        const r    = arcR - 22;
+        mc.fillStyle = db >= 0 ? '#ff7755' : '#d4a860';
+        mc.fillText(lbl, cx + r * Math.cos(ang), pivY + r * Math.sin(ang));
+      }
+
+      // "dB" sub-label
+      mc.font      = 'bold 8px sans-serif';
+      mc.fillStyle = '#a07830';
+      mc.fillText('DECIBELS', cx, mH * 0.14);
+
+      // ── peak-hold needle (translucent red) ──
+      if (peak > NL + 0.02) {
+        const pLen = armLen * 0.84;
+        mc.beginPath();
+        mc.moveTo(cx, pivY);
+        mc.lineTo(cx + pLen * Math.cos(peak), pivY + pLen * Math.sin(peak));
+        mc.strokeStyle = 'rgba(255,70,50,0.65)';
+        mc.lineWidth   = 1.5;
+        mc.stroke();
+      }
+
+      // ── main needle ──
+      // shadow depth
+      mc.shadowBlur  = 5;
+      mc.shadowColor = 'rgba(0,0,0,0.7)';
+
+      // body (dark)
+      mc.beginPath();
+      mc.moveTo(cx, pivY);
+      mc.lineTo(cx + armLen * Math.cos(needle), pivY + armLen * Math.sin(needle));
+      mc.strokeStyle = '#181008';
+      mc.lineWidth   = 2.8;
+      mc.stroke();
+
+      // red tip (top 30% of needle)
+      const tipFrac = 0.70;
+      mc.beginPath();
+      mc.moveTo(
+        cx + armLen * tipFrac * Math.cos(needle),
+        pivY + armLen * tipFrac * Math.sin(needle)
+      );
+      mc.lineTo(cx + armLen * Math.cos(needle), pivY + armLen * Math.sin(needle));
+      mc.strokeStyle = '#ff1a00';
+      mc.lineWidth   = 2;
+      mc.stroke();
+      mc.shadowBlur = 0;
+
+      // pivot disc
+      mc.beginPath();
+      mc.arc(cx, pivY, 5.5, 0, Math.PI * 2);
+      mc.fillStyle   = '#251808';
+      mc.fill();
+      mc.strokeStyle = '#906020';
+      mc.lineWidth   = 1.5;
+      mc.stroke();
+
+      // ── corner screws ──
+      for (const [sx, sy] of [[13, 13], [mW - 13, 13], [13, mH - 13], [mW - 13, mH - 13]]) {
+        mc.beginPath();
+        mc.arc(sx, sy, 5, 0, Math.PI * 2);
+        mc.fillStyle   = '#201408';
+        mc.fill();
+        mc.strokeStyle = '#7a5520';
+        mc.lineWidth   = 1;
+        mc.stroke();
+        mc.strokeStyle = '#3a2810';
+        mc.lineWidth   = 0.8;
+        mc.beginPath(); mc.moveTo(sx-3,sy);   mc.lineTo(sx+3,sy);   mc.stroke();
+        mc.beginPath(); mc.moveTo(sx,sy-3);   mc.lineTo(sx,sy+3);   mc.stroke();
+      }
+
+      // ── glass shine ──
+      const sh = mc.createLinearGradient(0, 0, 0, mH * 0.55);
+      sh.addColorStop(0,   'rgba(255,255,230,0.09)');
+      sh.addColorStop(0.6, 'rgba(255,255,200,0.03)');
+      sh.addColorStop(1,   'rgba(0,0,0,0)');
+      mc.fillStyle = sh;
+      mc.fillRect(0, 0, mW, mH);
+    }
+
+    // ── update VU needle physics ────────────────────────────────────────────
+    function updateVU(freqData) {
+      // Bass: bins 1-14 (~20-300 Hz at 44.1kHz / fftSize 1024)
+      let bSum = 0;
+      for (let i = 1; i <= 7; i++) bSum += freqData[i];
+      const bassRaw = (bSum / 7) / 255;
+
+      // Treble: bins 93-232 (~4-10 kHz at 44.1kHz / fftSize 1024)
+      let tSum = 0;
+      for (let i = 93; i < 233; i++) tSum += freqData[i];
+      const trebRaw = (tSum / 140) / 255;
+
+      // map to needle angle with gentle power curve
+      bTgt = NL + Math.pow(Math.min(bassRaw * 1.4, 1), 0.65) * NW;
+      tTgt = NL + Math.pow(Math.min(trebRaw * 1.5, 1), 0.65) * NW;
+
+      [bAng, bVel] = stepNeedle(bAng, bVel, bTgt);
+      [tAng, tVel] = stepNeedle(tAng, tVel, tTgt);
+
+      // peak hold: rises instantly, decays slowly
+      bPeak = bAng > bPeak ? bAng : Math.max(NL, bPeak - 0.0025);
+      tPeak = tAng > tPeak ? tAng : Math.max(NL, tPeak - 0.0025);
+
+      drawVU(vuBassC, vuBassX, bAng, bPeak);
+      drawVU(vuTrebC, vuTrebX, tAng, tPeak);
+    }
+
+    function idleVU() {
+      drawVU(vuBassC, vuBassX, NL, NL);
+      drawVU(vuTrebC, vuTrebX, NL, NL);
+    }
+
+    // ── colour ──────────────────────────────────────────────────────────────
+    function retroColor(i, total) {
+      return `hsl(${(hue + (i / total) * 200) % 360},100%,55%)`;
+    }
+
+    // ── idle grid ───────────────────────────────────────────────────────────
+    function drawIdle() {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = '#0ff2'; ctx.lineWidth = 1;
+      for (let x = 0; x <= W; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for (let y = 0; y <= H; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+      ctx.fillStyle = '#0ff4'; ctx.font = '13px monospace'; ctx.textAlign = 'center';
+      ctx.fillText('[ awaiting signal ]', W/2, H/2);
+      idleVU();
+    }
+
+    // ── Bars ────────────────────────────────────────────────────────────────
+    function drawBars(data) {
+      ctx.fillStyle = '#0009'; ctx.fillRect(0, 0, W, H);
+
+      const N       = 48;                 // fewer bars
+      const GAP     = 4;                  // gap between bars
+      const barW    = Math.floor(W / N) - GAP;
+      const sRate   = analyser ? analyser.context.sampleRate : 44100;
+      const binHz   = sRate / (analyser ? analyser.fftSize : 1024);
+      const F_MIN   = 20, F_MAX = 20000;
+      const logMin  = Math.log10(F_MIN), logMax = Math.log10(F_MAX);
+
+      const BASS_MAX  = 300;
+      const MID_MAX   = 4000;
+      const bassEdgeX = (Math.log10(BASS_MAX) - logMin) / (logMax - logMin) * W;
+      const midEdgeX  = (Math.log10(MID_MAX)  - logMin) / (logMax - logMin) * W;
+      const HZ_TICKS  = [30, 60, 120, 250, 500, 1000, 2000, 4000, 8000, 16000];
+      const FOOTER    = 22;
+      const drawH     = H - FOOTER;
+
+      for (let i = 0; i < N; i++) {
+        const f0 = Math.pow(10, logMin + (i / N)       * (logMax - logMin));
+        const f1 = Math.pow(10, logMin + ((i + 1) / N) * (logMax - logMin));
+        const b0 = Math.max(1, Math.floor(f0 / binHz));
+        const b1 = Math.min(data.length - 1, Math.ceil(f1 / binHz));
+
+        let s = 0, cnt = 0;
+        for (let b = b0; b <= b1; b++) { s += data[b]; cnt++; }
+        const avg = cnt > 0 ? s / cnt : 0;
+        const bh  = Math.pow(avg / 255, 1.2) * drawH;
+        if (bh < 1) continue;
+
+        const x    = i * (barW + GAP) + GAP / 2;
+        const yTop = drawH - bh;
+
+        // Gradient inside each bar: green (bottom) → orange (mid) → red (top)
+        const grad = ctx.createLinearGradient(0, drawH, 0, yTop);
+        grad.addColorStop(0,    '#00ff44');   // bottom = green
+        grad.addColorStop(0.55, '#ffaa00');   // middle = orange
+        grad.addColorStop(1,    '#ff1a00');   // top    = red
+
+        ctx.shadowBlur  = 5;
+        ctx.shadowColor = '#ff440066';
+        ctx.fillStyle   = grad;
+        ctx.fillRect(x, yTop, barW, bh);
+        ctx.shadowBlur  = 0;
+
+        // bright pixel cap
+        ctx.fillStyle = 'rgba(255,255,255,0.82)';
+        ctx.fillRect(x, yTop - 3, barW, 3);
+      }
+
+      // Zone divider lines
+      ctx.strokeStyle = '#ffffff28'; ctx.lineWidth = 1;
+      [bassEdgeX, midEdgeX].forEach(dx => {
+        ctx.beginPath(); ctx.moveTo(dx, 0); ctx.lineTo(dx, drawH); ctx.stroke();
+      });
+
+      // Footer strip
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, drawH, W, FOOTER);
+
+      // Hz tick marks & labels in footer
+      ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
+      HZ_TICKS.forEach(hz => {
+        if (hz < F_MIN || hz > F_MAX) return;
+        const tx = (Math.log10(hz) - logMin) / (logMax - logMin) * W;
+        ctx.strokeStyle = '#ffffff44'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(tx, drawH); ctx.lineTo(tx, drawH + 5); ctx.stroke();
+        const lbl = hz >= 1000 ? (hz / 1000) + 'k' : hz + '';
+        ctx.fillStyle = '#ffdd88cc';
+        ctx.fillText(lbl, tx, H - 5);
+      });
+
+      // Zone labels in footer
+      ctx.font = 'bold 9px monospace';
+      ctx.fillStyle = '#00ff4488';
+      ctx.fillText('BASS', bassEdgeX / 2, drawH + 10);
+      ctx.fillStyle = '#ffaa0088';
+      ctx.fillText('MID', (bassEdgeX + midEdgeX) / 2, drawH + 10);
+      ctx.fillStyle = '#ff202088';
+      ctx.fillText('TREBLE', (midEdgeX + W) / 2, drawH + 10);
+
+      // Horizontal grid
+      ctx.strokeStyle = '#0ff1'; ctx.lineWidth = 1;
+      for (let y = 0; y < H - 16; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+    }
+
+    // ── Wave ────────────────────────────────────────────────────────────────
+    function drawWave(data) {
+      ctx.fillStyle = '#0008'; ctx.fillRect(0, 0, W, H);
+      const sw = W / data.length;
+      for (let pass = 0; pass < 2; pass++) {
+        ctx.beginPath();
+        const col = pass === 0 ? `hsl(${hue},100%,60%)` : `hsl(${(hue+120)%360},100%,55%)`;
+        ctx.shadowBlur = 10; ctx.shadowColor = col;
+        ctx.strokeStyle = col; ctx.lineWidth = pass === 0 ? 2 : 1;
+        for (let i = 0; i < data.length; i++) {
+          const v = data[i] / 128.0;
+          const y = pass === 0 ? (v * H) / 2 : H - (v * H) / 2;
+          i === 0 ? ctx.moveTo(0, y) : ctx.lineTo(i * sw, y);
+        }
+        ctx.stroke(); ctx.shadowBlur = 0;
+      }
+    }
+
+    // ── Rings ───────────────────────────────────────────────────────────────
+    function drawRings(data) {
+      ctx.fillStyle = '#0007'; ctx.fillRect(0, 0, W, H);
+      const cx = W/2, cy = H/2, N = 14;
+      const step = Math.floor(data.length / N);
+      for (let r = N-1; r >= 0; r--) {
+        let s = 0;
+        for (let j = 0; j < step; j++) s += data[r * step + j];
+        const radius = 14 + r * 18 + (s/step/255) * 55;
+        const c = `hsl(${(hue + r * 26) % 360},100%,55%)`;
+        ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI*2);
+        ctx.strokeStyle = c; ctx.lineWidth = 3;
+        ctx.shadowBlur = 12; ctx.shadowColor = c;
+        ctx.stroke(); ctx.shadowBlur = 0;
+      }
+      ctx.beginPath(); ctx.arc(cx, cy, 5 + (data[0]/255)*16, 0, Math.PI*2);
+      ctx.fillStyle = `hsl(${hue},100%,70%)`; ctx.fill();
+    }
+
+    // ── Tunnel ──────────────────────────────────────────────────────────────
+    function drawTunnel(data) {
+      ctx.fillStyle = '#0008'; ctx.fillRect(0, 0, W, H);
+      const cx = W/2, cy = H/2, N = 22;
+      const step = Math.floor(data.length / N);
+      for (let i = 0; i < N; i++) {
+        let s = 0;
+        for (let j = 0; j < step; j++) s += data[i * step + j];
+        const size = 8 + i * 18 + (s/step/255) * 28;
+        const c = `hsl(${(hue + i * 16 + tick) % 360},100%,50%)`;
+        ctx.strokeStyle = c; ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 7; ctx.shadowColor = c;
+        ctx.strokeRect(cx-size, cy-size*(H/W), size*2, size*2*(H/W));
+        ctx.shadowBlur = 0;
+      }
+      ctx.strokeStyle = '#fff1'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(W,H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W,0); ctx.lineTo(0,H); ctx.stroke();
+    }
+
+    // ── render loop ─────────────────────────────────────────────────────────
+    function render() {
+      requestAnimationFrame(render);
+      tick++;
+      hue = (hue + 0.7) % 360;
+
+      if (!analyser) { drawIdle(); return; }
+
+      const freqData = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(freqData);
+
+      const mode = MODES[modeIndex];
+      if (mode === 'Wave') {
+        const td = new Uint8Array(analyser.fftSize);
+        analyser.getByteTimeDomainData(td);
+        drawWave(td);
+      } else if (mode === 'Bars')   drawBars(freqData);
+      else if  (mode === 'Rings')  drawRings(freqData);
+      else                          drawTunnel(freqData);
+
+      updateVU(freqData);
+    }
+
+    // ── fullscreen ───────────────────────────────────────────────────────────
+    fsBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+      else document.exitFullscreen();
+    });
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        resizeAll(true);
+        fsBtn.textContent = '\u00D7 Exit Full';
+      } else {
+        resizeAll(false);
+        fsBtn.textContent = '\u25A1 Fullscreen';
+      }
+    });
+
+    // resize on orientation change / window resize
+    window.addEventListener('resize', () => {
+      if (!document.fullscreenElement) resizeAll(false);
+    });
+
+    // initial sizing
+    resizeAll(false);
+
+    // ── mic ──────────────────────────────────────────────────────────────────
+    startBtn.addEventListener('click', async () => {
+      try {
+        stream   = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 1024;              // smaller = more time-resolution
+        analyser.smoothingTimeConstant = 0.5; // was 0.82, much snappier
+        source   = audioCtx.createMediaStreamSource(stream);
+        source.connect(analyser);
+        startBtn.disabled = true; stopBtn.disabled = false;
+        status.textContent = '● LIVE — MIC ACTIVE';
+        status.classList.remove('error');
+      } catch (e) {
+        status.textContent = 'ERROR: ' + (e.message || 'mic access denied');
+        status.classList.add('error');
+      }
+    });
+
+    stopBtn.addEventListener('click', () => {
+      if (source)   { source.disconnect(); source = null; }
+      if (audioCtx) { audioCtx.close();    audioCtx = null; }
+      if (stream)   { stream.getTracks().forEach(t => t.stop()); stream = null; }
+      analyser = null;
+      bAng = tAng = bPeak = tPeak = NL;
+      bVel = tVel = 0;
+      startBtn.disabled = false; stopBtn.disabled = true;
+      status.textContent = 'STOPPED — PRESS START MIC';
+      status.classList.remove('error');
+    });
+
+    modeBtn.addEventListener('click', () => {
+      modeIndex = (modeIndex + 1) % MODES.length;
+      modeBtn.textContent = 'Mode: ' + MODES[modeIndex];
+    });
+
+    render();
+
+    // Prevent iOS scroll bounce / zoom on double-tap for buttons
+    document.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('touchend', e => e.preventDefault(), { passive: false });
+    });
+  </script>
+</body>
+</html>

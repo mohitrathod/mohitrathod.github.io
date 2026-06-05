@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Impact</title>
+  <style>
+    body { background: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; overflow: hidden; }
+    #game-container { position: relative; width: 100vw; height: 80vh; max-width: 600px; margin: 0 auto; background: #111; border: 3px solid #333; border-radius: 10px; overflow: hidden; }
+    canvas { display: block; background: #111; }
+    #score { position: absolute; top: 10px; left: 10px; font-size: 1.2rem; color: #ffe066; z-index: 2; }
+    #controls { display: flex; justify-content: center; gap: 18px; margin: 10px 0 0 0; }
+    .ctrl-btn {
+      width: 60px; height: 60px; border-radius: 50%; border: none; background: #ffe066; color: #222; font-size: 2rem; font-weight: bold; box-shadow: 0 2px 8px #2228; margin: 0 8px; cursor: pointer; user-select: none;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .ctrl-btn:active { background: #ffd700; }
+    @media (max-width: 700px) {
+      #game-container { height: 60vw; max-width: 100vw; }
+      .ctrl-btn { width: 48px; height: 48px; font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="score">Score: 0</div>
+    <canvas id="game" width="600" height="400"></canvas>
+  </div>
+  <div id="controls">
+    <button class="ctrl-btn" id="btn-up">▲</button>
+    <button class="ctrl-btn" id="btn-shoot">●</button>
+    <button class="ctrl-btn" id="btn-down">▼</button>
+  </div>
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width, H = canvas.height;
+    let score = 0, gameOver = false;
+    const scoreDiv = document.getElementById('score');
+    // Player
+    const player = { x: 40, y: H/2-20, w: 36, h: 36, vy: 0, speed: 5 };
+    // Bullets
+    const bullets = [];
+    // Enemies
+    const enemies = [];
+    let enemyTimer = 0;
+    // Controls
+    let upPressed = false, downPressed = false, shootPressed = false;
+    // Touch controls
+    document.getElementById('btn-up').addEventListener('touchstart', e => { upPressed = true; e.preventDefault(); });
+    document.getElementById('btn-up').addEventListener('touchend', e => { upPressed = false; e.preventDefault(); });
+    document.getElementById('btn-down').addEventListener('touchstart', e => { downPressed = true; e.preventDefault(); });
+    document.getElementById('btn-down').addEventListener('touchend', e => { downPressed = false; e.preventDefault(); });
+    document.getElementById('btn-shoot').addEventListener('touchstart', e => { shootPressed = true; e.preventDefault(); });
+    document.getElementById('btn-shoot').addEventListener('touchend', e => { shootPressed = false; e.preventDefault(); });
+    // Keyboard controls
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowUp') upPressed = true;
+      if (e.key === 'ArrowDown') downPressed = true;
+      if (e.key === ' ' || e.key === 'Enter') shootPressed = true;
+    });
+    document.addEventListener('keyup', e => {
+      if (e.key === 'ArrowUp') upPressed = false;
+      if (e.key === 'ArrowDown') downPressed = false;
+      if (e.key === ' ' || e.key === 'Enter') shootPressed = false;
+    });
+    // Game loop
+    let lastShot = 0;
+    function gameLoop() {
+      ctx.clearRect(0,0,W,H);
+      // Move player
+      if (upPressed && player.y > 0) player.y -= player.speed;
+      if (downPressed && player.y < H-player.h) player.y += player.speed;
+      // Draw player (simple spaceship)
+      ctx.save();
+      ctx.translate(player.x+player.w/2, player.y+player.h/2);
+      ctx.fillStyle = '#ffe066';
+      ctx.beginPath();
+      ctx.moveTo(-18, 18); ctx.lineTo(0, -18); ctx.lineTo(18, 18); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#1976d2'; ctx.fillRect(-10, 0, 20, 18);
+      ctx.restore();
+      // Bullets
+      if (shootPressed && Date.now()-lastShot > 250) {
+        bullets.push({ x: player.x+player.w, y: player.y+player.h/2-3, w: 12, h: 6 });
+        lastShot = Date.now();
+      }
+      for (let i=bullets.length-1; i>=0; i--) {
+        bullets[i].x += 10;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(bullets[i].x, bullets[i].y, bullets[i].w, bullets[i].h);
+        if (bullets[i].x > W) bullets.splice(i,1);
+      }
+      // Enemies
+      enemyTimer--;
+      if (enemyTimer <= 0) {
+        const ey = Math.random()*(H-36);
+        enemies.push({ x: W, y: ey, w: 36, h: 36, vx: 3+Math.random()*2 });
+        enemyTimer = 40 + Math.random()*40;
+      }
+      for (let i=enemies.length-1; i>=0; i--) {
+        enemies[i].x -= enemies[i].vx;
+        // Draw enemy (simple alien)
+        ctx.save();
+        ctx.translate(enemies[i].x+18, enemies[i].y+18);
+        ctx.fillStyle = '#e65100';
+        ctx.beginPath(); ctx.arc(0,0,16,0,2*Math.PI); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.fillRect(-8,4,16,6);
+        ctx.restore();
+        // Collision with player
+        if (enemies[i].x < player.x+player.w && enemies[i].x+enemies[i].w > player.x && enemies[i].y < player.y+player.h && enemies[i].y+enemies[i].h > player.y) {
+          gameOver = true;
+        }
+        // Collision with bullets
+        for (let j=bullets.length-1; j>=0; j--) {
+          if (bullets[j].x < enemies[i].x+enemies[i].w && bullets[j].x+bullets[j].w > enemies[i].x && bullets[j].y < enemies[i].y+enemies[i].h && bullets[j].y+bullets[j].h > enemies[i].y) {
+            enemies.splice(i,1); bullets.splice(j,1); score+=10; break;
+          }
+        }
+        if (enemies[i] && enemies[i].x+enemies[i].w < 0) enemies.splice(i,1);
+      }
+      // Score
+      scoreDiv.textContent = 'Score: ' + score;
+      if (!gameOver) requestAnimationFrame(gameLoop);
+      else {
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 2rem Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Game Over!', W/2, H/2-10);
+        ctx.font = '1.2rem Arial';
+        ctx.fillText('Score: '+score, W/2, H/2+30);
+      }
+    }
+    gameLoop();
+  </script>
+</body>
+</html>
