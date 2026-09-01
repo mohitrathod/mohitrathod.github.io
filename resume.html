@@ -1,904 +1,426 @@
 <!DOCTYPE html>
-<html lang="en-us">
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Mohit Rathod Resume</title>
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link href="stylesheets/stylesheet.css" media="screen" rel="stylesheet" type="text/css">
-    <link href="stylesheets/custom.css" media="screen" rel="stylesheet" type="text/css">
-    <script src="/js/jquery-3.3.1.min.js"></script>
-    <script src="/js/common.js"></script>
+<meta charset="UTF-8">
+<title>Mohit Rathod — Resume</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1f22;
+    --muted:#5b6670;
+    --accent:#2f4858;
+    --rule:#d9dee1;
+    --bg:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:#eef0f1;
+    color:var(--ink);
+    font-family:'IBM Plex Sans', Arial, sans-serif;
+    font-size:13.5px;
+    line-height:1.5;
+  }
+  .page{
+    max-width:800px;
+    margin:32px auto;
+    background:var(--bg);
+    padding:44px 52px 52px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:2px solid var(--accent);
+    padding-bottom:12px;
+    margin-bottom:6px;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  h1{
+    font-family:'Fraunces', Georgia, serif;
+    font-weight:600;
+    font-size:30px;
+    margin:0 0 4px;
+    color:var(--accent);
+    letter-spacing:0.2px;
+  }
+  .role-line{
+    font-size:14px;
+    color:var(--muted);
+    margin:0;
+  }
+  .contact{
+    text-align:right;
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  .contact a{color:var(--accent); text-decoration:none;}
+  .contact a:hover{text-decoration:underline;}
+  .avail{
+    font-size:11.5px;
+    color:var(--accent);
+    margin:6px 0 18px;
+    text-align:right;
+  }
 
+  section{margin-bottom:16px;}
+  h2{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--accent);
+    border-bottom:1px solid var(--rule);
+    padding-bottom:4px;
+    margin:0 0 8px;
+  }
+
+  .summary{margin:0 0 8px; color:var(--ink);}
+  ul.profile{margin:0; padding-left:18px;}
+  ul.profile li{margin-bottom:3px;}
+
+  .skills-grid{
+    display:grid;
+    grid-template-columns:172px 1fr;
+    row-gap:5px;
+    column-gap:14px;
+    font-size:13px;
+  }
+  .skills-grid dt{font-weight:600; color:var(--ink);}
+  .skills-grid dd{margin:0; color:var(--muted);}
+
+  ul.responsibilities{
+    columns:2;
+    column-gap:24px;
+    margin:0;
+    padding-left:18px;
+  }
+  ul.responsibilities li{margin-bottom:3px; break-inside:avoid;}
+
+  .entry{margin-bottom:16px; page-break-inside:avoid;}
+  .entry:last-child{margin-bottom:0;}
+  .entry-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .entry-title{font-weight:600; font-size:14px; color:var(--ink);}
+  .entry-org{font-weight:400; color:var(--accent);}
+  .entry-meta{font-size:12px; color:var(--muted); white-space:nowrap;}
+
+  .project{margin-top:9px; padding-left:14px; border-left:2px solid var(--rule); page-break-inside:avoid;}
+  .project-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .project-title{font-weight:600; font-size:13px; color:var(--ink); font-style:italic;}
+  .project-meta{font-size:11.5px; color:var(--muted); white-space:nowrap;}
+  .project-tech{font-size:11.5px; color:var(--muted); margin:2px 0 4px;}
+  ul.bullets{margin:4px 0 0; padding-left:18px;}
+  ul.bullets li{margin-bottom:2px;}
+
+  .early-entry{margin-bottom:12px; page-break-inside:avoid;}
+  .early-entry:last-child{margin-bottom:0;}
+  .early-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .early-title{font-weight:600; font-size:13.5px; color:var(--ink);}
+  .early-org{font-weight:400; color:var(--accent);}
+  .early-meta{font-size:11.5px; color:var(--muted); white-space:nowrap;}
+  .early-tech{font-size:11.5px; color:var(--muted); margin:2px 0 3px;}
+  .early-desc{margin:2px 0 0; font-size:13px;}
+
+  .edu-line{font-size:13.5px; margin:0 0 4px;}
+  .edu-line b{font-weight:600;}
+  .edu-sub{font-size:12px; color:var(--muted); margin:0 0 4px;}
+
+  ul.academic{margin:4px 0 0; padding-left:18px; font-size:13px;}
+  ul.academic li{margin-bottom:3px;}
+
+  .langs{font-size:13px; color:var(--muted); margin-top:4px;}
+
+  footer{
+    margin-top:22px;
+    padding-top:8px;
+    border-top:1px solid var(--rule);
+    font-size:10.5px;
+    color:var(--muted);
+    text-align:right;
+  }
+
+  @media print{
+    body{background:#fff;}
+    .page{box-shadow:none; margin:0; padding:14mm 16mm; max-width:none;}
+    @page{size:A4; margin:0;}
+  }
+</style>
 </head>
-
 <body>
+<div class="page">
 
-<div class="scrollmenu">
-    <a href="/">Home</a>
-    <a href="/about">About</a>
-    <a href="/blog">Blog</a>
-    <a href="/resume">Resume</a>
-    <a href="/linkedIn">Linked-In</a>
-    <a href="/contact">Contact</a>
-</div>
-
-<div ng-view style="padding-left: 2%; padding-right: 2%; width: 21cm; height: 29.7cm; margin: 0 auto;">
-
-    <h2 align="left"> Mohit Rathod </h2>
-
-    <h5 align="right">
-        Mobile: +91 9033359849</br>
-        E-Mail: er.mohit.rathod@gmail.com</br>
-        <a href="http://www.mohitrathod.com"> mohitrathod.com </a> </br></br>
-
-    </h5>
-
-    <hr>
-
+  <header>
     <div>
+      <h1>Mohit Rathod</h1>
+      <p class="role-line">Staff Software Engineer — Distributed Systems &amp; Backend Engineering</p>
+    </div>
+    <div class="contact">
+      Bengaluru, India<br>
+      +91 90333 59849<br>
+      er.mohit.rathod@gmail.com<br>
+      <a href="http://www.mohitrathod.com">mohitrathod.com</a>
+    </div>
+  </header>
+  <p class="avail">Available immediately for in-person discussions in Bengaluru — actively seeking new opportunities.</p>
 
-        <h5 align="left"> Objective </h5>
+  <section>
+    <h2>Summary</h2>
+    <p class="summary">Staff Software Engineer with 16+ years in the Java technology landscape, currently at Skyhigh Security (McAfee Enterprise). Expert in Java enterprise applications, SaaS platform development, and data engineering — hands-on with Kafka, Apache Flink, AWS, Spring, Redis, Python, microservices, Docker, and Kubernetes. Passionate about open-source technology and a FOSS enthusiast.</p>
+    <ul class="profile">
+      <li>Dedicated to tackling complex architectural challenges, ensuring customer success through technology solutions, managing resources and time, taking on leadership responsibilities, and staying hands-on.</li>
+      <li>End of the day, responsible for quality deliverables, healthy production services, and quality code from the team.</li>
+    </ul>
+  </section>
 
-        <p>
-            Seeking opportunities to design and develop scalable enterprise software solutions, with a keen focus on mission-critical, distributed systems. Aiming to contribute expertise in Data Engineering, Streaming, SaaS, PaaS, AI driven development, Java, Microservices to a dynamic role that aligns with my skill set and passion for innovation.
-        </p>
-        <p style="color: #e57373;">
-            Available immediately for in-person discussions in Bengaluru and actively seeking new opportunities.
-        </p>
+  <section>
+    <h2>Skills</h2>
+    <dl class="skills-grid">
+      <dt>Languages / Methodologies</dt><dd>Java, Python, JavaScript, XML, JSON</dd>
+      <dt>Fundamentals</dt><dd>Data Analytics, Search Algorithms, DI, AOP, Design Patterns, OOP, Functional Programming, SQL, AI, ML</dd>
+      <dt>Technologies</dt><dd>Docker, Kubernetes, Kafka, Flink, Redis, RESTful, Spring, Solr, OAuth2, JWT, Helm, HAProxy, Maven</dd>
+      <dt>Databases</dt><dd>Oracle, MySQL, PostgreSQL, MongoDB, DynamoDB, SQLite</dd>
+      <dt>Tools &amp; Utilities</dt><dd>IntelliJ IDEA, JIRA, Confluence, Jenkins, PyCharm, Black Duck Protex</dd>
+      <dt>Operating Systems</dt><dd>Pro at Linux &amp; OS X, advanced Windows user</dd>
+    </dl>
+    <p class="langs">Languages known: English, Hindi, Gujarati</p>
+  </section>
 
+  <section>
+    <h2>Roles &amp; Responsibilities</h2>
+    <ul class="responsibilities">
+      <li>Architecture, technical strategy &amp; R&amp;D</li>
+      <li>Technical leadership, mentoring &amp; delivery</li>
+      <li>Stakeholder &amp; product collaboration</li>
+      <li>Engineering excellence, code quality &amp; Agile practices</li>
+      <li>DevOps, security &amp; AI initiatives</li>
+    </ul>
+  </section>
 
-        <h5 align="left"> Current Profile </h5>
+  <section>
+    <h2>Professional Experience</h2>
 
-        <ul>
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">Staff Software Engineer <span class="entry-org">— Skyhigh Security (McAfee Enterprise)</span></div>
+        <div class="entry-meta">Sep 2021 – Present (5 years) · Bengaluru</div>
+      </div>
 
-            <li>Over <b>16 years</b> of experience in the Java technology landscape, currently working as Staff Software Engineer at Skyhigh Security (Mcafee Enterprise).
-            </li>
-            <li>In my daily work, I am dedicated to tackling complex architectural challenges, ensuring customer success through technology solutions, proficiently managing resources and time, taking on leadership responsibilities, and actively participating in hands-on tasks.
-            </li>
-            <li>End of the day Responsible for quality deliverables, healthy services at production, and quality code
-                from the team.
-            </li>
-            <li>Expert in Java Enterprise applications, SaaS platform development, and data engineering. Currently hands-on with Kafka, Apache Flink, AWS, Spring, Redis, Python, Microservices, Docker, and Kubernetes. Passionate about open-source technologies and a FOSS enthusiast.
-            </li>
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">Secure Service Edge Firewall</div>
+          <div class="project-meta">5 years · team of 10, India/US/Germany</div>
+        </div>
+        <p class="project-tech">Kubernetes, Docker, Kafka, Flink, Java, Spring Boot, Spring Data, RESTful, Python, Redis, OpenSearch, CI/CD, AWS, GitOps, Helm</p>
+        <ul class="bullets">
+          <li>Designed and built a high-performance data streaming pipeline processing 6B+ events daily, continuously scaled to meet growing demand.</li>
+          <li>Solved scaling and CAP (Consistency, Availability, Partition Tolerance) challenges using Flink for real-time stream processing, Kafka as the central message broker, Kubernetes for job orchestration, and Redis for caching.</li>
+          <li>Built an S3/Parquet data lake queried via Athena, and high-performance analytical dashboards (Java microservices + Flink + Postgres) enabling data-driven insights for internal teams and customers.</li>
+          <li>Facilitated real-time alerting and advanced analytics, empowering customers to enhance decision-making and bolster security measures.</li>
+          <li>Implemented a Secure SDLC and IP planning/management process for the product, adhering to industry standards.</li>
         </ul>
+      </div>
 
-        <h5 align="left"> Technical Skill </h5>
-
-        <table>
-
-            <tr>
-                <td> Languages / Methodologies</td>
-                <td> Java, Python, JavaScript, XML, JSON</td>
-            </tr>
-            <tr>
-                <td> Fundamentals</td>
-                <td> Data Analytics, Search Algorithms, DI, AOP, Design Patterns, OOP, Functional Programming, SQL, AI, ML
-                </td>
-            </tr>
-            <tr>
-                <td> Technologies</td>
-                <td> Docker, Kubernetes, Kafka, Flink, Redis, RESTful, Spring, Solr, Oauth2, JWT, Helm, HAProxy, Maven
-                </td>
-            </tr>
-            <tr>
-                <td> Database Technologies</td>
-                <td> Oracle, MySQL, Postgresql, MongoDB, DynamoDB, Sqlite</td>
-            </tr>
-            <tr>
-                <td> Software tools and Utilities</td>
-                <td> IntelliJ IDEA, JIRA, Confluence, Jenkins, PyCharm, Black Duck Protex</td>
-            </tr>
-            <tr>
-                <td> Operating Systems</td>
-                <td> Pro at Linux, OS X and windows advance user </td>
-            </tr>
-        </table>
-
-        <h5 align="left"> Roles & Responsibilities </h5>
-
-        <ul>
-            <li>Architectural Design, Research & Development
-            </li>
-            <li>Helping business take data aware decision
-            </li>
-            <li>Active participate of Scrum and Agile model
-            </li>
-            <li>Handling small group of resources
-            </li>
-            <li>Onsite Experience with UK and NL customers
-            </li>
-            <li>Communication with customer, Product owners and requirements understanding
-            </li>
-            <li>Schedule work, code review and QC of codes
-            </li>
-            <li>Application Environment Configuration, DevOps
-            </li>
-            <li>Member of AI community of Practice at Organization</li>
-            <li>Member of Security Champion community at Organization</li>
-
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">Proprietary AI Dev Tool (pet project)</div>
+          <div class="project-meta">6 months · team of 5, India/US/Germany</div>
+        </div>
+        <p class="project-tech">Python, SQLite, Chrome extension</p>
+        <ul class="bullets">
+          <li>Leveraged a frontier AI model with a local knowledge base to fast-track development and deployment workflows while supporting feature planning and execution.</li>
+          <li>Developed a proprietary Chrome plugin that boosted the team's daily productivity and efficiency.</li>
+          <li>Built a SQLite-based local memory layer so AI models could assist more naturally, with continuous feedback and improvement.</li>
         </ul>
-
-        <h5 align="left"> Work Experience </h5>
-
-        <table>
-            <tr>
-                <td> Company</td>
-                <td> Skyhigh Security (Mcafee Enterprise)</td>
-            </tr>
-            <tr>
-                <td> Designation</td>
-                <td> Staff Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Timeline</td>
-                <td> Sep 2021 – Present (5 years), Bengaluru, India</td>
-            </tr>
-            <tr>
-                <td> &nbsp;&nbsp;</td>
-                <td> &nbsp;&nbsp;</td>
-            </tr>
-            <tr>
-                <td> Company</td>
-                <td> Jio Platforms Ltd (TIME100 Most Influential Companies)</td>
-            </tr>
-            <tr>
-                <td> Designation</td>
-                <td> Senior Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Timeline</td>
-                <td> Jan 2019 – Sep 2021 (2 years, 10 months), Bengaluru, India</td>
-            </tr>
-            <tr>
-                <td> &nbsp;&nbsp;</td>
-                <td> &nbsp;&nbsp;</td>
-            </tr>
-            <tr>
-                <td> Company</td>
-                <td> Cisco</td>
-            </tr>
-            <tr>
-                <td> Designation</td>
-                <td> Software Engineer III</td>
-            </tr>
-            <tr>
-                <td> Timeline</td>
-                <td> Aug 2017 – Dec 2018 (1 year 5 months), Bengaluru, India</td>
-            </tr>
-            <tr>
-                <td> &nbsp;&nbsp;</td>
-                <td> &nbsp;&nbsp;</td>
-            </tr>
-            <tr>
-                <td> Company</td>
-                <td> Capgemini and Morgan Stanley</td>
-            </tr>
-            <tr>
-                <td> Designation</td>
-                <td> Consultant</td>
-            </tr>
-            <tr>
-                <td> Timeline</td>
-                <td> Aug 2015 – Jul 2017 (2 years), Bengaluru, India</td>
-            </tr>
-            <tr>
-                <td> &nbsp;&nbsp;</td>
-                <td> &nbsp;&nbsp;</td>
-            </tr>
-            <tr>
-                <td> Company</td>
-                <td> Mobiquity Inc.</td>
-            </tr>
-            <tr>
-                <td> Designation</td>
-                <td> Senior Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Timeline</td>
-                <td> Oct 2010 – Jul 2015 (4 years 10 months), Ahmedabad, India</td>
-            </tr>
-            <tr>
-                <td> &nbsp;&nbsp;</td>
-                <td> &nbsp;&nbsp;</td>
-            </tr>
-            <tr>
-                <td> Company</td>
-                <td> n-Xperts Solutions</td>
-            </tr>
-            <tr>
-                <td> Designation</td>
-                <td> Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Timeline</td>
-                <td> Apr 2010 – Sep 2010 (6 months), Rajkot, India</td>
-            </tr>
-            <tr>
-                <td> &nbsp;&nbsp;</td>
-                <td> &nbsp;&nbsp;</td>
-            </tr>
-            <tr>
-                <td> Company</td>
-                <td> Every Step Group Pvt. Ltd.</td>
-            </tr>
-            <tr>
-                <td> Designation</td>
-                <td> Software Engineer Intern</td>
-            </tr>
-            <tr>
-                <td> Timeline</td>
-                <td> Jan 2010 – Apr 2010 (4 months), Ahmedabad, India</td>
-            </tr>
-            <tr>
-                <td> &nbsp;&nbsp;</td>
-                <td> &nbsp;&nbsp;</td>
-            </tr>
-            <tr>
-                <td> Company</td>
-                <td> Freelance Java Programmer / Web developer</td>
-            </tr>
-            <tr>
-                <td> Designation</td>
-                <td> Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Timeline</td>
-                <td> Sep 2009 – Dec 2009 (4 months), Rajkot, India</td>
-            </tr>
-
-        </table>
-
-        </br>
-
-        <h5 align="left"> Key Projects </h5>
-
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Skyhigh Security</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> proprietary AI dev tool, pet project</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Staff Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 6 Months</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 5 members from India, US, Germany</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Python, sqlite, chrome addon</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-            Leveraged a frontier AI model with a local knowledge base to fastrack development and deployment workflows while supporting feature planning and execution.</br>
-            Developed Proprietary chrome plugin that enhance productivity of team for daily chores, boost efficiency.</br>
-            Developed sqlite based local memory for AI models making them help human more lifelike with continuous feedback and improvement</br>
-        </p>
-
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Skyhigh Security</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Secure Service Edge Firewall</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Staff Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 5 years</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 10 members from India, US, Germany</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Kubernetes, Docker, Kafka, Flink, Java, Spring boot, Spring data, RESTful, Python, Redis, OpenSearch, CI/CD, AWS, GitOps, Helm</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-            Designed and built a high-performance data streaming pipeline for Skyhigh firewall, processing over 6 billion events daily and continuously scaling to meet growing demands.</br>
-            Successfully addressed scaling and CAP (Consistency, Availability, Partition Tolerance) challenges by leveraging cutting-edge technologies, including Apache Flink for real-time stream processing, Apache Kafka as the central message broker, Kubernetes for scalable job orchestration, and Redis for efficient data caching.</br>
-            Using s3 and parquet format as data lake using athena for adhoc query. High Performance analytical dashboards with Java Microservice, Flink and Postgres, enabling data-driven insights and reporting for both internal teams and customers.</br>
-            </br>
-            Facilitated real-time alerting and advanced analytics, empowering customers to enhance decision-making and bolster security measures.</br>
-            Implemented a Secure Software Development Life Cycle (SDLC) and Intellectual Property Planning and Management for the product, adhering to industry standards
-        </p>
-
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Jio Platforms Ltd</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Carrier Engine</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Senior Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 2 years</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 10 members from India</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Spring boot, Eureka, Zuul, Spring data, RESTful, Python, Oracle, Redis, MongoDB, ELK, CI/CD</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-
-            Building an Online Ecommerce Platform specifically involved in delivery Slot management and Carrier
-            recommendation services, Designing a platform with micro-services capabilities and horizontal scaling.</br>
-            Designed Customer Number Masking service and Integration with OMS and Carrier Booking Services.</br>
-            Solved performance and throughput related issues.</br>
-            Implemented Distributed caching using Redis.</br>
-            Developed Backoffice Services from scratch and provided innovative tools that TechOperations can use.</br>
-
-
-        </p>
-
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Cisco</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Cisco FirePower (security firewall)</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Software Engineer III</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 1 year 2 months</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 15 members from India, US</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Spring boot, Persistence, Jetty, DB2, RESTful, Python, NoSql</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-
-            It's a Hardware Firewall for data protection at firm level capable of handling very huge data transfer and
-            provide security on the data transfer.
-            </br>
-            Designed services and dashboards for realtime analytics preview and feature management.
-            </br>
-            <a href="https://www.cisco.com/go/ngfw">more details</a>
-
-        </p>
-
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Capgemini and Morgan Stanley</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Wealth Management Tool for Morgan Stanley</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Tech. Consultant</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 2 years</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 25 members from India, US</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Spring Boot, Persistence, Angular JS, Jetty, DB2, RESTful, Python, NoSql</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-
-            Wealth Management Tool is an application used by a Bank’s business unit every day to get a suggestion of
-            attractive scheme related to Mortgages and Wealth Management Products for End Customers, Tool can analyze
-            multiple loans and finance products from the history of the bank as well as from market sources on a given
-            pivotal input. It got boosted Algorithms from the ML framework and also powerful visuals from AngularJS.
-            </br>
-            Here I am responsible to design a reusable calculation framework as well as high-quality calculation logic
-            that calculates and predicts pricing and interest rates for different types of Mortgage loan products. Also
-            involves in application design and generic functionality development part and yes have built attractive
-            Angular JS front end.
-
-        </p>
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Mobiquity Inc.</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Superdirect (e-commerce)</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Sr. Software Engineer (developer / server / analyst / team lead)</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 1 year</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 25 members from India, Netherlands, US, Serbia</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Broadleaf Commerce (Spring, Persistence, Thymeleaf, Solr), Apache Tomcat, AWS, Spring Social, OAuth2</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-
-            E-Commerce Platform for Netherlands Based online store where you can order your groceries, It generates QR
-            Code on successful cart checkout, that QR Code can be scan with Superdirect Pickup points which are fully
-            automated. It also has a KPI module for merchants.
-
-            </br>
-
-            I was involved in the development of geospatial search to find products nearest to customer’s locations and
-            sort based on distance, offers, ranking, etc.
-            </br>
-            Configured and Optimized Solr Search engine for the entire product catalog.
-            </br>
-            Developed Autocomplete or auto-suggest APIs
-
-
-        </p>
-
-        </br>
-        </br>
-
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Mobiquity Inc.</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> EMTE (e-commerce)</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Sr. Software Engineer (developer / server / analyst / team lead)</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 1 year</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 25 members from India, Netherlands, US, Serbia</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Broadleaf Commerce (Spring, Persistence, Thymeleaf, Solr), Apache Tomcat, AWS</td>
-            </tr>
-
-
-        </table>
-        <p>
-
-            E-Commerce Platform for Netherlands Based Company to buy and sell stuff, unique part of this Application is
-            Voucher Distribution and Multiple Contribution in one gift or Voucher.
-
-            Users can purchase or order a gift and invite friends to contribute to that gift.
-            The platform has cards for “saving-together” in that family members can join the program and earns loyalty
-            points.
-
-            </br>
-
-            With this project, I have worked on Machine imported Products that use the Talend tool to import big data
-            from various inputs then process and persist it.
-            Worked on the “saving-together” and Gift Voucher program.
-
-
-        </p>
-
-
-        </br>
-        </br>
-
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Mobiquity Inc.</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> WRAP (Website Reports and Analysis Platform)</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Sr. Software Engineer (developer / server / analyst / team lead)</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 2 years</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 15 members from India, Netherlands, UK</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Spring, GWT, Torque, Apache Tomcat</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-            A Business Tracking Dashboard and ROI tool, like google analytics and Facebook Demographics. WRAP is an
-            analysis tool for customers of European Directories to analyze business growth by giving reports of website
-            usage, traffic, Facebook fan page traffics, Facebook likes, Facebook fan growth, phone and skype traffic
-            analysis,
-            Social Network and Telecom domain information processing.
-
-
-        </p>
-
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Mobiquity Inc.</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Mobiquity Internal reusable components XRAPID</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Software Engineer (developer / server / analyst)</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 6 Months</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 5 members from India, Netherlands</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Spring, GWT, Torque, Apache Tomcat</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-
-            Involved in development of reusable components like generic GWT based bar chart and Pi chart and generic
-            information display tables with multiple event support plus pagination and sorting that will use with
-            Mobiquity’s rapid development frameworks. Also developed reusable components related to bulk email
-            generation and sender queue implementations.
-
-        </p>
-
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> n-Xperts Solutions</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Hospital and Laboratory Management System for Teletech System Europe</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 5 Months</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 10 members from India and Germany</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Spring, JSP, Java Script, Hibernate, MySQL, SyBase, Apache Tomcat</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-            A Complete Healthcare System for around 5 Hospitals in Germany also a blood bank management tool, following
-            HL7 standards. Different security module configuration by admin users, it have dynamic mathematical inputs
-            module where hospital staff can construct formula and use it further to another departments.
-        </p>
-
-
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Every Step Group Pvt. Ltd.</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Compare Junction</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Software Engineer Intern</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 4 Months</td>
-            </tr>
-            <tr>
-                <td> Team size</td>
-                <td> 10 members from India and UK</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Java, Spring, Hibernate, MySQL, Apache Tomcat, web crawling programming</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-            Portal for comparing hotels, travels, internet services etc. Provide clients search result with multiple
-            shorting options and searching. It collects data automatically with help of crawler programs with partner’s
-            websites.
-        </p>
-
-        </br>
-        </br>
-
-        <table>
-
-            <tr>
-                <td> Company</td>
-                <td> Freelancer Programmer</td>
-            </tr>
-            <tr>
-                <td> Title</td>
-                <td> Property Crawler for Las Vegas Building Association</td>
-            </tr>
-            <tr>
-                <td> Role</td>
-                <td> Software Engineer</td>
-            </tr>
-            <tr>
-                <td> Duration</td>
-                <td> 4 Months</td>
-            </tr>
-            <tr>
-                <td> Technology</td>
-                <td> Spring, Hibernate, MySQL, Apache Tomcat, crawling programming</td>
-            </tr>
-
-
-        </table>
-
-        <p>
-            This project is for building association of Las Vegas for finding dynamic data regarding property from
-            around 5 well known sites insert it to database manage information and export to excel sheets, RSS. It’s
-            like intelligent information collection program.
-
-        </p>
-
-        </br>
-        </br>
-
-
-        <h5 align="left"> Academic Qualification </h5>
-
-        <ul>
-            <li>Bachelor of Engineering in Computer Science with <b>Distinction</b> from Saurashtra University, V.V.P.
-                Engineering College class of 2010
-            </li>
-            <li>Grade 12 exam certification from Gujarat Board, Saurashtra High School with Physics and Maths as main
-                subject, class of 2005
-            </li>
-            <li>Grade 10 exam certification from Gujarat Board with Shri G T Sheth Vidhyalaya with main Subjects as
-                Science, Maths, English, Social Science, Sanskrit, class of 2003
-            </li>
-
-        </ul>
-
-        </br>
-
-
-        <h5 align="left"> Academic Projects </h5>
-
-        <p>
-
-            My Academic project includes a development of web based application for Social Network website & role of
-            Requirement analyst as well as core developer in swing based applications.
-            </br>
-
-        <ul>
-            <li>Conducted A Practical Session of State Level Seminar along with Ankit Fadia on Ethical Hacking
-            </li>
-            <li>Conducted Seminars on Embedded Systems, Microprocessor
-            </li>
-        </ul>
-
-        </p>
-
-        </br>
-
-        <h5 align="left"> Personal Information </h5>
-
-        <table>
-
-            <tr>
-                <td> Date of Birth</td>
-                <td> 7th Jan</td>
-            </tr>
-            <tr>
-                <td> Gender</td>
-                <td> Male</td>
-            </tr>
-            <tr>
-                <td> Nationality</td>
-                <td> Indian</td>
-            </tr>
-            <tr>
-                <td> Languages Known</td>
-                <td> English, Hindi & Gujarati</td>
-            </tr>
-            <tr>
-                <td> Marital Status</td>
-                <td> Married</td>
-            </tr>
-            <tr>
-                <td> Hobbies</td>
-                <td> Programming, Problem Solving, Basketball, Physics, Maths</td>
-            </tr>
-            <tr>
-                <td> Address</td>
-                <td> Bengaluru, Karnataka 560035</td>
-            </tr>
-
-        </table>
-
-        </br>
-
-
-        <h5 align="left"> Professional Information </h5>
-
-        <table>
-
-            <tr>
-                <td> Total Experience</td>
-                <td> 16 years</td>
-            </tr>
-            <tr>
-                <td> Current Location</td>
-                <td> Bengaluru, India</td>
-            </tr>
-
-        </table>
-
-
-        <h5 align="right">
-            Last updated: 28 Aug 2026
-            </br>
-            To update go to <a href="http://MohitRathod.com/resume"> MohitRathod.com/resume </a>
-        </h5>
-
-        </br>
-        <p align="center">
-            “Sometimes it's the very people who no one imagines anything of who do the things no one can imagine.”
-        </p>
-
+      </div>
     </div>
 
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">Senior Software Engineer <span class="entry-org">— Jio Platforms Ltd</span></div>
+        <div class="entry-meta">Jan 2019 – Sep 2021 (2 yrs 10 mos) · Bengaluru</div>
+      </div>
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">Carrier Engine</div>
+          <div class="project-meta">2 years · team of 10, India</div>
+        </div>
+        <p class="project-tech">Java, Spring Boot, Eureka, Zuul, Spring Data, RESTful, Python, Oracle, Redis, MongoDB, ELK, CI/CD</p>
+        <ul class="bullets">
+          <li>Built an online e-commerce platform's delivery-slot management and carrier-recommendation services, designed with microservices capabilities and horizontal scaling.</li>
+          <li>Designed a customer number-masking service integrated with OMS and Carrier Booking Services.</li>
+          <li>Solved performance and throughput-related issues; implemented distributed caching using Redis.</li>
+          <li>Developed back-office services from scratch, providing innovative tools for TechOperations.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">Software Engineer III <span class="entry-org">— Cisco</span></div>
+        <div class="entry-meta">Aug 2017 – Dec 2018 (1 yr 5 mos) · Bengaluru</div>
+      </div>
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">Cisco Firepower (security firewall)</div>
+          <div class="project-meta">1 yr 2 mos · team of 15, India/US</div>
+        </div>
+        <p class="project-tech">Java, Spring Boot, Persistence, Jetty, DB2, RESTful, Python, NoSQL</p>
+        <ul class="bullets">
+          <li>Contributed to a hardware firewall for firm-level data protection, capable of handling very large data transfers and securing them in transit.</li>
+          <li>Designed services and dashboards for real-time analytics preview and feature management.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">Technical Consultant <span class="entry-org">— Capgemini (for Morgan Stanley)</span></div>
+        <div class="entry-meta">Aug 2015 – Jul 2017 (2 years) · Bengaluru</div>
+      </div>
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">Wealth Management Tool for Morgan Stanley</div>
+          <div class="project-meta">2 years · team of 25, India/US</div>
+        </div>
+        <p class="project-tech">Java, Spring Boot, Persistence, AngularJS, Jetty, DB2, RESTful, Python, NoSQL</p>
+        <ul class="bullets">
+          <li>Built a tool used daily by a bank's business unit to surface attractive mortgage and wealth-management schemes, analyzing loans and finance products from bank history and market sources against a given input.</li>
+          <li>Designed a reusable calculation framework and high-quality logic to calculate and predict pricing and interest rates for mortgage loan products, boosted by ML-framework algorithms.</li>
+          <li>Built out generic application functionality and an AngularJS front end for the tool.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">Senior Software Engineer <span class="entry-org">— Mobiquity Inc.</span></div>
+        <div class="entry-meta">Oct 2010 – Jul 2015 (4 yrs 10 mos) · Ahmedabad</div>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">Superdirect (e-commerce)</div>
+          <div class="project-meta">1 year · team of 25, India/Netherlands/US/Serbia</div>
+        </div>
+        <p class="project-tech">Java, Broadleaf Commerce (Spring, Persistence, Thymeleaf, Solr), Apache Tomcat, AWS, Spring Social, OAuth2</p>
+        <ul class="bullets">
+          <li>Built an e-commerce platform for a Netherlands-based grocery store, generating a QR code on checkout for scanning at fully automated pickup points; included a merchant KPI module.</li>
+          <li>Developed geospatial search to find products nearest to a customer's location, sorted by distance, offers, and ranking.</li>
+          <li>Configured and optimized the Solr search engine for the entire product catalog; developed autocomplete/auto-suggest APIs.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">EMTE (e-commerce)</div>
+          <div class="project-meta">1 year · team of 25, India/Netherlands/US/Serbia</div>
+        </div>
+        <p class="project-tech">Java, Broadleaf Commerce (Spring, Persistence, Thymeleaf, Solr), Apache Tomcat, AWS</p>
+        <ul class="bullets">
+          <li>Built a buy/sell e-commerce platform for a Netherlands-based company, with unique voucher distribution supporting multiple contributors on a single gift.</li>
+          <li>Built "saving-together" cards letting family members join a program and earn loyalty points.</li>
+          <li>Worked with the Talend tool to import, process, and persist machine-imported product data from various sources.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">WRAP (Website Reports and Analysis Platform)</div>
+          <div class="project-meta">2 years · team of 15, India/Netherlands/UK</div>
+        </div>
+        <p class="project-tech">Java, Spring, GWT, Torque, Apache Tomcat</p>
+        <ul class="bullets">
+          <li>Built a business-tracking dashboard and ROI tool, similar to Google Analytics and Facebook demographics, for European Directories clients.</li>
+          <li>Delivered reports on website usage, traffic, Facebook fan-page traffic and growth, and phone/Skype traffic analysis across social-network and telecom domains.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <div class="project-title">Internal Reusable Components — XRAPID</div>
+          <div class="project-meta">6 months · team of 5, India/Netherlands</div>
+        </div>
+        <p class="project-tech">Java, Spring, GWT, Torque, Apache Tomcat</p>
+        <ul class="bullets">
+          <li>Built reusable GWT-based bar and pie charts, plus generic paginated/sortable information tables with multi-event support, adopted across Mobiquity's rapid-development frameworks.</li>
+          <li>Developed reusable components for bulk email generation and sender-queue implementations.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Earlier Experience</h2>
+
+    <div class="early-entry">
+      <div class="early-head">
+        <div class="early-title">Software Engineer <span class="early-org">— n-Xperts Solutions</span> · Hospital &amp; Laboratory Management System (Teletech System Europe)</div>
+        <div class="early-meta">Apr – Sep 2010 (6 mos) · Rajkot · team of 10, India/Germany</div>
+      </div>
+      <p class="early-tech">Java, Spring, JSP, JavaScript, Hibernate, MySQL, Sybase, Apache Tomcat</p>
+      <p class="early-desc">Built a complete healthcare system for around 5 hospitals in Germany plus a blood bank management tool, following HL7 standards, with configurable security modules and a dynamic formula-builder module for hospital staff.</p>
+    </div>
+
+    <div class="early-entry">
+      <div class="early-head">
+        <div class="early-title">Software Engineer Intern <span class="early-org">— Every Step Group Pvt. Ltd.</span> · Compare Junction</div>
+        <div class="early-meta">Jan – Apr 2010 (4 mos) · Ahmedabad · team of 10, India/UK</div>
+      </div>
+      <p class="early-tech">Java, Spring, Hibernate, MySQL, Apache Tomcat, web crawling</p>
+      <p class="early-desc">Built a portal comparing hotels, travel, and internet services with multiple sorting and search options, using crawler programs to automatically collect data from partner websites.</p>
+    </div>
+
+    <div class="early-entry">
+      <div class="early-head">
+        <div class="early-title">Software Engineer <span class="early-org">— Freelance Java Programmer / Web Developer</span> · Property Crawler for Las Vegas Building Association</div>
+        <div class="early-meta">Sep – Dec 2009 (4 mos) · Rajkot</div>
+      </div>
+      <p class="early-tech">Spring, Hibernate, MySQL, Apache Tomcat, crawling</p>
+      <p class="early-desc">Built an intelligent data-collection tool gathering dynamic property data from around 5 well-known sites, storing it and exporting to Excel sheets and RSS.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Education</h2>
+    <p class="edu-line"><b>B.E., Computer Science</b> (Distinction) — Saurashtra University, V.V.P. Engineering College, class of 2010</p>
+  </section>
+
+  <section>
+    <h2>Academic Projects</h2>
+    <p class="early-desc">Developed a web-based social network application as requirement analyst and core developer, alongside Swing-based desktop applications.</p>
+    <ul class="academic">
+      <li>Conducted a practical session at a State-Level Seminar with Ankit Fadia on Ethical Hacking.</li>
+      <li>Conducted seminars on Embedded Systems and Microprocessors.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Last updated: 1 Sep 2026 &nbsp;·&nbsp; mohitrathod.com/resume
+  </footer>
 
 </div>
-
 </body>
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-82393887-1', 'auto');
-  ga('send', 'pageview');
-
-
-
-
-
-
-</script>
-
 </html>
