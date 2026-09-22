@@ -1,1 +1,0 @@
-wkhtmltopdf.exe mohitrathod.com/resume ../resume.pdf
