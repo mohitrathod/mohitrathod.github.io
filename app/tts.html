@@ -267,6 +267,49 @@
                 return;
             }
 
+            /* ---------- settings persistence ---------- */
+
+            var STORAGE_KEY = 'tts-settings';
+
+            function loadSettings() {
+                try {
+                    var raw = localStorage.getItem(STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : {};
+                } catch (e) {
+                    return {};
+                }
+            }
+
+            function saveSettings() {
+                try {
+                    var voices = synth.getVoices();
+                    var v = voices[parseInt(voiceEl.value, 10)];
+                    var settings = {
+                        rate: parseFloat(rateEl.value),
+                        pitch: parseFloat(pitchEl.value),
+                        volume: parseFloat(volumeEl.value),
+                        voiceURI: v ? v.voiceURI : null
+                    };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+                } catch (e) { /* storage unavailable */ }
+            }
+
+            var saved = loadSettings();
+
+            if (typeof saved.rate === 'number') rateEl.value = String(saved.rate);
+            if (typeof saved.pitch === 'number') pitchEl.value = String(saved.pitch);
+            if (typeof saved.volume === 'number') volumeEl.value = String(saved.volume);
+
+            function updateSliderLabel(el, valEl, fmt) {
+                valEl.textContent = fmt(parseFloat(el.value));
+            }
+            var rateValEl = document.getElementById('tts-rate-val');
+            var pitchValEl = document.getElementById('tts-pitch-val');
+            var volumeValEl = document.getElementById('tts-volume-val');
+            updateSliderLabel(rateEl, rateValEl, function (v) { return v.toFixed(1) + '\u00d7'; });
+            updateSliderLabel(pitchEl, pitchValEl, function (v) { return v.toFixed(1); });
+            updateSliderLabel(volumeEl, volumeValEl, function (v) { return Math.round(v * 100) + '%'; });
+
             /* ---------- voices ---------- */
 
             function populateVoices() {
@@ -276,6 +319,12 @@
                     return;
                 }
                 var selected = voiceEl.value;
+                var selectedURI = null;
+                if (selected !== '') {
+                    var prev = voices[parseInt(selected, 10)];
+                    if (prev) selectedURI = prev.voiceURI;
+                }
+                if (!selectedURI && saved.voiceURI) selectedURI = saved.voiceURI;
                 voiceEl.innerHTML = '';
                 voices.forEach(function (v, i) {
                     var opt = document.createElement('option');
@@ -283,9 +332,17 @@
                     opt.textContent = v.name + ' (' + v.lang + ')' + (v.default ? ' — default' : '');
                     voiceEl.appendChild(opt);
                 });
-                if (selected) {
-                    voiceEl.value = selected;
-                } else {
+                var restored = false;
+                if (selectedURI) {
+                    for (var k = 0; k < voices.length; k++) {
+                        if (voices[k].voiceURI === selectedURI) {
+                            voiceEl.value = String(k);
+                            restored = true;
+                            break;
+                        }
+                    }
+                }
+                if (!restored) {
                     for (var j = 0; j < voices.length; j++) {
                         if (voices[j].default && voices[j].lang.indexOf('en') === 0) {
                             voiceEl.value = String(j);
@@ -303,11 +360,13 @@
             function bindSlider(el, valEl, fmt) {
                 el.addEventListener('input', function () {
                     valEl.textContent = fmt(parseFloat(el.value));
+                    saveSettings();
                 });
             }
-            bindSlider(rateEl, document.getElementById('tts-rate-val'), function (v) { return v.toFixed(1) + '\u00d7'; });
-            bindSlider(pitchEl, document.getElementById('tts-pitch-val'), function (v) { return v.toFixed(1); });
-            bindSlider(volumeEl, document.getElementById('tts-volume-val'), function (v) { return Math.round(v * 100) + '%'; });
+            bindSlider(rateEl, rateValEl, function (v) { return v.toFixed(1) + '\u00d7'; });
+            bindSlider(pitchEl, pitchValEl, function (v) { return v.toFixed(1); });
+            bindSlider(volumeEl, volumeValEl, function (v) { return Math.round(v * 100) + '%'; });
+            voiceEl.addEventListener('change', saveSettings);
 
             /* ---------- file upload ---------- */
 
