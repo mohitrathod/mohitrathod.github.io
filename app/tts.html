@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Text to Speech</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <style>
+        .tts-container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 16px;
+            font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        .tts-container h1 {
+            margin-bottom: 4px;
+        }
+
+        .tts-note {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 16px;
+        }
+
+        .tts-panel {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #fafafa;
+        }
+
+        .tts-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .tts-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .tts-row label {
+            font-size: 0.9em;
+            color: #333;
+            min-width: 70px;
+        }
+
+        .tts-row select,
+        .tts-row input[type="file"] {
+            font-size: 0.9em;
+        }
+
+        .tts-row select {
+            max-width: 100%;
+            flex: 1;
+            min-width: 220px;
+            padding: 4px;
+        }
+
+        .slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .slider-wrap input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-wrap .slider-val {
+            font-family: Inconsolata, monospace;
+            font-size: 0.9em;
+            min-width: 36px;
+            text-align: right;
+        }
+
+        #tts-text {
+            width: 100%;
+            min-height: 260px;
+            box-sizing: border-box;
+            padding: 10px;
+            font-family: 'menlo regular webfont', Inconsolata, monospace;
+            font-size: 0.95em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 18px;
+            margin-right: 8px;
+            margin-bottom: 6px;
+            font-size: 0.95em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #eee;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #43a047;
+        }
+
+        .btn-danger {
+            background: #fff;
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+
+        .tts-status {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #444;
+            min-height: 1.3em;
+        }
+
+        .tts-progress {
+            margin-top: 8px;
+            height: 8px;
+            background: #e9e9e9;
+            border-radius: 4px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .tts-progress-bar {
+            height: 100%;
+            width: 0;
+            background: #4CAF50;
+            transition: width 0.25s ease;
+        }
+
+        .tts-counts {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="scrollmenu">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/blog">Blog</a>
+        <a href="/resume">Resume</a>
+        <a href="/linkedIn">Linked-In</a>
+        <a href="/contact">Contact</a>
+    </div>
+
+    <div class="tts-container">
+
+        <h1>Text to Speech</h1>
+        <p class="tts-note">
+            Runs 100% offline in your browser using the built-in Web Speech API
+            (no uploads, no server, no internet needed after this page loads).
+            Voices come from your operating system &mdash; install more OS voices for more options.
+        </p>
+
+        <div class="tts-panel">
+            <div class="tts-row">
+                <label for="tts-voice">Voice</label>
+                <select id="tts-voice"></select>
+            </div>
+            <div class="tts-row">
+                <label for="tts-rate">Rate</label>
+                <div class="slider-wrap">
+                    <input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1">
+                    <span class="slider-val" id="tts-rate-val">1.0&times;</span>
+                </div>
+                <label for="tts-pitch">Pitch</label>
+                <div class="slider-wrap">
+                    <input type="range" id="tts-pitch" min="0" max="2" step="0.1" value="1">
+                    <span class="slider-val" id="tts-pitch-val">1.0</span>
+                </div>
+                <label for="tts-volume">Volume</label>
+                <div class="slider-wrap">
+                    <input type="range" id="tts-volume" min="0" max="1" step="0.05" value="1">
+                    <span class="slider-val" id="tts-volume-val">100%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tts-row">
+            <input type="file" id="tts-file" accept=".txt,.md,.text,text/plain,text/markdown">
+            <button type="button" class="btn" id="tts-paste">&#128203; Paste</button>
+            <button type="button" class="btn" id="tts-clear">Clear</button>
+        </div>
+
+        <div style="margin-top: 4px;">
+            <button type="button" class="btn btn-primary" id="tts-speak">&#9654; Speak</button>
+            <button type="button" class="btn" id="tts-back" disabled>&#9194; Back 10s</button>
+            <button type="button" class="btn" id="tts-pause" disabled>&#10074;&#10074; Pause</button>
+            <button type="button" class="btn" id="tts-resume" disabled>&#9654; Resume</button>
+            <button type="button" class="btn btn-danger" id="tts-stop" disabled>&#9632; Stop</button>
+        </div>
+
+        <div class="tts-status" id="tts-status"></div>
+        <div class="tts-progress" id="tts-progress">
+            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+        </div>
+
+        <textarea id="tts-text" style="margin-top: 12px;" placeholder="Type or paste text here, upload a .txt file, or use the Paste button above. Then click Speak."></textarea>
+        <div class="tts-counts" id="tts-counts">0 characters, 0 words</div>
+
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            var synth = window.speechSynthesis;
+            var textEl = document.getElementById('tts-text');
+            var voiceEl = document.getElementById('tts-voice');
+            var rateEl = document.getElementById('tts-rate');
+            var pitchEl = document.getElementById('tts-pitch');
+            var volumeEl = document.getElementById('tts-volume');
+            var fileEl = document.getElementById('tts-file');
+            var speakBtn = document.getElementById('tts-speak');
+            var backBtn = document.getElementById('tts-back');
+            var pauseBtn = document.getElementById('tts-pause');
+            var resumeBtn = document.getElementById('tts-resume');
+            var stopBtn = document.getElementById('tts-stop');
+            var clearBtn = document.getElementById('tts-clear');
+            var statusEl = document.getElementById('tts-status');
+            var progressEl = document.getElementById('tts-progress');
+            var progressBar = document.getElementById('tts-progress-bar');
+            var countsEl = document.getElementById('tts-counts');
+
+            var chunks = [];
+            var chunkWordStarts = [];
+            var chunkIndex = 0;
+            var speaking = false;
+            var paused = false;
+
+            if (!synth) {
+                statusEl.textContent = 'Sorry, your browser does not support the Web Speech API.';
+                speakBtn.disabled = true;
+                return;
+            }
+
+            /* ---------- voices ---------- */
+
+            function populateVoices() {
+                var voices = synth.getVoices();
+                if (!voices.length) {
+                    voiceEl.innerHTML = '<option value="">No voices available yet...</option>';
+                    return;
+                }
+                var selected = voiceEl.value;
+                voiceEl.innerHTML = '';
+                voices.forEach(function (v, i) {
+                    var opt = document.createElement('option');
+                    opt.value = String(i);
+                    opt.textContent = v.name + ' (' + v.lang + ')' + (v.default ? ' — default' : '');
+                    voiceEl.appendChild(opt);
+                });
+                if (selected) {
+                    voiceEl.value = selected;
+                } else {
+                    for (var j = 0; j < voices.length; j++) {
+                        if (voices[j].default && voices[j].lang.indexOf('en') === 0) {
+                            voiceEl.value = String(j);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            populateVoices();
+            synth.addEventListener('voiceschanged', populateVoices);
+
+            /* ---------- sliders ---------- */
+
+            function bindSlider(el, valEl, fmt) {
+                el.addEventListener('input', function () {
+                    valEl.textContent = fmt(parseFloat(el.value));
+                });
+            }
+            bindSlider(rateEl, document.getElementById('tts-rate-val'), function (v) { return v.toFixed(1) + '\u00d7'; });
+            bindSlider(pitchEl, document.getElementById('tts-pitch-val'), function (v) { return v.toFixed(1); });
+            bindSlider(volumeEl, document.getElementById('tts-volume-val'), function (v) { return Math.round(v * 100) + '%'; });
+
+            /* ---------- file upload ---------- */
+
+            fileEl.addEventListener('change', function () {
+                var f = fileEl.files[0];
+                if (!f) return;
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    textEl.value = e.target.result;
+                    updateCounts();
+                    setStatus('Loaded "' + f.name + '" (' + f.size + ' bytes).');
+                };
+                reader.onerror = function () {
+                    setStatus('Could not read the selected file.');
+                };
+                reader.readAsText(f);
+            });
+
+            clearBtn.addEventListener('click', function () {
+                stopSpeaking();
+                textEl.value = '';
+                fileEl.value = '';
+                updateCounts();
+                setStatus('');
+            });
+
+            document.getElementById('tts-paste').addEventListener('click', function () {
+                if (!navigator.clipboard || !navigator.clipboard.readText) {
+                    setStatus('Clipboard access not supported in this browser. Use Ctrl+V in the textbox.');
+                    return;
+                }
+                navigator.clipboard.readText().then(function (text) {
+                    if (!text) {
+                        setStatus('Clipboard is empty.');
+                        return;
+                    }
+                    textEl.value = textEl.value ? textEl.value.replace(/\s*$/, '') + '\n\n' + text : text;
+                    updateCounts();
+                    setStatus('Pasted ' + text.length + ' characters from clipboard.');
+                }).catch(function () {
+                    setStatus('Could not read clipboard. Check browser permission, or use Ctrl+V in the textbox.');
+                });
+            });
+
+            /* ---------- counts ---------- */
+
+            function updateCounts() {
+                var t = textEl.value;
+                var words = t.trim() ? t.trim().split(/\s+/).length : 0;
+                countsEl.textContent = t.length + ' characters, ' + words + ' words';
+            }
+            textEl.addEventListener('input', updateCounts);
+            updateCounts();
+
+            /* ---------- chunking (avoids browser cut-off on long utterances) ---------- */
+
+            function splitIntoChunks(text) {
+                var MAX = 200;
+                var sentences = text.match(/[^.!?\n]+[.!?]*[\s]*/g) || [text];
+                var result = [];
+                var buf = '';
+                sentences.forEach(function (s) {
+                    if ((buf + s).length <= MAX) {
+                        buf += s;
+                    } else {
+                        if (buf) result.push(buf);
+                        while (s.length > MAX) {
+                            var cut = s.lastIndexOf(' ', MAX);
+                            if (cut < 1) cut = MAX;
+                            result.push(s.slice(0, cut));
+                            s = s.slice(cut);
+                        }
+                        buf = s;
+                    }
+                });
+                if (buf.trim()) result.push(buf);
+                return result.filter(function (c) { return c.trim().length > 0; });
+            }
+
+            /* ---------- speech controls ---------- */
+
+            function getVoice() {
+                var voices = synth.getVoices();
+                return voices[parseInt(voiceEl.value, 10)] || null;
+            }
+
+            function setControls(state) {
+                speaking = state === 'speaking';
+                paused = state === 'paused';
+                speakBtn.disabled = state !== 'idle';
+                backBtn.disabled = state === 'idle';
+                pauseBtn.disabled = state !== 'speaking';
+                resumeBtn.disabled = state !== 'paused';
+                stopBtn.disabled = state === 'idle';
+                voiceEl.disabled = state !== 'idle';
+                progressEl.style.display = state === 'idle' ? 'none' : 'block';
+            }
+
+            function setStatus(msg) {
+                statusEl.textContent = msg;
+            }
+
+            function updateProgress() {
+                var pct = chunks.length ? ((chunkIndex) / chunks.length) * 100 : 0;
+                progressBar.style.width = pct.toFixed(1) + '%';
+            }
+
+            function speakNext() {
+                if (chunkIndex >= chunks.length) {
+                    progressBar.style.width = '100%';
+                    setStatus('Done. Spoke ' + chunks.length + ' segment' + (chunks.length === 1 ? '' : 's') + '.');
+                    setControls('idle');
+                    chunks = [];
+                    chunkIndex = 0;
+                    return;
+                }
+                var u = new SpeechSynthesisUtterance(chunks[chunkIndex]);
+                var v = getVoice();
+                if (v) {
+                    u.voice = v;
+                    u.lang = v.lang;
+                }
+                u.rate = parseFloat(rateEl.value);
+                u.pitch = parseFloat(pitchEl.value);
+                u.volume = parseFloat(volumeEl.value);
+                u.onend = function () {
+                    chunkIndex++;
+                    updateProgress();
+                    if (speaking && !synth.paused) speakNext();
+                };
+                u.onerror = function (e) {
+                    if (e.error === 'interrupted' || e.error === 'canceled') return;
+                    setStatus('Speech error: ' + e.error);
+                    setControls('idle');
+                };
+                setStatus('Speaking... segment ' + (chunkIndex + 1) + ' of ' + chunks.length);
+                synth.speak(u);
+            }
+
+            function startSpeaking() {
+                var text = textEl.value.trim();
+                if (!text) {
+                    setStatus('Nothing to speak. Add some text or upload a file first.');
+                    return;
+                }
+                synth.cancel();
+                chunks = splitIntoChunks(textEl.value);
+                chunkWordStarts = [];
+                var w = 0;
+                chunks.forEach(function (c) {
+                    chunkWordStarts.push(w);
+                    w += c.trim().split(/\s+/).length;
+                });
+                chunkIndex = 0;
+                setControls('speaking');
+                updateProgress();
+                speakNext();
+            }
+
+            function stopSpeaking() {
+                synth.cancel();
+                setControls('idle');
+                progressBar.style.width = '0';
+                setStatus('Stopped.');
+                chunks = [];
+                chunkIndex = 0;
+            }
+
+            speakBtn.addEventListener('click', startSpeaking);
+            stopBtn.addEventListener('click', stopSpeaking);
+
+            backBtn.addEventListener('click', function () {
+                if (!chunks.length) return;
+                var rate = parseFloat(rateEl.value);
+                var wordsPerSec = 2.5 * rate;              // ~150 wpm baseline, scaled by rate
+                var currentWord = chunkWordStarts[chunkIndex] || 0;
+                var target = Math.max(0, currentWord - Math.round(10 * wordsPerSec));
+                var idx = 0;
+                for (var i = 0; i < chunkWordStarts.length; i++) {
+                    if (chunkWordStarts[i] <= target) idx = i; else break;
+                }
+                synth.cancel();
+                chunkIndex = idx;
+                updateProgress();
+                setControls('speaking');
+                speakNext();
+            });
+
+            pauseBtn.addEventListener('click', function () {
+                synth.pause();
+                setControls('paused');
+                setStatus('Paused.');
+            });
+
+            resumeBtn.addEventListener('click', function () {
+                synth.resume();
+                setControls('speaking');
+                setStatus('Speaking... segment ' + (chunkIndex + 1) + ' of ' + chunks.length);
+            });
+
+            /* Chrome keeps speaking after tab blur glitches; re-sync on focus */
+            window.addEventListener('focus', function () {
+                if (speaking && !synth.speaking && !synth.paused) {
+                    speakNext();
+                }
+            });
+
+            window.addEventListener('beforeunload', function () {
+                synth.cancel();
+            });
+
+            setControls('idle');
+        })();
+    </script>
+
+</body>
+
+</html>
