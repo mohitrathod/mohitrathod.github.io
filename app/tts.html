@@ -142,19 +142,88 @@
         }
 
         .tts-progress {
-            margin-top: 8px;
+            position: relative;
+            margin-top: 10px;
+            height: 16px;
+            cursor: pointer;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .tts-progress-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 6px;
+            height: 4px;
+            background: #ccc;
+            border-radius: 2px;
+            transition: height 0.1s ease, top 0.1s ease;
+        }
+
+        .tts-progress:hover .tts-progress-track {
             height: 8px;
-            background: #e9e9e9;
-            border-radius: 4px;
-            overflow: hidden;
-            display: none;
+            top: 4px;
         }
 
         .tts-progress-bar {
-            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
             width: 0;
             background: #4CAF50;
-            transition: width 0.25s ease;
+            border-radius: 2px;
+        }
+
+        .tts-progress:hover .tts-progress-bar {
+            background: #43a047;
+        }
+
+        .tts-progress-scrubber {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 13px;
+            height: 13px;
+            margin: -6.5px 0 0 -6.5px;
+            background: #4CAF50;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.35);
+            transform: scale(0);
+            transition: transform 0.1s ease;
+            pointer-events: none;
+        }
+
+        .tts-progress:hover .tts-progress-scrubber,
+        .tts-progress.scrubbing .tts-progress-scrubber {
+            transform: scale(1);
+        }
+
+        .tts-progress-tooltip {
+            position: absolute;
+            bottom: calc(100% - 4px);
+            transform: translateX(-50%);
+            display: none;
+            padding: 4px 7px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 12px;
+            line-height: 1;
+            border-radius: 3px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .tts-time {
+            margin-top: 2px;
+            font-family: Inconsolata, monospace;
+            font-size: 0.85em;
+            color: #666;
+            text-align: right;
         }
 
         .tts-counts {
@@ -224,9 +293,15 @@
         </div>
 
         <div class="tts-status" id="tts-status"></div>
-        <div class="tts-progress" id="tts-progress">
-            <div class="tts-progress-bar" id="tts-progress-bar"></div>
+        <div class="tts-progress" id="tts-progress" role="slider" aria-label="Playback position"
+            aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+            <div class="tts-progress-track">
+                <div class="tts-progress-bar" id="tts-progress-bar"></div>
+                <div class="tts-progress-scrubber" id="tts-progress-scrubber"></div>
+            </div>
+            <div class="tts-progress-tooltip" id="tts-progress-tooltip"></div>
         </div>
+        <div class="tts-time" id="tts-time">0:00 / 0:00</div>
 
         <textarea id="tts-text" style="margin-top: 12px;" placeholder="Type or paste text here, upload a .txt file, or use the Paste button above. Then click Speak."></textarea>
         <div class="tts-counts" id="tts-counts">0 characters, 0 words</div>
@@ -253,17 +328,31 @@
             var statusEl = document.getElementById('tts-status');
             var progressEl = document.getElementById('tts-progress');
             var progressBar = document.getElementById('tts-progress-bar');
+            var scrubberEl = document.getElementById('tts-progress-scrubber');
+            var tooltipEl = document.getElementById('tts-progress-tooltip');
+            var timeEl = document.getElementById('tts-time');
             var countsEl = document.getElementById('tts-counts');
 
             var chunks = [];
             var chunkWordStarts = [];
             var chunkIndex = 0;
+            var chunkWordOffset = 0;
+            var totalWords = 0;
+            var lastFrac = 0;
             var speaking = false;
             var paused = false;
+            var rafId = null;
+            var scrubbing = false;
+            var currentU = null;
+            var chunkSpeakStart = 0;
+            var pausedAt = 0;
+            var totalPausedMs = 0;
 
             if (!synth) {
                 statusEl.textContent = 'Sorry, your browser does not support the Web Speech API.';
                 speakBtn.disabled = true;
+                progressEl.style.display = 'none';
+                timeEl.style.display = 'none';
                 return;
             }
 
@@ -360,6 +449,7 @@
             function bindSlider(el, valEl, fmt) {
                 el.addEventListener('input', function () {
                     valEl.textContent = fmt(parseFloat(el.value));
+                    updateTimes(lastFrac);
                     saveSettings();
                 });
             }
@@ -367,6 +457,170 @@
             bindSlider(pitchEl, pitchValEl, function (v) { return v.toFixed(1); });
             bindSlider(volumeEl, volumeValEl, function (v) { return Math.round(v * 100) + '%'; });
             voiceEl.addEventListener('change', saveSettings);
+
+            /* ---------- progress / seek ---------- */
+
+            function fmtTime(sec) {
+                sec = Math.max(0, Math.round(sec));
+                var m = Math.floor(sec / 60);
+                var s = sec % 60;
+                return m + ':' + (s < 10 ? '0' : '') + s;
+            }
+
+            function totalSeconds() {
+                if (!totalWords) return 0;
+                var r = parseFloat(rateEl.value) || 1;
+                return totalWords / (2.5 * r);
+            }
+
+            function updateTimes(frac) {
+                var total = totalSeconds();
+                timeEl.textContent = fmtTime(frac * total) + ' / ' + fmtTime(total);
+                progressEl.setAttribute('aria-valuetext', timeEl.textContent);
+            }
+
+            function setBar(frac) {
+                lastFrac = Math.max(0, Math.min(1, frac || 0));
+                var pct = (lastFrac * 100) + '%';
+                progressBar.style.width = pct;
+                scrubberEl.style.left = pct;
+                progressEl.setAttribute('aria-valuenow', Math.round(lastFrac * 100));
+                updateTimes(lastFrac);
+            }
+
+            function updateProgressBar() {
+                if (!totalWords) {
+                    setBar(0);
+                    return;
+                }
+                if (!chunks.length || chunkIndex >= chunks.length) {
+                    updateTimes(lastFrac);
+                    return;
+                }
+                var base = chunkWordStarts[chunkIndex] + chunkWordOffset;
+                var end = (chunkIndex + 1 < chunkWordStarts.length) ? chunkWordStarts[chunkIndex + 1] : totalWords;
+                var remaining = Math.max(0, end - base);
+                var r = parseFloat(rateEl.value) || 1;
+                var estMs = remaining / (2.5 * r) * 1000;
+                var ref = paused ? pausedAt : performance.now();
+                var elapsed = Math.max(0, ref - chunkSpeakStart - totalPausedMs);
+                var grown = estMs > 0 ? Math.min(remaining, (elapsed / estMs) * remaining) : remaining;
+                setBar((base + grown) / totalWords);
+            }
+
+            function startProgressLoop() {
+                stopProgressLoop();
+                function tick() {
+                    if (speaking) {
+                        if (!scrubbing) updateProgressBar();
+                        rafId = requestAnimationFrame(tick);
+                    } else {
+                        rafId = null;
+                    }
+                }
+                rafId = requestAnimationFrame(tick);
+            }
+
+            function stopProgressLoop() {
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+            }
+
+            function buildChunks() {
+                chunks = splitIntoChunks(textEl.value);
+                chunkWordStarts = [];
+                var w = 0;
+                chunks.forEach(function (c) {
+                    chunkWordStarts.push(w);
+                    w += c.trim().split(/\s+/).length;
+                });
+                totalWords = w;
+            }
+
+            function wordToChunk(targetWord) {
+                var idx = 0;
+                for (var i = 0; i < chunkWordStarts.length; i++) {
+                    if (chunkWordStarts[i] <= targetWord) idx = i; else break;
+                }
+                var start = chunkWordStarts[idx];
+                var end = (idx + 1 < chunkWordStarts.length) ? chunkWordStarts[idx + 1] : totalWords;
+                var offset = Math.max(0, Math.min(targetWord - start, Math.max(0, end - start - 1)));
+                return { index: idx, offset: offset };
+            }
+
+            function fracFromClientX(x) {
+                var rect = progressEl.getBoundingClientRect();
+                if (!rect.width) return 0;
+                return Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+            }
+
+            function showTooltip(frac) {
+                tooltipEl.textContent = fmtTime(frac * totalSeconds());
+                tooltipEl.style.left = (Math.max(0.04, Math.min(0.96, frac)) * 100) + '%';
+                tooltipEl.style.display = 'block';
+            }
+
+            function previewBar(frac) {
+                frac = Math.max(0, Math.min(1, frac));
+                var pct = (frac * 100) + '%';
+                progressBar.style.width = pct;
+                scrubberEl.style.left = pct;
+                progressEl.setAttribute('aria-valuenow', Math.round(frac * 100));
+                showTooltip(frac);
+                updateTimes(frac);
+            }
+
+            progressEl.addEventListener('pointerdown', function (e) {
+                e.preventDefault();
+                scrubbing = true;
+                progressEl.classList.add('scrubbing');
+                if (progressEl.setPointerCapture) progressEl.setPointerCapture(e.pointerId);
+                previewBar(fracFromClientX(e.clientX));
+            });
+
+            progressEl.addEventListener('pointermove', function (e) {
+                var frac = fracFromClientX(e.clientX);
+                if (scrubbing) previewBar(frac);
+                else showTooltip(frac);
+            });
+
+            progressEl.addEventListener('pointerup', function (e) {
+                if (!scrubbing) return;
+                scrubbing = false;
+                progressEl.classList.remove('scrubbing');
+                tooltipEl.style.display = 'none';
+                startSpeaking(fracFromClientX(e.clientX));
+            });
+
+            progressEl.addEventListener('pointercancel', function () {
+                if (!scrubbing) return;
+                scrubbing = false;
+                progressEl.classList.remove('scrubbing');
+                tooltipEl.style.display = 'none';
+                setBar(lastFrac);
+            });
+
+            progressEl.addEventListener('pointerleave', function () {
+                if (!scrubbing) tooltipEl.style.display = 'none';
+            });
+
+            progressEl.addEventListener('keydown', function (e) {
+                if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Home' && e.key !== 'End') return;
+                e.preventDefault();
+                var frac;
+                if (e.key === 'Home') {
+                    frac = 0;
+                } else if (e.key === 'End') {
+                    frac = 1;
+                } else {
+                    var total = totalSeconds();
+                    var delta = total ? 10 / total : 0;
+                    frac = lastFrac + (e.key === 'ArrowRight' ? delta : -delta);
+                }
+                startSpeaking(frac);
+            });
 
             /* ---------- file upload ---------- */
 
@@ -417,6 +671,10 @@
                 var t = textEl.value;
                 var words = t.trim() ? t.trim().split(/\s+/).length : 0;
                 countsEl.textContent = t.length + ' characters, ' + words + ' words';
+                if (!speaking && !paused) {
+                    totalWords = words;
+                    if (!totalWords) setBar(0); else updateProgressBar();
+                }
             }
             textEl.addEventListener('input', updateCounts);
             updateCounts();
@@ -462,28 +720,29 @@
                 resumeBtn.disabled = state !== 'paused';
                 stopBtn.disabled = state === 'idle';
                 voiceEl.disabled = state !== 'idle';
-                progressEl.style.display = state === 'idle' ? 'none' : 'block';
+                if (speaking) startProgressLoop(); else stopProgressLoop();
             }
 
             function setStatus(msg) {
                 statusEl.textContent = msg;
             }
 
-            function updateProgress() {
-                var pct = chunks.length ? ((chunkIndex) / chunks.length) * 100 : 0;
-                progressBar.style.width = pct.toFixed(1) + '%';
-            }
-
             function speakNext() {
                 if (chunkIndex >= chunks.length) {
-                    progressBar.style.width = '100%';
+                    setBar(1);
                     setStatus('Done. Spoke ' + chunks.length + ' segment' + (chunks.length === 1 ? '' : 's') + '.');
                     setControls('idle');
                     chunks = [];
                     chunkIndex = 0;
+                    chunkWordOffset = 0;
                     return;
                 }
-                var u = new SpeechSynthesisUtterance(chunks[chunkIndex]);
+                var text = chunks[chunkIndex];
+                if (chunkWordOffset > 0) {
+                    text = text.split(/\s+/).slice(chunkWordOffset).join(' ');
+                }
+                var u = new SpeechSynthesisUtterance(text);
+                currentU = u;
                 var v = getVoice();
                 if (v) {
                     u.voice = v;
@@ -493,77 +752,77 @@
                 u.pitch = parseFloat(pitchEl.value);
                 u.volume = parseFloat(volumeEl.value);
                 u.onend = function () {
+                    if (u !== currentU) return;
                     chunkIndex++;
-                    updateProgress();
+                    chunkWordOffset = 0;
                     if (speaking && !synth.paused) speakNext();
                 };
                 u.onerror = function (e) {
+                    if (u !== currentU) return;
                     if (e.error === 'interrupted' || e.error === 'canceled') return;
                     setStatus('Speech error: ' + e.error);
                     setControls('idle');
                 };
+                chunkSpeakStart = performance.now();
+                totalPausedMs = 0;
                 setStatus('Speaking... segment ' + (chunkIndex + 1) + ' of ' + chunks.length);
                 synth.speak(u);
             }
 
-            function startSpeaking() {
+            function startSpeaking(frac) {
                 var text = textEl.value.trim();
                 if (!text) {
                     setStatus('Nothing to speak. Add some text or upload a file first.');
                     return;
                 }
                 synth.cancel();
-                chunks = splitIntoChunks(textEl.value);
-                chunkWordStarts = [];
-                var w = 0;
-                chunks.forEach(function (c) {
-                    chunkWordStarts.push(w);
-                    w += c.trim().split(/\s+/).length;
-                });
-                chunkIndex = 0;
+                buildChunks();
+                if (!totalWords) return;
+                frac = Math.max(0, Math.min(1, frac));
+                var target = Math.min(totalWords - 1, Math.round(frac * totalWords));
+                var loc = wordToChunk(target);
+                chunkIndex = loc.index;
+                chunkWordOffset = loc.offset;
                 setControls('speaking');
-                updateProgress();
                 speakNext();
+                updateProgressBar();
             }
 
             function stopSpeaking() {
                 synth.cancel();
+                currentU = null;
                 setControls('idle');
-                progressBar.style.width = '0';
                 setStatus('Stopped.');
                 chunks = [];
                 chunkIndex = 0;
+                chunkWordOffset = 0;
             }
 
-            speakBtn.addEventListener('click', startSpeaking);
+            speakBtn.addEventListener('click', function () { startSpeaking(0); });
             stopBtn.addEventListener('click', stopSpeaking);
 
             backBtn.addEventListener('click', function () {
                 if (!chunks.length) return;
                 var rate = parseFloat(rateEl.value);
                 var wordsPerSec = 2.5 * rate;              // ~150 wpm baseline, scaled by rate
-                var currentWord = chunkWordStarts[chunkIndex] || 0;
+                var currentWord = chunkWordStarts[chunkIndex] + chunkWordOffset;
                 var target = Math.max(0, currentWord - Math.round(10 * wordsPerSec));
-                var idx = 0;
-                for (var i = 0; i < chunkWordStarts.length; i++) {
-                    if (chunkWordStarts[i] <= target) idx = i; else break;
-                }
-                synth.cancel();
-                chunkIndex = idx;
-                updateProgress();
-                setControls('speaking');
-                speakNext();
+                startSpeaking(totalWords ? target / totalWords : 0);
             });
 
             pauseBtn.addEventListener('click', function () {
+                pausedAt = performance.now();
                 synth.pause();
                 setControls('paused');
+                updateProgressBar();
                 setStatus('Paused.');
             });
 
             resumeBtn.addEventListener('click', function () {
+                totalPausedMs += performance.now() - pausedAt;
                 synth.resume();
                 setControls('speaking');
+                updateProgressBar();
                 setStatus('Speaking... segment ' + (chunkIndex + 1) + ' of ' + chunks.length);
             });
 
