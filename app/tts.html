@@ -141,6 +141,17 @@
             min-height: 1.3em;
         }
 
+        .tts-status-label {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 8px;
+            background: #f0f0f0;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #333;
+        }
+
         .tts-progress {
             position: relative;
             margin-top: 10px;
@@ -247,7 +258,12 @@
 
     <div class="tts-container">
 
-        <h1>Text to Speech</h1>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <h1 style="margin:0;">Text to Speech</h1>
+            <div class="tts-status" style="margin-top:0;">
+                <span>Status:</span> <span class="tts-status-label" id="tts-status">Idle</span>
+            </div>
+        </div>
         <p class="tts-note">
             Runs 100% offline in your browser using the built-in Web Speech API
             (no uploads, no server, no internet needed after this page loads).
@@ -292,7 +308,6 @@
             <button type="button" class="btn btn-danger" id="tts-stop" disabled>&#9632; Stop</button>
         </div>
 
-        <div class="tts-status" id="tts-status"></div>
         <div class="tts-progress" id="tts-progress" role="slider" aria-label="Playback position"
             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
             <div class="tts-progress-track">
@@ -349,7 +364,7 @@
             var totalPausedMs = 0;
 
             if (!synth) {
-                statusEl.textContent = 'Sorry, your browser does not support the Web Speech API.';
+                statusEl.textContent = 'Not supported';
                 speakBtn.disabled = true;
                 progressEl.style.display = 'none';
                 timeEl.style.display = 'none';
@@ -381,6 +396,23 @@
                     };
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
                 } catch (e) { /* storage unavailable */ }
+            }
+
+            var saveTimer = null;
+
+            function scheduleSave() {
+                if (saveTimer) clearTimeout(saveTimer);
+                saveTimer = setTimeout(function () {
+                    saveTimer = null;
+                    saveSettings();
+                }, 300);
+            }
+
+            function flushSave() {
+                if (!saveTimer) return;
+                clearTimeout(saveTimer);
+                saveTimer = null;
+                saveSettings();
             }
 
             var saved = loadSettings();
@@ -450,13 +482,14 @@
                 el.addEventListener('input', function () {
                     valEl.textContent = fmt(parseFloat(el.value));
                     updateTimes(lastFrac);
-                    saveSettings();
+                    scheduleSave();
                 });
+                el.addEventListener('change', flushSave);
             }
             bindSlider(rateEl, rateValEl, function (v) { return v.toFixed(1) + '\u00d7'; });
             bindSlider(pitchEl, pitchValEl, function (v) { return v.toFixed(1); });
             bindSlider(volumeEl, volumeValEl, function (v) { return Math.round(v * 100) + '%'; });
-            voiceEl.addEventListener('change', saveSettings);
+            voiceEl.addEventListener('change', function () { flushSave(); });
 
             /* ---------- progress / seek ---------- */
 
@@ -644,7 +677,7 @@
                 textEl.value = '';
                 fileEl.value = '';
                 updateCounts();
-                setStatus('');
+                setStatus('Idle');
             });
 
             document.getElementById('tts-paste').addEventListener('click', function () {
@@ -724,13 +757,13 @@
             }
 
             function setStatus(msg) {
-                statusEl.textContent = msg;
+                statusEl.textContent = msg || 'Idle';
             }
 
             function speakNext() {
                 if (chunkIndex >= chunks.length) {
                     setBar(1);
-                    setStatus('Done. Spoke ' + chunks.length + ' segment' + (chunks.length === 1 ? '' : 's') + '.');
+                    setStatus('Done');
                     setControls('idle');
                     chunks = [];
                     chunkIndex = 0;
@@ -760,42 +793,48 @@
                 u.onerror = function (e) {
                     if (u !== currentU) return;
                     if (e.error === 'interrupted' || e.error === 'canceled') return;
-                    setStatus('Speech error: ' + e.error);
+                    setStatus('Error');
                     setControls('idle');
                 };
                 chunkSpeakStart = performance.now();
                 totalPausedMs = 0;
-                setStatus('Speaking... segment ' + (chunkIndex + 1) + ' of ' + chunks.length);
+                setStatus('Speaking');
                 synth.speak(u);
             }
 
             function startSpeaking(frac) {
+                setStatus('Starting');
                 var text = textEl.value.trim();
                 if (!text) {
-                    setStatus('Nothing to speak. Add some text or upload a file first.');
+                    setStatus('Nothing to speak');
                     return;
                 }
-                synth.cancel();
-                buildChunks();
-                if (!totalWords) return;
-                frac = Math.max(0, Math.min(1, frac));
-                var target = Math.min(totalWords - 1, Math.round(frac * totalWords));
-                var loc = wordToChunk(target);
-                chunkIndex = loc.index;
-                chunkWordOffset = loc.offset;
-                setControls('speaking');
-                speakNext();
-                updateProgressBar();
+                setTimeout(function () {
+                    synth.cancel();
+                    buildChunks();
+                    if (!totalWords) return;
+                    frac = Math.max(0, Math.min(1, frac));
+                    var target = Math.min(totalWords - 1, Math.round(frac * totalWords));
+                    var loc = wordToChunk(target);
+                    chunkIndex = loc.index;
+                    chunkWordOffset = loc.offset;
+                    setControls('speaking');
+                    speakNext();
+                    updateProgressBar();
+                }, 10);
             }
 
             function stopSpeaking() {
-                synth.cancel();
-                currentU = null;
-                setControls('idle');
-                setStatus('Stopped.');
-                chunks = [];
-                chunkIndex = 0;
-                chunkWordOffset = 0;
+                setStatus('Stopping');
+                setTimeout(function () {
+                    synth.cancel();
+                    currentU = null;
+                    setControls('idle');
+                    setStatus('Stopped');
+                    chunks = [];
+                    chunkIndex = 0;
+                    chunkWordOffset = 0;
+                }, 10);
             }
 
             speakBtn.addEventListener('click', function () { startSpeaking(0); });
@@ -803,27 +842,36 @@
 
             backBtn.addEventListener('click', function () {
                 if (!chunks.length) return;
-                var rate = parseFloat(rateEl.value);
-                var wordsPerSec = 2.5 * rate;              // ~150 wpm baseline, scaled by rate
-                var currentWord = chunkWordStarts[chunkIndex] + chunkWordOffset;
-                var target = Math.max(0, currentWord - Math.round(10 * wordsPerSec));
-                startSpeaking(totalWords ? target / totalWords : 0);
+                setStatus('Moving back');
+                setTimeout(function () {
+                    var rate = parseFloat(rateEl.value);
+                    var wordsPerSec = 2.5 * rate;              // ~150 wpm baseline, scaled by rate
+                    var currentWord = chunkWordStarts[chunkIndex] + chunkWordOffset;
+                    var target = Math.max(0, currentWord - Math.round(10 * wordsPerSec));
+                    startSpeaking(totalWords ? target / totalWords : 0);
+                }, 10);
             });
 
             pauseBtn.addEventListener('click', function () {
-                pausedAt = performance.now();
-                synth.pause();
-                setControls('paused');
-                updateProgressBar();
-                setStatus('Paused.');
+                setStatus('Pausing');
+                setTimeout(function () {
+                    pausedAt = performance.now();
+                    synth.pause();
+                    setControls('paused');
+                    updateProgressBar();
+                    setStatus('Paused');
+                }, 10);
             });
 
             resumeBtn.addEventListener('click', function () {
-                totalPausedMs += performance.now() - pausedAt;
-                synth.resume();
-                setControls('speaking');
-                updateProgressBar();
-                setStatus('Speaking... segment ' + (chunkIndex + 1) + ' of ' + chunks.length);
+                setStatus('Resuming');
+                setTimeout(function () {
+                    totalPausedMs += performance.now() - pausedAt;
+                    synth.resume();
+                    setControls('speaking');
+                    updateProgressBar();
+                    setStatus('Speaking');
+                }, 10);
             });
 
             /* Chrome keeps speaking after tab blur glitches; re-sync on focus */
@@ -834,10 +882,12 @@
             });
 
             window.addEventListener('beforeunload', function () {
+                flushSave();
                 synth.cancel();
             });
 
             setControls('idle');
+            setStatus('Idle');
         })();
     </script>
 
