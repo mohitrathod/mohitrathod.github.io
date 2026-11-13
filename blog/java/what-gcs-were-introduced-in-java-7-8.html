@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>What GCs were introduced in java 7,8? - Java Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Garbage Collection in Earlier versions Java 1.5 The major enhancements in Java 1.5 Garbage Collector (GC) has changed from the previous serial collector (-XX:+UseSerialGC) to a parallel collector…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<p><a href="/blog/java.html">&larr; Java Notes</a></p>
+
+<h1>What GCs were introduced in java 7,8?</h1>
+
+<p class="publish-date">Published: <time datetime="2018-07-06">July 6, 2018</time></p>
+
+<hr>
+
+<pre><h3>Garbage Collection in Earlier versions</h3>
+
+<h4>Java 1.5</h4>
+
+    The major enhancements in Java 1.5 Garbage Collector (GC) has changed from the previous serial collector (-XX:+UseSerialGC) to a parallel collector (-XX:+UseParallelGC). You can override this default by using the -XX:+UseSerialGC command-line option to the java command. Enormous changes have made to the heap size.Before J2SE 5.0, the default initial heap size was a reasonable minimum, which varies by platform. Now it is increased and we can override this default maximum size of the heap using the -Xmx command-line option.
+
+    The implementation of certain policies for parallel collector has changed to consider three goals :-
+
+    a desired maximum GC pause goal
+    a desired application throughput goal
+    minimum footprint
+
+Garbage Collector in Java 1.5 was with some specific constraints to follow as strategies for an application to attain the above goals.
+
+
+<h4>Java 1.6</h4>
+
+The Major Enhancements in Java 1.6 are
+
+    Parallel Compaction Collector
+
+    It is a feature that enables the Garbage Collector to do collections in parallel leading to less garbage collection overhead and increase the performance for applications which require lager heaps. The platforms with more than two processors are best suited.
+
+    two total types of GC in java 1.6
+
+    1) Ergonomics in the 6.0 Java Virtual Machine
+    2) Concurrent Low Pause Collector: Concurrent Mark Sweep Collector
+
+more at https://javabeat.net/g1-garbage-collector-in-java-7-0/
+
+
+<h4>Java 1.7 G1 Garbage Collector</h4>
+
+In Java 1.7 might have a new garbage collection strategy by default. It is called G1, which is short for Garbage First. It has been experimentally launched in the Java 1.6 update 14 to replace the regular Concurrent Mark and Sweep Garbage Collectors with increased performance.
+
+G1 is considered as “server centric” with following attributes.
+
+    G1 uses parallelism which are mostly used in hardware today.The main advantage of G1 is designed in such a way to make use of all available CPU’s and utilize the processing power of all CPU’s and increase the performance and speed in Garbage Collection.
+    Concurrency feature of G1 allows to run Java threads to minimize the heap operations at stop pauses.
+    Next feature which plays a key role in increasing the Garbage Collection is treating the young objects(newly created) and the old objects(which lived for some time) differently.G1 mainly focuses on young objects as they can be reclaimable when traversing the old objects.
+    Heap compaction is done to eliminate fragmentation problems.
+    G1 can be more predictable when compared to CMS.
+
+
+Features of G1 Garbage Collector
+
+    A single contiguous heap which is split into same-sized regions. No separation between younger and older regions.
+    G1 uses evacuation pauses.Evacuation pauses are done in parallel by using all the available processors.
+    G1 uses a pause prediction model to meet user-defined pause time targets
+    Like CMS,G1 also periodically performs a concurrent marking phase.
+    Unlike CMS, G1 does not perform a concurrent sweeping phase.
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="What GCs were introduced in java 7,8?">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>What is java.lang.OutOfMemoryError in Java ? - Java Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="OutOfMemoryError in Java is a subclass of java.lang.VirtualMachineError and JVM throws java.lang.OutOfMemoryError when it ran out of memory in the heap. OutOfMemoryError in Java can come anytime in…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<p><a href="/blog/java.html">&larr; Java Notes</a></p>
+
+<h1>What is java.lang.OutOfMemoryError in Java ?</h1>
+
+<p class="publish-date">Published: <time datetime="2016-11-13">November 13, 2016</time></p>
+
+<hr>
+
+<pre>OutOfMemoryError in Java is a subclass of java.lang.VirtualMachineError and JVM throws java.lang.OutOfMemoryError when it ran out of memory in the heap. OutOfMemoryError in Java can come anytime in heap mostly while you try to create an object and there is not enough space on the heap to allocate that object. Javadoc of OutOfMemoryError is not very informative about this, though.
+
+I have seen mainly two types of OutOfMemoryError in Java:
+
+1) The java.lang.OutOfMemoryError: Java heap space
+2) The java.lang.OutOfMemoryError: PermGen space
+
+Though both of them occur because JVM ran out of memory they are quite different to each other and their solutions are independent of each other.
+
+
+Since in most of JVM default size of Perm Space is around "64MB" you can easily run out of memory if you have too many classes or a huge number of Strings in your project.
+
+How to solve java.lang.OutOfMemoryError: Java heap space
+
+1) An easy way to solve OutOfMemoryError in java is to increase the maximum heap size by using JVM options "-Xmx512M", this will immediately solve your OutOfMemoryError. This is my preferred solution when I get OutOfMemoryError in Eclipse, Maven or ANT while building project because based upon size of project you can easily run out of Memory.here is an example of increasing maximum heap size of JVM, Also its better to keep -Xmx to -Xms ration either 1:1 or 1:1.5 if you are setting heap size in your java application
+
+export JVM_ARGS="-Xms1024m -Xmx1024m"
+
+2) The second way to resolve OutOfMemoryError in Java is rather hard and  comes when you don't have much memory and even after increase maximum heap size you are still getting java.lang.OutOfMemoryError, in this case, you probably want to profile your application and look for any memory leak. You can use Eclipse Memory Analyzer to examine your heap dump or you can use any profiler like Netbeans or JProbe. This is tough solution and requires some time to analyze and find memory leaks.
+
+How to solve java.lang.OutOfMemoryError: PermGen space
+As explained in above paragraph this OutOfMemory error in java comes when Permanent generation of heap filled up. To fix this OutOfMemoryError in Java, you need to increase heap size of Perm space by using JVM option   "-XX: MaxPermSize". You can also specify initial size of Perm space by using    "-XX: PermSize" and keeping both initial and maximum Perm Space you can prevent some full garbage collection which may occur when Perm Space gets re-sized. Here is how you can specify initial and maximum Perm size in Java:
+
+export JVM_ARGS="-XX:PermSize=64M -XX:MaxPermSize=256m"
+
+Some time java.lang.OutOfMemoryError  in Java gets tricky and on those cases profiling remains ultimate solution.Though you have the freedom to increase heap size in java, it’s recommended that to follow memory management practices while coding and setting null to any unused references.
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="What is java.lang.OutOfMemoryError in Java ?">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

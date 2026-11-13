@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>How hashmap works in java ? - Java Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Single statement answer If anybody asks me to describe “How HashMap works?“, I simply answer: “On principle of Hashing“. As simple as it is. Now before answering it, one must be very sure to know at…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<p><a href="/blog/java.html">&larr; Java Notes</a></p>
+
+<h1>How hashmap works in java ?</h1>
+
+<p class="publish-date">Published: <time datetime="2017-07-14">July 14, 2017</time></p>
+
+<hr>
+
+<pre>Single statement answer
+
+If anybody asks me to describe “How HashMap works?“, I simply answer: “On principle of Hashing“. As simple as it is. Now before answering it, one must be very sure to know at least basics of Hashing. Right??
+
+What is Hashing
+
+Hashing in its simplest form, is a way to assigning a unique code for any variable/object after applying any formula/algorithm on its properties. A true Hashing function must follow this rule:
+
+Hash function should return the same hash code each and every time, when function is applied on same or equal objects. In other words, two equal objects must produce same hash code consistently.
+
+All objects in java inherit a default implementation of hashCode() function defined in Object class. This function produce hash code by typically converting the internal address of the object into an integer, thus producing different hash codes for all different objects.
+
+A little about Entry class
+
+A map by definition is : “An object that maps keys to values”. Very easy.. right?
+
+So, there must be some mechanism in HashMap to store this key value pair. Answer is YES. HashMap has an inner class Entry, which looks like this:
+static class Entry<K ,V> implements Map.Entry<K ,V>
+{
+    final K key;
+    V value;
+    Entry<K ,V> next;
+    final int hash;
+    ...//More code goes here
+}
+
+What put() method actually does
+
+Before going into put() method’s implementation, it is very important to learn that instances of Entry class are stored in an array. HashMap class defines this variable as:
+/**
+ * The table, resized as necessary. Length MUST Always be a power of two.
+ */
+transient Entry[] table;
+
+Now look at code implementation of put() method:
+
+/**
+* Associates the specified value with the specified key in this map. If the
+* map previously contained a mapping for the key, the old value is
+* replaced.
+*
+* @param key
+*            key with which the specified value is to be associated
+* @param value
+*            value to be associated with the specified key
+* @return the previous value associated with <tt>key</tt>, or <tt>null</tt>
+*         if there was no mapping for <tt>key</tt>. (A <tt>null</tt> return
+*         can also indicate that the map previously associated
+*         <tt>null</tt> with <tt>key</tt>.)
+*/
+public V put(K key, V value) {
+    if (key == null)
+    return putForNullKey(value);
+    int hash = hash(key.hashCode());
+    int i = indexFor(hash, table.length);
+    for (Entry<K , V> e = table[i]; e != null; e = e.next) {
+        Object k;
+        if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+            V oldValue = e.value;
+            e.value = value;
+            e.recordAccess(this);
+            return oldValue;
+        }
+    }
+
+    modCount++;
+    addEntry(hash, key, value, i);
+    return null;
+}
+
+Lets note down the steps one by one:
+
+1) First of all, key object is checked for null. If key is null, value is stored in table[0] position. Because hash code for null is always 0.
+
+2) Then on next step, a hash value is calculated using key’s hash code by calling its hashCode() method. This hash value is used to calculate index in array for storing Entry object. JDK designers well assumed that there might be some poorly written hashCode() functions that can return very high or low hash code value. To solve this issue, they introduced another hash() function, and passed the object’s hash code to this hash() function to bring hash value in range of array index size.
+
+3) Now indexFor(hash, table.length) function is called to calculate exact index position for storing the Entry object.
+
+4) Here comes the main part. Now, as we know that two unequal objects can have same hash code value, how two different objects will be stored in same array location [called bucket].
+Answer is LinkedList. If you remember, Entry class had an attribute “next”. This attribute always points to next object in chain. This is exactly the behavior of LinkedList.
+
+So, in case of collision, Entry objects are stored in LinkedList form. When an Entry object needs to be stored in particular index, HashMap checks whether there is already an entry?? If there is no entry already present, Entry object is stored in this location.
+
+If there is already an object sitting on calculated index, its next attribute is checked. If it is null, and current Entry object becomes next node in LinkedList. If next variable is not null, procedure is followed until next is evaluated as null.
+
+What if we add the another value object with same key as entered before. Logically, it should replace the old value. How it is done? Well, after determining the index position of Entry object, while iterating over LinkedList on calculated index, HashMap calls equals method on key object for each Entry object. All these Entry objects in LinkedList will have similar hash code but equals() method will test for true equality. If key.equals(k) will be true then both keys are treated as same key object. This will cause the replacing of value object inside Entry object only.
+
+In this way, HashMap ensure the uniqueness of keys.
+
+How get() methods works internally
+
+Now we have got the idea, how key-value pairs are stored in HashMap. Next big question is : what happens when an object is passed in get method of HashMap? How the value object is determined?
+
+Answer we already should know that the way key uniqueness is determined in put() method , same logic is applied in get() method also. The moment HashMap identify exact match for the key object passed as argument, it simply returns the value object stored in current Entry object.
+
+If no match is found, get() method returns null.
+
+Let have a look at code:
+/**
+* Returns the value to which the specified key is mapped, or {@code null}
+* if this map contains no mapping for the key.
+*
+* <p>
+* More formally, if this map contains a mapping from a key {@code k} to a
+* value {@code v} such that {@code (key==null ? k==null :
+* key.equals(k))}, then this method returns {@code v}; otherwise it returns
+* {@code null}. (There can be at most one such mapping.)
+*
+* </p><p>
+* A return value of {@code null} does not <i>necessarily</i> indicate that
+* the map contains no mapping for the key; it's also possible that the map
+* explicitly maps the key to {@code null}. The {@link #containsKey
+* containsKey} operation may be used to distinguish these two cases.
+*
+* @see #put(Object, Object)
+*/
+public V get(Object key) {
+    if (key == null)
+    return getForNullKey();
+    int hash = hash(key.hashCode());
+    for (Entry<K , V> e = table[indexFor(hash, table.length)]; e != null; e = e.next) {
+        Object k;
+        if (e.hash == hash && ((k = e.key) == key || key.equals(k)))
+            return e.value;
+    }
+    return null;
+}
+
+Above code is same as put() method till if (e.hash == hash && ((k = e.key) == key || key.equals(k))), after this simply value object is returned.
+
+Key Notes
+
+    Data structure to store Entry objects is an array named table of type Entry.
+    A particular index location in array is referred as bucket, because it can hold the first element of a LinkedList of Entry objects.
+    Key object’s hashCode() is required to calculate the index location of Entry object.
+    Key object’s equals() method is used to maintain uniqueness of Keys in map.
+    Value object’s hashCode() and equals() method are not used in HashMap’s get() and put() methods.
+    Hash code for null keys is always zero, and such Entry object is always stored in zero index in Entry[].
+
+[Update] Improvements in Java 8
+
+As part of the work for JEP 180, there is a performance improvement for HashMap objects where there are lots of collisions in the keys by using balanced trees rather than linked lists to store map entries. The principal idea is that once the number of items in a hash bucket grows beyond a certain threshold, that bucket will switch from using a linked list of entries to a balanced tree. In the case of high hash collisions, this will improve worst-case performance from O(n) to O(log n).
+
+Basically when a bucket becomes too big (currently: TREEIFY_THRESHOLD = 8), HashMap dynamically replaces it with an ad-hoc implementation of tree map. This way rather than having pessimistic O(n) we get much better O(log n).
+
+Bins (elements or nodes) of TreeNodes may be traversed and used like any others, but additionally support faster lookup when overpopulated. However, since the vast majority of bins in normal use are not overpopulated, checking for existence of tree bins may be delayed in the course of table methods.
+
+Tree bins (i.e., bins whose elements are all TreeNodes) are ordered primarily by hashCode, but in the case of ties, if two elements are of the same “class C implements Comparable<C>“, type then their compareTo() method is used for ordering.
+
+Because TreeNodes are about twice the size of regular nodes, we use them only when bins contain enough nodes. And when they become too small (due to removal or resizing) they are converted back to plain bins (currently: UNTREEIFY_THRESHOLD = 6). In usages with well-distributed user hashCodes, tree bins are rarely used.
+
+I hope, i have correctly communicated my thoughts by this article. If you find any difference or need any help in any point, please drop a comment.
+
+Happy Learning !!
+
+http://howtodoinjava.com/core-java/collections/how-hashmap-works-in-java/
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="How hashmap works in java ?">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Why multiple inheritances are not supported in Java ? - Java Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The diamond problem A diamond class inheritance diagram. The &quot;diamond problem&quot; (sometimes referred to as the &quot;deadly diamond of death&quot;[4]) is an ambiguity that arises when two classes B and C inherit…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<p><a href="/blog/java.html">&larr; Java Notes</a></p>
+
+<h1>Why multiple inheritances are not supported in Java ?</h1>
+
+<p class="publish-date">Published: <time datetime="2017-07-14">July 14, 2017</time></p>
+
+<hr>
+
+<pre>The diamond problem
+A diamond class inheritance diagram.
+
+The "diamond problem" (sometimes referred to as the "deadly diamond of death"[4]) is an ambiguity that arises when two classes B and C inherit from A, and class D inherits from both B and C. If there is a method in A that B and C have overridden, and D does not override it, then which version of the method does D inherit: that of B, or that of C?
+
+For example, in the context of GUI software development, a class Button may inherit from both classes Rectangle (for appearance) and Clickable (for functionality/input handling), and classes Rectangle and Clickable both inherit from the Object class. Now if the equals method is called for a Button object and there is no such method in the Button class but there is an overridden equals method in Rectangle or Clickable (or both), which method should be eventually called?
+
+It is called the "diamond problem" because of the shape of the class inheritance diagram in this situation. In this case, class A is at the top, both B and C separately beneath it, and D joins the two together at the bottom to form a diamond shape.
+
+Java 8 introduces default methods on interfaces. If A,B,C are interfaces, B,C can each provide a different implementation to an abstract method of A, causing the diamond problem. Either class D must reimplement the method (the body of which can simply forward the call to one of the super implementations), or the ambiguity will be rejected as a compile error.[6] Prior to Java 8, Java was not subject to the Diamond problem risk, as Java does not support multiple inheritance.
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Why multiple inheritances are not supported in Java ?">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

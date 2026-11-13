@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Working with hashCode and equals methods in java - Java Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The general contract of hashCode is: Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer,…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<p><a href="/blog/java.html">&larr; Java Notes</a></p>
+
+<h1>Working with hashCode and equals methods in java</h1>
+
+<p class="publish-date">Published: <time datetime="2017-07-14">July 14, 2017</time></p>
+
+<hr>
+
+<pre>The general contract of hashCode is:
+
+    Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer, provided no information used in equals comparisons on the object is modified. This integer need not remain consistent from one execution of an application to another execution of the same application.
+    If two objects are equal according to the equals(Object) method, then calling the hashCode method on each of the two objects must produce the same integer result.
+    It is not required that if two objects are unequal according to the equals(java.lang.Object) method, then calling the hashCode method on each of the two objects must produce distinct integer results. However, the programmer should be aware that producing distinct integer results for unequal objects may improve the performance of hash tables.
+
+Usage of hashCode() and equals()
+
+hashCode() method is used to get a unique integer for given object. This integer is used for determining the bucket location, when this object needs to be stored in some HashTable like data structure. By default, Object’s hashCode() method returns and integer representation of memory address where object is stored.
+
+equals() method, as name suggest, is used to simply verify the equality of two objects. Default implementation simply check the object references of two objects to verify their equality.
+
+Overriding the default behavior
+
+Everything works fine until you do not override any of these methods in your classes. But, sometimes application needs to change the default behavior of some objects.
+
+Lets take an example where your application has Employee object. Lets create a minimal possible structure of Employee class::
+public class Employee
+{
+    private Integer id;
+    private String firstname;
+    private String lastName;
+    private String department;
+
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public String getFirstname() {
+        return firstname;
+    }
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    public String getDepartment() {
+        return department;
+    }
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+}
+
+Above Employee class has some very basic attributes and there accessor methods. Now consider a simple situation where you need to compare two employee objects.
+public class EqualsTest {
+    public static void main(String[] args) {
+        Employee e1 = new Employee();
+        Employee e2 = new Employee();
+
+        e1.setId(100);
+        e2.setId(100);
+
+        //Prints false in console
+        System.out.println(e1.equals(e2));
+    }
+}
+
+No prize for guessing. Above method will print “false“. But, is it really correct after knowing that both objects represent same employee. In a real time application, this must return true.
+
+To achieve correct behavior, we need to override equals method as below:
+public boolean equals(Object o) {
+    if(o == null)
+    {
+        return false;
+    }
+    if (o == this)
+    {
+        return true;
+    }
+    if (getClass() != o.getClass())
+    {
+        return false;
+    }
+
+    Employee e = (Employee) o;
+    return (this.getId() == e.getId());
+
+}
+
+Add this method to your Employee class, and EqualsTest will start returning “true“.
+
+So are we done? Not yet. Lets test again above modified Employee class in different way.
+import java.util.HashSet;
+import java.util.Set;
+
+public class EqualsTest
+{
+    public static void main(String[] args)
+    {
+        Employee e1 = new Employee();
+        Employee e2 = new Employee();
+
+        e1.setId(100);
+        e2.setId(100);
+
+        //Prints 'true'
+        System.out.println(e1.equals(e2));
+
+        Set<Employee> employees = new HashSet<Employee>();
+        employees.add(e1);
+        employees.add(e2);
+
+        //Prints two objects
+        System.out.println(employees);
+    }
+}
+
+Above class prints two objects in second print statement. If both employee objects have been equal, in a Set which stores only unique objects, there must be only one instance inside HashSet, after all both objects refer to same employee. What is it we are missing??
+
+We are missing the second important method hashCode(). As java docs say, if you override equals() method then you must override hashCode() method. So lets add another method in our Employee class.
+@Override
+public int hashCode()
+{
+    final int PRIME = 31;
+    int result = 1;
+    result = PRIME * result + getId();
+    return result;
+}
+
+Once above method is added in Employee class, the second statement start printing only single object in second statement, and thus validating the true equality of e1 and e2.
+
+Overriding hashCode() and equals() using Apache Commons Lang
+
+Apache commons provide two excellent utility classes HashCodeBuilder and EqualsBuilder for generating hash code and equals methods. Below is its usage:
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+public class Employee
+{
+    private Integer id;
+    private String firstname;
+    private String lastName;
+    private String department;
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public String getFirstname() {
+        return firstname;
+    }
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    public String getDepartment() {
+        return department;
+    }
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+    @Override
+    public int hashCode()
+    {
+        final int PRIME = 31;
+        return new HashCodeBuilder(getId()%2==0?getId()+1:getId(), PRIME).toHashCode();
+    }
+    @Override
+    public boolean equals(Object o) {
+    if (o == null)
+       return false;
+
+    if (o == this)
+       return true;
+
+    if (o.getClass() != getClass())
+       return false;
+
+    Employee e = (Employee) o;
+
+    return new EqualsBuilder().
+              append(getId(), e.getId()).
+              isEquals();
+    }
+}
+
+Alternatively, if you are using any code editor, they also must be capable of generating some good structure for you. For example, Eclipse IDE has option under right click on class >> source > Generate hashCode() and equals() … will generate a very good implementation for you.
+
+Important things to remember
+
+1) Always use same attributes of an object to generate hashCode() and equals() both. As in our case, we have used employee id.
+
+2) equals() must be consistent (if the objects are not modified, then it must keep returning the same value).
+
+3) Whenever a.equals(b), then a.hashCode() must be same as b.hashCode().
+
+4) If you override one, then you should override the other.
+
+Special Attention When Using in ORM
+
+If you’re dealing with an ORM, make sure to always use getters, and never field references in hashCode() and equals(). This is for reason, in ORM, occasionally fields are lazy loaded and not available until called their getter methods.
+
+For example, In our Employee class if we use e1.id == e2.id. It is very much possible that id field is lazy loaded. So in this case, one might be zero or null, and thus resulting in incorrect behavior.
+
+But if uses e1.getId() == e2.getId(), we can be sure even if field is lazy loaded; calling getter will populate the field first.
+
+This is all i know about hashCode() and equals() methods. I hope, it will help someone somewhere.
+
+If you feel, I am missing something or wrong somewhere, please leave a comment. I will update this post again to help others.
+
+Happy Learning !!
+
+http://howtodoinjava.com/core-java/basics/working-with-hashcode-and-equals-methods-in-java/
+
+
+Using HashMap in non-synchronized code in multi-threaded application
+
+In normal cases, it can leave the hashmap in inconsistent state where key-value pairs added and retrieved can be different. Apart from this, other surprising behavior like NullPointerException can come into picture.
+
+In worst case, It can cause infinite loop. YES. You got it right. It can cause infinite loop. What did you asked, How?? Well, here is the reason.
+
+HashMap has the concept of rehashing when it reaches to its upper limit of size. This rehashing is the process of creating a new memory area, and copying all the already present key-value pairs in new memory are. Lets say Thread A tried to put a key-value pair in map and then rehashing started. At the same time, thread B came and started manipulating the buckets using put operation.
+
+Here while rehashing process, there are chances to generate the cyclic dependency where one element in linked list [in any bucket] can point to any previous node in same bucket. This will result in infinite loop, because rehashing code contains a “while(true) { //get next node; }” block and in cyclic dependency it will run infinite.
+
+To watch closely, look art source code of transfer method which is used in rehashing:
+public Object get(Object key) {
+    Object k = maskNull(key);
+    int hash = hash(k);
+    int i = indexFor(hash, table.length);
+    Entry e = table[i];
+
+    //While true is always a bad practice and cause infinite loops
+
+    while (true) {
+        if (e == null)
+            return e;
+        if (e.hash == hash &amp;&amp; eq(k, e.key))
+            return e.value;
+        e = e.next;
+    }
+}
+
+I will write a more detailed article on this in future.
+
+I hope I was able to put some more items on your knowledge bucket. If you find this article helpful, please consider it sharing with your friends.
+
+Happy Learning !!
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Working with hashCode and equals methods in java">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

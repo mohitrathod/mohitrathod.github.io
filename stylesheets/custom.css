@@ -117,3 +117,89 @@ div.scrollmenu a:hover {
 
 
 /* side menu floating ends */
+
+/* java notes index and article dates */
+
+.java-intro {
+  color: #666;
+  max-width: 60em;
+}
+
+ul.java-toc {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 60em;
+}
+
+ul.java-toc li {
+  margin: 0;
+  padding: 0;
+}
+
+.java-article {
+  display: block;
+  padding: 0.9em 0.5em;
+  border-bottom: 1px solid #e4e4e4;
+  color: inherit;
+  text-decoration: none;
+}
+
+.java-article:hover {
+  background: #f7f7f7;
+}
+
+.java-article-title {
+  display: block;
+  font-weight: bold;
+}
+
+.java-article-date {
+  display: block;
+  margin-top: 0.2em;
+  color: #777;
+  font-size: 0.85em;
+}
+
+.java-article-excerpt {
+  display: block;
+  margin-top: 0.35em;
+  color: #555;
+  font-size: 0.9em;
+  line-height: 1.45;
+}
+
+.publish-date {
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* article share and comment actions */
+
+.article-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6em;
+  margin: 0.8em 0 1.2em;
+}
+
+.share-button,
+.comment-button {
+  display: inline-block;
+  padding: 0.45em 1.1em;
+  border: 1px solid #106cc8;
+  border-radius: 4px;
+  background: #fff;
+  color: #106cc8;
+  font: inherit;
+  font-size: 0.9em;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.share-button:hover,
+.comment-button:hover {
+  background: #106cc8;
+  color: #fff;
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Java.lang.Thread.yield() Method - Java Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Description The java.lang.Thread.yield() method causes the currently executing thread object to temporarily pause and allow other threads to execute. Declaration Following is the declaration for…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<p><a href="/blog/java.html">&larr; Java Notes</a></p>
+
+<h1>Java.lang.Thread.yield() Method</h1>
+
+<p class="publish-date">Published: <time datetime="2017-06-20">June 20, 2017</time></p>
+
+<hr>
+
+<pre>Description
+The java.lang.Thread.yield() method causes the currently executing thread object to temporarily pause and allow other threads to execute.
+
+Declaration
+Following is the declaration for java.lang.Thread.yield() method
+
+public static void yield()
+Parameters
+NA
+
+Return Value
+This method does not return any value.
+
+Exception
+
+Example
+
+import java.lang.*;
+
+public class ThreadDemo implements Runnable {
+
+   Thread t;
+
+   ThreadDemo(String str) {
+
+      t = new Thread(this, str);
+      // this will call run() function
+      t.start();
+   }
+
+   public void run() {
+
+      for (int i = 0; i < 5; i++) {
+         // yields control to another thread every 5 iterations
+         if ((i % 5) == 0) {
+            System.out.println(Thread.currentThread().getName() + "
+            yielding control...");
+
+            /* causes the currently executing thread object to temporarily
+            pause and allow other threads to execute */
+            Thread.yield();
+         }
+      }
+
+      System.out.println(Thread.currentThread().getName() + " has finished executing.");
+   }
+
+   public static void main(String[] args) {
+      new ThreadDemo("Thread 1");
+      new ThreadDemo("Thread 2");
+      new ThreadDemo("Thread 3");
+   }
+}
+
+output--
+
+Thread 1 is yielding control...
+Thread 2 is yielding control...
+Thread 3 is yielding control...
+Thread 1 has finished executing.
+Thread 2 has finished executing.
+Thread 3 has finished executing.
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Java.lang.Thread.yield() Method">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Callable and Future Example in Java - Java Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="import java.util.concurrent.Callable; import java.util.concurrent.ExecutionException; import java.util.concurrent.ExecutorService; import java.util.concurrent.Executors; import…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<p><a href="/blog/java.html">&larr; Java Notes</a></p>
+
+<h1>Callable and Future Example in Java</h1>
+
+<p class="publish-date">Published: <time datetime="2017-07-22">July 22, 2017</time></p>
+
+<hr>
+
+<pre>import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+/**
+ * Simple Java program to demonstrate how to use Callable and Future class in
+ * Java. You can use FutureTask for asynchronous processing.
+ *
+ *
+ */
+public class CallableAndFuture {
+
+    public static void main(String... args) throws InterruptedException, ExecutionException {
+
+        // creating thread pool to execute task which implements Callable
+        ExecutorService es = Executors.newSingleThreadExecutor();
+
+
+        System.out.println("submitted callable task to calculate factorial of 10");
+        Future<Long> result10 = es.submit(new FactorialCalculator(10l));
+
+        System.out.println("submitted callable task to calculate factorial of 15");
+        Future<Long> result15 = es.submit(new FactorialCalculator(15l));
+
+        System.out.println("submitted callable task to calculate factorial of 20");
+        Future<Long> result20 = es.submit(new FactorialCalculator(20l));
+
+        es.shutdown();
+
+        System.out.println("Calling get method of Future to fetch result of factorial 10");
+        Long factorialof10 = result10.get();
+        System.out.println("factorial of 100 is : " + factorialof10);
+
+        System.out.println("Calling get method of Future to get result of factorial 15");
+        Long factorialof15 = result15.get();
+        System.out.println("factorial of 15 is : " + factorialof15);
+
+        System.out.println("Calling get method of Future to get result of factorial 20");
+        Long factorialof20 = result20.get();
+        System.out.println("factorial of 20 is : " + factorialof20);
+
+    }
+
+}
+
+class FactorialCalculator implements Callable<Long> {
+
+    private Long number;
+
+    public FactorialCalculator(Long number){
+        this.number = number;
+    }
+
+    @Override
+    public Long call() throws Exception {
+        return factorial(number);
+    }
+
+    private long factorial(Long n) throws InterruptedException {
+        long result = 1;
+        while (n != 0) {
+            result = n * result;
+            n = n - 1;
+            Thread.sleep(100);
+        }
+
+        return result;
+    }
+
+}
+
+
+Output
+submitted callable task to calculate factorial of 10
+submitted callable task to calculate factorial of 15
+submitted callable task to calculate factorial of 20
+Calling get method of Future to fetch result of factorial 10
+factorial of 10 is : 3628800
+Calling get method of Future to get result of factorial 15
+factorial of 15 is : 1307674368000
+Calling get method of Future to get result of factorial 20
+factorial of 20 is : 2432902008176640000
+
+
+1) Callable is a SAM type interface, so it can be used in lambda expression.
+
+2) Callable has just one method call() which holds all the code needs to executed asynchronously.
+
+3) In Runnable interface, there was no way to return the result of computation or throw checked exception but with Callable you can both return a value and can throw checked exception.
+
+4) You can use get() method of Future to retrieve result once computation is done. You can check if computation is finished or not by using isDone() method.
+
+5) You can cancel the computation by using Future.cancel() method.
+
+6) get() is a blocking call and it blocks until computation is completed.
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Callable and Future Example in Java">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>
