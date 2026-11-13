@@ -4,8 +4,8 @@
   <head>
     <meta charset="UTF-8">
     <title>Misc. Utilities</title>
-	  <meta name="viewport" content="width=device-width, initial-scale=1">
-	  <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
     <script src="/js/jquery-3.3.1.min.js"></script>
     <script src="/js/common.js"></script>
@@ -21,92 +21,58 @@
 
 <div id="side-menu"></div>
 
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+</div>
+
 <div style="padding-left: 2%; padding-right: 2%;">
 
-<h1 align="center" > Misc. Utilities </h1>
-
-
+<h1 align="center">Misc. Utilities</h1>
 
 <hr>
 
-</br>
-
-<pre>
-
-<a name="linux-tail-to-latest-file" href="#linux-tail-to-latest-file" >Do tail -f to latest file of your directory</a>
-
-
-
-	tail -f $(find . -maxdepth 1 -type f -printf "%T@ %p\n" | sort -n | tail -n 1 | cut -d' ' -f 2-)
-
-
-<hr style="border-top: 1px;" />
-
-<a name="change-file-premissions-in-git-on-windows" href="#change-file-premissions-in-git-on-windows" >Change file premissions in Git on Windows</a>
-
-
-	C:\views\myproject>git update-index --chmod=+x script.sh
-
-
-<hr style="border-top: 1px;" />
-
-<a name="calc-return-of-investment-after-some-year" href="#calc-return-of-investment-after-some-year" >Calculate return of investment after some years</a>
-
-initInvestment = 250000
-intrate = 0.15
-years = 25
-
-def calcIntrestForOneYear():
-    return initInvestment + (initInvestment * intrate)
-
-
-for i in range (1 , years):
-    initInvestment = calcIntrestForOneYear()
-    print(initInvestment)
-
-print('-----at end-----')
-print(initInvestment)
-
-
-
-<hr style="border-top: 1px;" />
-
-<a name="simple-tax-calculator-india" href="#simple-tax-calculator-india" >simple tax calculator india</a>
-
-# simple tax calculator india
-
-total_salary = 100000
-
-tax_total = 0
-
-updated_salary = total_salary - 250000  # first slab removed from main salary
-
-updated_salary = updated_salary - 150000  # 80c removed
-
-if updated_salary > 250000:
-    tax_total = tax_total + (250000 * (0.05))
-    updated_salary = updated_salary - 250000  # 5 % slab removed
-
-
-if total_salary > 500000 and updated_salary > 0:
-    tax_total = tax_total + (500000 * (0.20))
-    updated_salary = updated_salary - 500000
-
-if total_salary > 1000000 and updated_salary > 0:
-    tax_total = tax_total + (updated_salary * (0.30))
-    updated_salary = updated_salary - tax_total
-
-print(updated_salary, ' updated salary')
-print(tax_total, ' tax total')
-
-
-# some bugs needs to be fixed
-
-<hr style="border-top: 1px;" />
-
-</pre>
+<ul class="java-toc">
+      <li>
+        <a name="linux-tail-to-latest-file" class="java-article" href="/blog/utilities/linux-tail-to-latest-file.html">
+          <span class="java-article-title">Do tail -f to latest file of your directory</span>
+          <time class="java-article-date" datetime="2016-11-20">November 20, 2016</time>
+          <span class="java-article-excerpt">tail -f $(find . -maxdepth 1 -type f -printf &quot;%T@ %p\n&quot; | sort -n | tail -n 1 | cut -d&#x27; &#x27; -f 2-)</span>
+        </a>
+      </li>
+      <li>
+        <a name="change-file-premissions-in-git-on-windows" class="java-article" href="/blog/utilities/change-file-premissions-in-git-on-windows.html">
+          <span class="java-article-title">Change file premissions in Git on Windows</span>
+          <time class="java-article-date" datetime="2017-06-21">June 21, 2017</time>
+          <span class="java-article-excerpt">C:\views\myproject&gt;git update-index --chmod=+x script.sh</span>
+        </a>
+      </li>
+      <li>
+        <a name="calc-return-of-investment-after-some-year" class="java-article" href="/blog/utilities/calc-return-of-investment-after-some-year.html">
+          <span class="java-article-title">Calculate return of investment after some years</span>
+          <time class="java-article-date" datetime="2017-10-28">October 28, 2017</time>
+          <span class="java-article-excerpt">initInvestment = 250000 intrate = 0.15 years = 25 def calcIntrestForOneYear(): return initInvestment + (initInvestment * intrate) for i in range (1 , years): initInvestment = calcIntrestForOneYear()…</span>
+        </a>
+      </li>
+      <li>
+        <a name="simple-tax-calculator-india" class="java-article" href="/blog/utilities/simple-tax-calculator-india.html">
+          <span class="java-article-title">simple tax calculator india</span>
+          <time class="java-article-date" datetime="2018-03-13">March 13, 2018</time>
+          <span class="java-article-excerpt"># simple tax calculator india total_salary = 100000 tax_total = 0 updated_salary = total_salary - 250000 # first slab removed from main salary updated_salary = updated_salary - 150000 # 80c removed…</span>
+        </a>
+      </li>
+</ul>
 
 </div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
 
 </body>
 

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Long Polling - S/W Theories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="What is Long polling, how does it work, and why would you use it? Considering server and client resources, what is the main drawback of using long polling? Which HTML5 feature is the best alternative…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/software-theories.html">S/W Theories</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>Long Polling</h1>
+
+<p class="publish-date">Published: <time datetime="2018-02-08">February 8, 2018</time></p>
+
+<hr>
+
+<pre>What is Long polling, how does it work, and why would you use it? Considering server and client resources, what is the main drawback of using long polling? Which HTML5 feature is the best alternative to long polling?
+
+The HTTP protocol is based on a request/response pattern, which means that the server cannot push any data to the client (i.e., the server can only provide data to the client in response to a client request). Long polling is a web application development pattern used to emulate pushing data from server to client. When the long polling pattern is used, the client submits a request to the server and the connection then remains active until the server is ready to send data to the client. The connection is closed only after data is sent back to the client or connection timeout occurs. The client then creates a new request when the connection is closed, thus restarting the loop.
+
+There are two important drawbacks that need to be considered when using long polling:
+
+Long polling requests are not different from any other HTTP request and web servers handle them the same way. This means that every long poll connection will reserve server resources, potentially maxing out the number of connections the server can handle. This can lead to HTTP connection timeouts.
+
+Each web browser will limit the maximum number of connections web application can make. This means that your application load time and performance may be degraded.
+
+In HTML5, a useful alternative to long polling is using a WebSocket. A WebSocket is a protocol providing full-duplex communications channels over a single TCP connection. The WebSocket protocol makes possible more interaction between a browser and a web site, facilitating live content and eliminates the need for the long polling paradigm.
+
+Another potential answer could be Server-sent DOM Events. Which is method of continuously sending data from a server to the browser, rather than repeatedly requesting it. However, this HTML5 feature is not supported by Microsoft Internet Explorer, thus making it less attractive solution.
+
+added on 08-Feb-2018
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Long Polling">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

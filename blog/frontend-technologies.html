@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Frontend Technologies</title>
-	  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
     <script src="/js/jquery-3.3.1.min.js"></script>
@@ -21,306 +21,100 @@
 
 <div id="side-menu"></div>
 
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+</div>
+
 <div style="padding-left: 2%; padding-right: 2%;">
 
-<h1 align="center" > Frontend Technologies </h1>
-
+<h1 align="center">Frontend Technologies</h1>
 
 <hr>
 
-</br>
-<p>
-
-<pre>
-
-<a name="javascript" href="#javascript" >What is JavaScript</a>
-
-JavaScript is a high level dynamic, untyped and interpreted programming language standardized in the <b>ECMAScript</b> language specification, that alongside HTML and CSS is one of the three core technologies of world wide web content.
-
-To understand what JavaScript is we need to observe it in its natural environment - the web browser.
-
-Consider a modern web page with great content, fancy design and layout, and advanced interactivity. What you see is the combined output of three distinct layers of code, put together by the browser. The first layer is the HTML document. This is where the content lives, marked up in a language that makes it easy for the browser to parse. When you visit a webpage you're accessing this document. And without this HTML document there's no web page. The second layer is a collection of CSS Rules.
-
-This is the code that instructs the browser how to display the HTML Markup. HTML and CSS work together to insure a perfect separation of concerns. HTML handles the content. CSS is presentation. That means, even if you take the CSS away the content is still there. CSS is the presentational enhancement. The third layer is the JavaScript. What I call the interactive layer. JavaScript is a scripting language that runs in the browser and interacts with the HTML Markup and CSS Rules to change what you see and what you can do.
-
-Technically you should be able to take the JavaScript away and still be able to access the content. But in recent years this has become less of a certainty. More on that later in the course. When you point your browser at an address with an HTML document, it first pulls down the HTML and indexes its content. Then downloads any CSS and JavaScript documents referenced, runs the JavaScript to see if any of the HTML Markup has changed, applies the CSS to make everything look the way it's supposed to, and finally leaves the JavaScript running in the background, in case an interaction or event triggers further scripts.
-
-So in short, JavaScript is a scripting language that allows you to write small programs that run in the browser, and change the HTML and CSS of the current document. Of course, it's a bit more complicated than that, but this is a good way to think about it as you get started.
-
-added on 03-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="html-block-and-inline-elements" href="#html-block-and-inline-elements" >HTML Block and Inline Elements</a>
-
-
-Every HTML element has a default display value depending on what type of element it is. The default display value for most elements is block or inline.
-
-Block-level Elements
-
-A block-level element always starts on a new line and takes up the full width available (stretches out to the left and right as far as it can).
-The <div> element is a block-level element.
-
-Example
-<div>Hello</div>
-<div>World</div>
-
-Inline Elements
-
-An inline element does not start on a new line and only takes up as much width as necessary.
-
-This is an inline <span> element inside a paragraph.
-
-Example
-<span>Hello</span>
-<span>World</span>
-
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="css-margins" href="#css-margins" >CSS Margins</a>
-
-The CSS margin properties are used to create space around elements, outside of any defined borders.
-
-With CSS, you have full control over the margins. There are properties for setting the margin for each side of an element (top, right, bottom, and left).
-
-Margin - Individual Sides
-
-CSS has properties for specifying the margin for each side of an element:
-
-    margin-top
-    margin-right
-    margin-bottom
-    margin-left
-
-All the margin properties can have the following values:
-
-    auto - the browser calculates the margin
-    length - specifies a margin in px, pt, cm, etc.
-    % - specifies a margin in % of the width of the containing element
-    inherit - specifies that the margin should be inherited from the parent element
-
-Tip: Negative values are allowed.
-
-The following example sets different margins for all four sides of a <p> element:
-
-Example
-
-p {
-    margin-top: 100px;
-    margin-bottom: 100px;
-    margin-right: 150px;
-    margin-left: 80px;
-}
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="css-padding" href="#css-padding" >CSS Padding</a>
-
-The CSS padding properties are used to generate space around an element's content, inside of any defined borders.
-
-With CSS, you have full control over the padding. There are properties for setting the padding for each side of an element (top, right, bottom, and left).
-Padding - Individual Sides
-
-CSS has properties for specifying the padding for each side of an element:
-
-    padding-top
-    padding-right
-    padding-bottom
-    padding-left
-
-All the padding properties can have the following values:
-
-    length - specifies a padding in px, pt, cm, etc.
-    % - specifies a padding in % of the width of the containing element
-    inherit - specifies that the padding should be inherited from the parent element
-
-Note: Negative values are not allowed.
-
-The following example sets different padding for all four sides of a <div> element:
-
-Example
-
-div {
-    padding-top: 50px;
-    padding-right: 30px;
-    padding-bottom: 50px;
-    padding-left: 80px;
-}
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="div-and-span" href="#div-and-span" >Div and Span</a>
-
-What is the difference between HTML tags <div> and <span>?
-
-div is a block element, span is inline.
-
-This means that to use them semantically, divs should be used to wrap sections of a document, while spans should be used to wrap small portions of text, images, etc.
-
-For example:
-
-<div>This a large main division, with <span>a small bit</span> of spanned text!</div>
-
-Note that it is illegal to place a block level element within an inline element, so:
-
-<div>Some <span>text that <div>I want</div> to mark</span> up</div>
-
-...is illegal.
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="float-css-property" href="#float-css-property" >float CSS property</a>
-
-
-
-The float CSS property specifies that an element should be placed along the left or right side of its container, allowing text and inline elements to wrap around it. The element is removed from the normal flow of the web page, though still remaining a part of the flow (in contrast to absolute positioning).
-
-A floating element is one where the computed value of float is not none.
-
-/* Keyword values */
-float: left;
-float: right;
-float: none;
-float: inline-start;
-float: inline-end;
-
-/* Global values */
-float: inherit;
-float: initial;
-float: unset;
-
-more info at <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/float">https://developer.mozilla.org/en-US/docs/Web/CSS/float</a>
-
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="css-layout-position-property" href="#css-layout-position-property" >CSS Layout - The position Property</a>
-
-The position Property
-
-The position property specifies the type of positioning method used for an element.
-
-There are five different position values:
-
-    static
-    relative
-    fixed
-    absolute
-    sticky
-
-Elements are then positioned using the top, bottom, left, and right properties. However, these properties will not work unless the position property is set first. They also work differently depending on the position value.
-
-more at <a href="https://www.w3schools.com/css/css_positioning.asp">https://www.w3schools.com/css/css_positioning.asp</a>
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="css-z-index-property" href="#css-z-index-property" >CSS z-index Property</a>
-
-The z-index property specifies the stack order of an element.
-
-An element with greater stack order is always in front of an element with a lower stack order.
-
-Note: z-index only works on positioned elements (position:absolute, position:relative, or position:fixed).
-
-more at <a href="https://www.w3schools.com/cssref/pr_pos_z-index.asp">https://www.w3schools.com/cssref/pr_pos_z-index.asp</a>
-
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="css-display-property" href="#css-display-property" >CSS display Property</a>
-
-Definition and Usage
-
-The display property specifies the display behavior of an element.
-
-Note: Every element on a web page is a rectangular box. The CSS display property determines how that rectangular box behaves.
-
-Example
-
-Use of some different display values:
-
-p.ex1 {display: none;}
-p.ex2 {display: inline;}
-p.ex3 {display: block;}
-p.ex4 {display: inline-block;}
-
-more at <a href="https://www.w3schools.com/cssref/pr_class_display.asp">https://www.w3schools.com/cssref/pr_class_display.asp</a>
-
-added on 10-Feb-2018
-
-<hr style="border-top: 1px;" />
-
-
-<a name="using-my-json" href="#using-my-json" >MyJson.com API example</a>
-
-$(document).ready(function () {
-
-  var mohit_json;
-
-
-  $.ajax({url: "https://api.myjson.com/bins/1166d9", success: function(result){
-            console.log(result);
-            mohit_json = result;
-            if (!mohit_json.mohit_data.data) {
-              mohit_json.mohit_data.data = [];
-            }
-            // var data1 = 'mmo';
-            // mohit_json.mohit_data.data.push(data1);
-            push_data(mohit_json);
-        }});
-
-var push_data = function (mohit_json) {
-  $.ajax({
-        url: "https://api.myjson.com/bins/1166d9",
-        type: "PUT",
-        data: JSON.stringify(mohit_json),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        crossDomain: true,
-        success: function (result, textStatus, jqXHR) {
-          console.log(result);
-        },
-        error: function (jqXHR, exception) {
-
-            console.log(jqXHR.status)
-            console.log(exception);
-
-        },
-    });
-}
-
-});
-
-<hr style="border-top: 1px;" />
-
-
-
-<pre>
+<ul class="java-toc">
+      <li>
+        <a name="javascript" class="java-article" href="/blog/frontend-technologies/javascript.html">
+          <span class="java-article-title">What is JavaScript</span>
+          <time class="java-article-date" datetime="2018-02-03">February 3, 2018</time>
+          <span class="java-article-excerpt">JavaScript is a high level dynamic, untyped and interpreted programming language standardized in the ECMAScript language specification, that alongside HTML and CSS is one of the three core…</span>
+        </a>
+      </li>
+      <li>
+        <a name="html-block-and-inline-elements" class="java-article" href="/blog/frontend-technologies/html-block-and-inline-elements.html">
+          <span class="java-article-title">HTML Block and Inline Elements</span>
+          <time class="java-article-date" datetime="2018-02-10">February 10, 2018</time>
+          <span class="java-article-excerpt">Every HTML element has a default display value depending on what type of element it is. The default display value for most elements is block or inline. Block-level Elements A block-level element…</span>
+        </a>
+      </li>
+      <li>
+        <a name="css-margins" class="java-article" href="/blog/frontend-technologies/css-margins.html">
+          <span class="java-article-title">CSS Margins</span>
+          <time class="java-article-date" datetime="2018-02-10">February 10, 2018</time>
+          <span class="java-article-excerpt">The CSS margin properties are used to create space around elements, outside of any defined borders. With CSS, you have full control over the margins. There are properties for setting the margin for…</span>
+        </a>
+      </li>
+      <li>
+        <a name="css-padding" class="java-article" href="/blog/frontend-technologies/css-padding.html">
+          <span class="java-article-title">CSS Padding</span>
+          <time class="java-article-date" datetime="2018-02-10">February 10, 2018</time>
+          <span class="java-article-excerpt">The CSS padding properties are used to generate space around an element&#x27;s content, inside of any defined borders. With CSS, you have full control over the padding. There are properties for setting…</span>
+        </a>
+      </li>
+      <li>
+        <a name="div-and-span" class="java-article" href="/blog/frontend-technologies/div-and-span.html">
+          <span class="java-article-title">Div and Span</span>
+          <time class="java-article-date" datetime="2018-02-10">February 10, 2018</time>
+          <span class="java-article-excerpt">What is the difference between HTML tags and ? div is a block element, span is inline. This means that to use them semantically, divs should be used to wrap sections of a document, while spans should…</span>
+        </a>
+      </li>
+      <li>
+        <a name="float-css-property" class="java-article" href="/blog/frontend-technologies/float-css-property.html">
+          <span class="java-article-title">float CSS property</span>
+          <time class="java-article-date" datetime="2018-02-10">February 10, 2018</time>
+          <span class="java-article-excerpt">The float CSS property specifies that an element should be placed along the left or right side of its container, allowing text and inline elements to wrap around it. The element is removed from the…</span>
+        </a>
+      </li>
+      <li>
+        <a name="css-layout-position-property" class="java-article" href="/blog/frontend-technologies/css-layout-position-property.html">
+          <span class="java-article-title">CSS Layout - The position Property</span>
+          <time class="java-article-date" datetime="2018-02-10">February 10, 2018</time>
+          <span class="java-article-excerpt">The position Property The position property specifies the type of positioning method used for an element. There are five different position values: static relative fixed absolute sticky Elements are…</span>
+        </a>
+      </li>
+      <li>
+        <a name="css-z-index-property" class="java-article" href="/blog/frontend-technologies/css-z-index-property.html">
+          <span class="java-article-title">CSS z-index Property</span>
+          <time class="java-article-date" datetime="2018-02-10">February 10, 2018</time>
+          <span class="java-article-excerpt">The z-index property specifies the stack order of an element. An element with greater stack order is always in front of an element with a lower stack order. Note: z-index only works on positioned…</span>
+        </a>
+      </li>
+      <li>
+        <a name="css-display-property" class="java-article" href="/blog/frontend-technologies/css-display-property.html">
+          <span class="java-article-title">CSS display Property</span>
+          <time class="java-article-date" datetime="2018-02-11">February 11, 2018</time>
+          <span class="java-article-excerpt">Definition and Usage The display property specifies the display behavior of an element. Note: Every element on a web page is a rectangular box. The CSS display property determines how that…</span>
+        </a>
+      </li>
+      <li>
+        <a name="using-my-json" class="java-article" href="/blog/frontend-technologies/using-my-json.html">
+          <span class="java-article-title">MyJson.com API example</span>
+          <time class="java-article-date" datetime="2018-03-20">March 20, 2018</time>
+          <span class="java-article-excerpt">$(document).ready(function () { var mohit_json; $.ajax({url: &quot;https://api.myjson.com/bins/1166d9&quot;, success: function(result){ console.log(result); mohit_json = result; if…</span>
+        </a>
+      </li>
+</ul>
 
 </div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
 
 </body>
 

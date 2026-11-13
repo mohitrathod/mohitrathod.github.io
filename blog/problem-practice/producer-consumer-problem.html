@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Producer Consumer Problem - Coding Problem Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="// Java program to implement solution of producer // consumer problem. import java.util.LinkedList; public class Threadexample { public static void main(String[] args) throws InterruptedException {…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/problem-practice.html">Coding Problem Practice</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>Producer Consumer Problem</h1>
+
+<p class="publish-date">Published: <time datetime="2017-05-15">May 15, 2017</time></p>
+
+<hr>
+
+<pre>// Java program to implement solution of producer
+// consumer problem.
+import java.util.LinkedList;
+
+public class Threadexample
+{
+    public static void main(String[] args)
+                        throws InterruptedException
+    {
+        // Object of a class that has both produce()
+        // and consume() methods
+        final PC pc = new PC();
+
+        // Create producer thread
+        Thread t1 = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    pc.produce();
+                }
+                catch(InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Create consumer thread
+        Thread t2 = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    pc.consume();
+                }
+                catch(InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Start both threads
+        t1.start();
+        t2.start();
+
+        // t1 finishes before t2
+        t1.join();
+        t2.join();
+    }
+
+    // This class has a list, producer (adds items to list
+    // and consumber (removes items).
+    public static class PC
+    {
+        // Create a list shared by producer and consumer
+        // Size of list is 2.
+        LinkedList<Integer> list = new LinkedList<>();
+        int capacity = 2;
+
+        // Function called by producer thread
+        public void produce() throws InterruptedException
+        {
+            int value = 0;
+            while (true)
+            {
+                synchronized (this)
+                {
+                    // producer thread waits while list
+                    // is full
+                    while (list.size()==capacity)
+                        wait();
+
+                    System.out.println("Producer produced-"
+                                                  + value);
+
+                    // to insert the jobs in the list
+                    list.add(value++);
+
+                    // notifies the consumer thread that
+                    // now it can start consuming
+                    notify();
+
+                    // makes the working of program easier
+                    // to  understand
+                    Thread.sleep(1000);
+                }
+            }
+        }
+
+        // Function called by consumer thread
+        public void consume() throws InterruptedException
+        {
+            while (true)
+            {
+                synchronized (this)
+                {
+                    // consumer thread waits while list
+                    // is empty
+                    while (list.size()==0)
+                        wait();
+
+                    //to retrive the ifrst job in the list
+                    int val = list.removeFirst();
+
+                    System.out.println("Consumer consumed-"
+                                                    + val);
+
+                    // Wake up producer thread
+                    notify();
+
+                    // and sleep
+                    Thread.sleep(1000);
+                }
+            }
+        }
+    }
+}
+
+
+more at http://www.geeksforgeeks.org/producer-consumer-solution-using-threads-java/
+
+
+Approach 2
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+
+/**
+ * Simple Java program to demonstrate How to use wait, notify and notifyAll()
+ * method in Java by solving producer consumer problem.
+ *
+ * @author Javin Paul
+ */
+public class ProducerConsumerInJava {
+
+    public static void main(String args[]) {
+        System.out.println("How to use wait and notify method in Java");
+        System.out.println("Solving Producer Consumper Problem");
+
+        Queue<Integer> buffer = new LinkedList<>();
+        int maxSize = 10;
+
+        Thread producer = new Producer(buffer, maxSize, "PRODUCER");
+        Thread consumer = new Consumer(buffer, maxSize, "CONSUMER");
+
+        producer.start();
+        consumer.start();
+
+
+    }
+
+}
+
+/**
+ * Producer Thread will keep producing values for Consumer
+ * to consumer. It will use wait() method when Queue is full
+ * and use notify() method to send notification to Consumer
+ * Thread.
+ *
+ *
+ */
+class Producer extends Thread {
+    private Queue<Integer> queue;
+    private int maxSize;
+
+    public Producer(Queue<Integer> queue, int maxSize, String name){
+        super(name);
+        this.queue = queue;
+        this.maxSize = maxSize;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            synchronized (queue) {
+                while (queue.size() == maxSize) {
+                    try {
+                        System.out .println("Queue is full, "
+                                + "Producer thread waiting for "
+                                + "consumer to take something from queue");
+                        queue.wait();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+                Random random = new Random();
+                int i = random.nextInt();
+                System.out.println("Producing value : " + i);
+                queue.add(i);
+                queue.notifyAll();
+            }
+
+        }
+    }
+}
+
+/**
+ * Consumer Thread will consumer values form shared queue.
+ * It will also use wait() method to wait if queue is
+ * empty. It will also use notify method to send
+ * notification to producer thread after consuming values
+ * from queue.
+ *
+ *
+ */
+class Consumer extends Thread {
+    private Queue<Integer> queue;
+    private int maxSize;
+
+    public Consumer(Queue<Integer> queue, int maxSize, String name){
+        super(name);
+        this.queue = queue;
+        this.maxSize = maxSize;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            synchronized (queue) {
+                while (queue.isEmpty()) {
+                    System.out.println("Queue is empty,"
+                            + "Consumer thread is waiting"
+                            + " for producer thread to put something in queue");
+                    try {
+                        queue.wait();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+                System.out.println("Consuming value : " + queue.remove());
+                queue.notifyAll();
+            }
+
+        }
+    }
+}
+
+Output
+How to use wait and notify method in Java
+Solving Producer Consumper Problem
+Queue is empty,Consumer thread is waiting for producer thread to put something in queue
+Producing value : -1692411980
+Producing value : 285310787
+Producing value : -1045894970
+Producing value : 2140997307
+Producing value : 1379699468
+Producing value : 912077154
+Producing value : -1635438928
+Producing value : -500696499
+Producing value : -1985700664
+Producing value : 961945684
+Queue is full, Producer thread waiting for consumer to take something from queue
+Consuming value : -1692411980
+Consuming value : 285310787
+Consuming value : -1045894970
+Consuming value : 2140997307
+Consuming value : 1379699468
+Consuming value : 912077154
+Consuming value : -1635438928
+Consuming value : -500696499
+Consuming value : -1985700664
+Consuming value : 961945684
+Queue is empty,Consumer thread is waiting for producer thread to put something in queue
+Producing value : 1182138498
+
+
+more details at http://javarevisited.blogspot.in/2015/07/how-to-use-wait-notify-and-notifyall-in.html#axzz4hJulc43E
+
+http://javarevisited.blogspot.in/2011/05/wait-notify-and-notifyall-in-java.html#axzz4hJulc43E
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Producer Consumer Problem">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

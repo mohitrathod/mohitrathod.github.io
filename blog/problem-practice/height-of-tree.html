@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Find height of tree - Coding Problem Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="&#x27;&#x27;&#x27; input tree 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 &#x27;&#x27;&#x27; class Node: pass root = Node() root.data = 1 root.left = Node() root.right = Node() root.left.data = 2 root.left.left = Node() root.left.right =…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/problem-practice.html">Coding Problem Practice</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>Find height of tree</h1>
+
+<p class="publish-date">Published: <time datetime="2017-05-14">May 14, 2017</time></p>
+
+<hr>
+
+<pre>'''
+
+input tree
+
+                                1
+                2                               3
+        4                 5             6               7
+      8  9              10 11        12  13          14   15
+
+'''
+
+
+class Node:
+    pass
+
+
+root = Node()
+root.data = 1
+root.left = Node()
+root.right = Node()
+
+root.left.data = 2
+root.left.left = Node()
+root.left.right = Node()
+
+root.right.data = 3
+root.right.left = Node()
+root.right.right = Node()
+
+node2 = root.left
+node2.left.data = 4
+node2.right.data = 5
+
+node3 = root.right
+node3.left.data = 6
+node3.right.data = 7
+
+node4 = node2.left
+node4.left = Node()
+node4.left.data = 8
+node4.right = Node()
+node4.right.data = 9
+
+
+node5 = node2.right
+node5.left = Node()
+node5.left.data = 10
+node5.right = Node()
+node5.right.data = 11
+
+node6 = node3.left
+node6.left = Node()
+node6.left.data = 10
+
+node10 = node5.left
+node10.left = Node()
+node10.left.data = 16
+
+
+# node7 = node3.right
+# node7.right = Node()
+# node7.right.data = 11
+
+
+maxLength = 0
+
+def findHightOfTree(head, length):
+    if head is None:
+        print(length)
+        return length
+    maxHeight = 0
+    if hasattr(head, "left"):
+        lhight = findHightOfTree(head.left, length)
+        maxHeight = lhight + 1
+    if hasattr(head, "right"):
+        rhight = findHightOfTree(head.right, length)
+        if maxHeight - 1 < rhight:
+            maxHeight = rhight+1
+
+    print(maxHeight)
+    return maxHeight;
+
+print(findHightOfTree(root, 0))
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Find height of tree">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

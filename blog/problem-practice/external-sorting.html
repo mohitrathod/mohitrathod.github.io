@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Sort a file with huge volume of data given memory constraint - Coding Problem Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Points: We process thousands of flat files in a day, concurrently. Memory constraint is a major issue. We use thread for each file process. We don&#x27;t sort by columns. Each line (record) in the file is…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/problem-practice.html">Coding Problem Practice</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>Sort a file with huge volume of data given memory constraint</h1>
+
+<p class="publish-date">Published: <time datetime="2018-02-20">February 20, 2018</time></p>
+
+<hr>
+
+<pre>Points:
+
+    We process thousands of flat files in a day, concurrently.
+    Memory constraint is a major issue.
+    We use thread for each file process.
+    We don't sort by columns. Each line (record) in the file is treated as one column.
+
+Can't Do:
+
+    We cannot use unix/linux's sort commands.
+    We cannot use any database system no matter how light they can be.
+
+Now, we cannot just load everything in a collection and use the sort mechanism. It will eat up all the memory and the program is gonna get a heap error.
+
+In that situation, how would you sort the records/lines in a file?
+
+
+One example of external sorting is the external merge sort algorithm, which is a K-way merge algorithm. It sorts chunks that each fit in RAM, then merges the sorted chunks together.[1][2]
+
+The algorithm first sorts M items at a time and puts the sorted lists back into external memory. It then recursively does a M B {\displaystyle {\tfrac {M}{B}}} {\displaystyle {\tfrac {M}{B}}}-way merge on those sorted lists. To do this merge, B elements from each sorted list are loaded into internal memory, and the minimum is repeatedly outputted.
+
+For example, for sorting 900 megabytes of data using only 100 megabytes of RAM:
+
+1. Read 100 MB of the data in main memory and sort by some conventional method, like quicksort.
+
+2. Write the sorted data to disk.
+
+3. Repeat steps 1 and 2 until all of the data is in sorted 100 MB chunks (there are 900MB / 100MB = 9 chunks), which now need to be merged into one single output file.
+
+4. Read the first 10 MB (= 100MB / (9 chunks + 1)) of each sorted chunk into input buffers in main memory and allocate the remaining 10 MB for an output buffer. (In practice, it might provide better performance to make the output buffer larger and the input buffers slightly smaller.)
+
+5. Perform a 9-way merge and store the result in the output buffer. Whenever the output buffer fills, write it to the final sorted file and empty it. Whenever any of the 9 input buffers empties, fill it with the next 10 MB of its associated 100 MB sorted chunk until no more data from the chunk is available. This is the key step that makes external merge sort work externally -- because the merge algorithm only makes one pass sequentially through each of the chunks, each chunk does not have to be loaded completely; rather, sequential parts of the chunk can be loaded as needed.
+
+Historically, instead of a sort, sometimes a replacement-selection algorithm was used to perform the initial distribution, to produce on average half as many output chunks of double the length.
+
+
+2-way merge
+
+A 2-way merge, or a binary merge, has been studied extensively due to its key role in merge sort. An example of such is the classic merge that appears frequently in merge sort examples. The classic merge outputs the data item with the lowest key at each step; given some sorted lists, it produces a sorted list containing all the elements in any of the input lists, and it does so in time proportional to the sum of the lengths of the input lists.
+
+
+k-way merge
+
+The k-way merge problem consists of merging k sorted arrays to produce a single sorted array with the same elements. Denote by n the total number of elements. n is equal to the size of the output array and the sum of the sizes of the k input arrays. For simplicity, we assume that none of the input arrays is empty. As a consequence k < n, which simplifies the reported running times. The problem can be solved in O(n log k) running time with O(n) space. Several algorithms that achieve this running time exist.
+
+added on 20-Feb-2018
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Sort a file with huge volume of data given memory constraint">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

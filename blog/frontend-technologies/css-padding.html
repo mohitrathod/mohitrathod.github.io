@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>CSS Padding - Frontend Technologies</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The CSS padding properties are used to generate space around an element&#x27;s content, inside of any defined borders. With CSS, you have full control over the padding. There are properties for setting…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/frontend-technologies.html">Frontend Technologies</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>CSS Padding</h1>
+
+<p class="publish-date">Published: <time datetime="2018-02-10">February 10, 2018</time></p>
+
+<hr>
+
+<pre>The CSS padding properties are used to generate space around an element's content, inside of any defined borders.
+
+With CSS, you have full control over the padding. There are properties for setting the padding for each side of an element (top, right, bottom, and left).
+Padding - Individual Sides
+
+CSS has properties for specifying the padding for each side of an element:
+
+    padding-top
+    padding-right
+    padding-bottom
+    padding-left
+
+All the padding properties can have the following values:
+
+    length - specifies a padding in px, pt, cm, etc.
+    % - specifies a padding in % of the width of the containing element
+    inherit - specifies that the padding should be inherited from the parent element
+
+Note: Negative values are not allowed.
+
+The following example sets different padding for all four sides of a <div> element:
+
+Example
+
+div {
+    padding-top: 50px;
+    padding-right: 30px;
+    padding-bottom: 50px;
+    padding-left: 80px;
+}
+
+added on 10-Feb-2018
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="CSS Padding">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

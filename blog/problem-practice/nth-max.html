@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Find Nth Max or Largest element of unsorted array - Coding Problem Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="arr = [7,2,1,3,10,4,5,8,9,6] nthMax = 2 #specify max element here maxArr = arr for i in range (0, len(maxArr)): for j in range (i, len(maxArr)): if (maxArr[i] k){ q.poll(); } } return (int)q.peek();…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/problem-practice.html">Coding Problem Practice</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>Find Nth Max or Largest element of unsorted array</h1>
+
+<p class="publish-date">Published: <time datetime="2017-04-20">April 20, 2017</time></p>
+
+<hr>
+
+<pre>arr = [7,2,1,3,10,4,5,8,9,6]
+	nthMax = 2 #specify max element here
+	maxArr = arr
+
+	for i in range (0, len(maxArr)):
+	    for j in range (i, len(maxArr)):
+		if (maxArr[i] < maxArr[j]):
+		    maxArr[i],maxArr[j] = maxArr[j],maxArr[i]
+		    if i == nthMax:
+			break
+
+	print(maxArr)
+	print(maxArr[nthMax-1])
+
+
+-- java solution with Heap
+
+package com.company;
+
+import java.util.PriorityQueue;
+
+
+
+class JavaTest {
+
+    public static int findKthLargest(int[] nums, int k) {
+        PriorityQueue q = new PriorityQueue(k);
+        for(int i: nums){
+
+            q.offer(i);
+
+            if(q.size()>k){
+                q.poll();
+            }
+
+        }
+
+        return (int)q.peek();
+    }
+
+    public static void main (String[] args) throws java.lang.Exception
+    {
+
+        int[] arr = new int[]{7, 2, 1, 3, 10, 4, 5, 8, 9, 6};
+        int k = 2;
+
+        System.out.println(findKthLargest(arr, k));
+
+    }
+}
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Find Nth Max or Largest element of unsorted array">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

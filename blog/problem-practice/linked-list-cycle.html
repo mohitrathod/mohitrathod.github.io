@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Linked List Cycle Detect - Coding Problem Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Given a linked list, determine if it has a cycle in it. Analysis If we have 2 pointers - fast and slow. It is guaranteed that the fast one will meet the slow one if there exists a circle. The problem…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/problem-practice.html">Coding Problem Practice</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>Linked List Cycle Detect</h1>
+
+<p class="publish-date">Published: <time datetime="2017-07-22">July 22, 2017</time></p>
+
+<hr>
+
+<pre>Given a linked list, determine if it has a cycle in it.
+
+Analysis
+
+If we have 2 pointers - fast and slow. It is guaranteed that the fast one will meet the slow one if there exists a circle.
+
+The problem can be demonstrated in the following diagram:
+
+<img  width="300" height="211"  src="data:image/png;base64,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">
+
+Java Solution
+
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+
+        while(fast != null && fast.next != null){
+            slow = slow.next;
+            fast = fast.next.next;
+
+            if(slow == fast)
+                return true;
+        }
+
+        return false;
+    }
+}
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Linked List Cycle Detect">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

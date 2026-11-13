@@ -1,95 +1,42 @@
-from os import listdir, makedirs
-from os.path import isfile, join, dirname, realpath
+from glob import glob
+from os.path import dirname, realpath
+import html
 import re
 
 
-class URLDetails:
-    name = None
-    link = None
-    child = []
-
-
 currPath = dirname(realpath(__file__))
-navPath = currPath + '/blog'
+template = open(currPath + "/html/sitemap-template.html", "r", encoding="utf-8").read()
 
-template = open(currPath  + "/html/sitemap-template.html", 'r').read()
-allListing = []
+replacement = []
 
+for indexFile in sorted(glob(currPath + "/blog/*.html")):
+    with open(indexFile, "r", encoding="utf-8") as handle:
+        content = handle.read()
 
-def processFiles(currentPath, inputFiles):
-    for file in inputFiles:
-        url = currentPath + '\\' + file
-        ptn = '/blog(.*)'
-        matches = re.findall(ptn, url)
-        if len(matches) > 0:
-            url = matches[0]
-            url = url.replace('\\', '/')
-            url = url.replace('.html', '')
-            print(url)
-            allListing.append(url)
-            # also process content of file
-            fileHandel = open(navPath + url+'.html', 'r').read()
-            print(fileHandel)
-            ptn2 = '#(.*)"'
-            matches2 = re.findall(ptn2, fileHandel)
-            if len(matches2) > 0:
-                for url2 in matches2:
-                    allListing.append( url + '#' + url2)
+    if 'class="java-toc"' not in content:
+        continue
 
+    heading = re.search(r"<h1[^>]*>(.*?)</h1>", content, re.S)
+    if not heading:
+        continue
 
-def getFilesOfDirs(currentDir):
-    filesT = [f for f in listdir(currentDir) if isfile(join(currentDir, f))]
-    processFiles(currentDir, filesT)
+    label = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", heading.group(1))).strip()
+    indexUrl = "/blog/" + indexFile.rsplit("/", 1)[-1].replace(".html", "")
+    replacement.append("")
+    replacement.append("<a href='%s'>%s</a>" % (indexUrl, html.escape(label)))
 
-    inputDirs = [f for f in listdir(currentDir) if not isfile(join(currentDir, f))]
+    articles = re.findall(
+        r'<a[^>]*class="java-article"[^>]*href="([^"]+)"[^>]*>.*?'
+        r'<span class="java-article-title">(.*?)</span>',
+        content,
+        re.S,
+    )
+    for url, title in articles:
+        title = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", title)).strip()
+        replacement.append("  <a href='%s'>%s</a>" % (url, html.escape(title)))
 
-    for dir in inputDirs:
-        if dir == '.git' or dir == 'static':
-            continue
-        # filesT = [f for f in listdir(currentDir + '\\' + dir) if isfile(join(currentDir + '\\' + dir, f))]
-        # processFiles(currentDir + '\\' + dir, filesT)
-        getFilesOfDirs(currentDir + '\\' + dir)
+sitemap = template.replace("_BLOCK_TO_REPLACE_", "\n".join(replacement))
+with open(currPath + "/sitemap.html", "w", encoding="utf-8") as handle:
+    handle.write(sitemap)
 
-
-# processFiles(mypath, files)
-
-baseRoot = URLDetails()
-
-def findNodeAndAdd(childs, strData):
-    for child in childs:
-        if child.name in strData:
-            child.childs.append(strData)
-
-
-def checkAndAdd(strData):
-    if strData.count('/') > 1:
-        findNodeAndAdd(baseRoot.child, strData)
-    else:
-        newChild = URLDetails()
-        newChild.link = '\'/blog' + strData + '\''
-        newChild.name = strData
-        baseRoot.child.append(newChild)
-
-
-def processLising():
-    replacement = []
-
-    for r1 in allListing:
-        if '#' in r1:
-            replacement.append('<a href=' + '\'/blog' + r1 + '\'>' + re.sub("(.*)#", '  ', re.sub("([a-z])([A-Z])","\g<1> \g<2>",r1)) + '</a>')
-        else:
-            replacement.append(' ')
-            replacement.append('<a href=' + '\'/blog' + r1 + '\'>' + re.sub("/", '', re.sub("([a-z])([A-Z])","\g<1> \g<2>",r1)) + '</a>')
-
-        checkAndAdd(r1)
-
-
-    data = template.replace('_BLOCK_TO_REPLACE_', '\n'.join(replacement))
-    with open(currPath + '/sitemap.html', "w+") as file:
-        file.write(data)
-    file.close()
-
-
-getFilesOfDirs(navPath)
-processLising()
-print(baseRoot)
+print("wrote sitemap.html with", sum(1 for line in replacement if line.strip().startswith("<a")), "links")

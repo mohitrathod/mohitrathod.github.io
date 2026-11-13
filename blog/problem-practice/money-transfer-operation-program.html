@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Money Transfer Operation Program - Coding Problem Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Write java program to perform a money transfer operation for a bank, which is multi-threaded and can run parallel with multi-processor machines Solution can be developed with cachedthreadpool and…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/problem-practice.html">Coding Problem Practice</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>Money Transfer Operation Program</h1>
+
+<p class="publish-date">Published: <time datetime="2017-07-22">July 22, 2017</time></p>
+
+<hr>
+
+<pre>Write java program to perform a money transfer operation  for a bank, which is multi-threaded and can run parallel with multi-processor machines
+
+Solution can be developed with cachedthreadpool and executorservices.
+
+FixedThreadPool vs CachedThreadPool: the lesser of two evils
+
+
+
+A CachedThreadPool is exactly what you should use for your situation as there are no negative consequence to using one for long running threads. The comment in the java doc about CachedThreadPools being suitable for short tasks merely suggest that they are particularly appropriate for such cases, not that they cannot or should not be used for tasks involving long running tasks.
+
+To elaborate further, Executors.newCachedThreadPool and Executors.newFixedThreadPool are both backed by the same thread pool implementation (at least in the open JDK) just with different parameters. The differences just being their thread minimum, maximum, thread kill time, and queue type.
+
+public static ExecutorService newFixedThreadPool(int nThreads) {
+     return new ThreadPoolExecutor(nThreads, nThreads,
+                                   0L, TimeUnit.MILLISECONDS,
+                                   new LinkedBlockingQueue<Runnable>());
+ }
+
+public static ExecutorService newCachedThreadPool() {
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                 60L, TimeUnit.SECONDS,
+                                 new SynchronousQueue<Runnable>());
+}
+
+A FixedThreadPool does have its advantages when you do in fact want to work with a fixed number of threads, since then you can submit any number of tasks to the executor service while knowing that the number of threads will be maintained at the level you specified. If you explicitly want to grow the number of threads, then this is not the appropriate choice.
+
+This does however mean that the one issue that you may have with the CachedThreadPool is in regards to limiting the number of threads that are running concurrently. The CachedThreadPool will not limit them for you, so you may need to write your own code to ensure that you do not run too many threads. This really depends on the design of your application and how tasks are submitted to the executor service.
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Money Transfer Operation Program">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

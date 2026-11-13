@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Reverse the LinkedList - Coding Problem Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="public class ReverseLinkedList { private static class SinglyLinkedList { Node head; // prints content of double linked list void printList(Node node) { while (node != null) {…">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/problem-practice.html">Coding Problem Practice</a>
+</div>
+
+<div style="padding-left: 2%; padding-right: 2%;">
+
+<h1>Reverse the LinkedList</h1>
+
+<p class="publish-date">Published: <time datetime="2016-11-08">November 8, 2016</time></p>
+
+<hr>
+
+<pre>public class ReverseLinkedList {
+
+
+    private static class SinglyLinkedList {
+
+        Node head;
+
+
+
+        // prints content of double linked list
+        void printList(Node node) {
+            while (node != null) {
+                System.out.print(node.data + " ");
+                node = node.next;
+            }
+        }
+
+
+
+        Node reverseV2( Node node, Node previous) {
+
+//	    	System.out.println(node.data + "->" + (previous == null ? "null" : previous.data) );
+
+            if ( node.next != null) {
+
+                Node next1 = node.next;
+
+                node.next = previous;
+
+                return reverseV2(next1, node);
+
+            } else {
+
+                node.next = previous;
+                return node;
+
+            }
+
+
+        }
+
+    }
+
+
+    private static class Node {
+
+        int data;
+        Node next;
+        Node(int d) {
+            data = d;
+        }
+
+    }
+
+
+    public static void main(String[] args) {
+
+
+        SinglyLinkedList list = new SinglyLinkedList();
+        list.head = new Node(1);
+        list.head.next = new Node(2);
+        list.head.next.next = new Node(3);
+        list.head.next.next.next = new Node(4);
+
+        System.out.println("Original Linked list is :");
+        list.printList(list.head);
+        System.out.println("");
+        list.head = list.reverseV2(list.head, null);
+        System.out.println("");
+        System.out.println("Reversed linked list : ");
+        list.printList(list.head);
+    }
+
+}
+
+debug points
+
+linklist null->1->2->3->4
+
+reverse(1,null)
+next1 2,
+1->null
+reverse(2, 1)
+next1 3,
+2->1->null
+reverse(3, 2)
+next1 4,
+3->2->1->null
+reverse(4, 3)
+4->3->2->1->null
+return 4
+</pre>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="Reverse the LinkedList">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>
