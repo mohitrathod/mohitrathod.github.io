@@ -23,6 +23,9 @@
     <loc>https://mohitrathod.com/sitemap</loc>
   </url>
   <url>
+    <loc>https://mohitrathod.com/blog/cyber-security.html</loc>
+  </url>
+  <url>
     <loc>https://mohitrathod.com/blog/frontend-technologies.html</loc>
     <lastmod>2018-03-20</lastmod>
   </url>
@@ -171,15 +174,15 @@
     <lastmod>2018-07-09</lastmod>
   </url>
   <url>
-    <loc>https://mohitrathod.com/blog/machine-learning.html</loc>
+    <loc>https://mohitrathod.com/blog/machine-learning-and-ai.html</loc>
     <lastmod>2016-11-26</lastmod>
   </url>
   <url>
-    <loc>https://mohitrathod.com/blog/machine-learning/supervised-and-unsupervised-learning.html</loc>
+    <loc>https://mohitrathod.com/blog/machine-learning-and-ai/supervised-and-unsupervised-learning.html</loc>
     <lastmod>2016-11-26</lastmod>
   </url>
   <url>
-    <loc>https://mohitrathod.com/blog/machine-learning/further-topics-to-cover.html</loc>
+    <loc>https://mohitrathod.com/blog/machine-learning-and-ai/further-topics-to-cover.html</loc>
     <lastmod>2016-11-26</lastmod>
   </url>
   <url>
