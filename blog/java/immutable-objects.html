@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Immutable Objects</h1>
 
@@ -80,45 +80,34 @@
 
 <hr>
 
-<pre>An object is considered immutable if its state cannot change after it is constructed. Maximum reliance on immutable objects is widely accepted as a sound strategy for creating simple, reliable code.
-Immutable objects are particularly useful in concurrent applications. Since they cannot change state, they cannot be corrupted by thread interference or observed in an inconsistent state.
-Programmers are often reluctant to employ immutable objects, because they worry about the cost of creating a new object as opposed to updating an object in place. The impact of object creation is often overestimated, and can be offset by some of the efficiencies associated with immutable objects. These include decreased overhead due to garbage collection, and the elimination of code needed to protect mutable objects from corruption.
-The following subsections take a class whose instances are mutable and derives a class with immutable instances from it. In so doing, they give general rules for this kind of conversion and demonstrate some of the advantages of immutable objects.
-
-Immutable objects are simply objects whose state (the object's data) cannot change after construction. Examples of immutable objects from the JDK include String and Integer.
-
-Immutable objects greatly simplify your program, since they:
-
-    are simple to construct, test, and use
-    are automatically thread-safe and have no synchronization issues
-    don't need a copy constructor
-    don't need an implementation of clone
-    allow hashCode to use lazy initialization, and to cache its return value
-    don't need to be copied defensively when used as a field
-    make good Map keys and Set elements (these objects must not change state while in the collection)
-    have their class invariant established once upon construction, and it never needs to be checked again
-    always have "failure atomicity" (a term used by Joshua Bloch): if an immutable object throws an exception, it's never left in an undesirable or indeterminate state
-
-Immutable objects have a very compelling list of positive qualities. Without question, they are among the simplest and most robust kinds of classes you can possibly build. When you create immutable classes, entire categories of problems simply disappear.
-
-Make a class immutable by following these guidelines:
-
-    ensure the class cannot be overridden - make the class final, or use static factories and keep constructors private
-    make fields private and final
-    force callers to construct an object completely in a single step, instead of using a no-argument constructor combined with subsequent calls to setXXX methods (that is, avoid the Java Beans convention)
-    do not provide any methods which can change the state of the object in any way - not just setXXX methods, but any method which can change state
-    if the class has any mutable object fields, then they must be defensively copied when they pass between the class and its caller
-
-In Effective Java, Joshua Bloch makes this compelling recommendation :
-
-"Classes should be immutable unless there's a very good reason to make them mutable....If a class cannot be made immutable, limit its mutability as much as possible."
-
-It's interesting to note that BigDecimal is technically not immutable, since it's not final.
-
-Example
-
-
-import java.util.Date;
+<p>An object is considered immutable if its state cannot change after it is constructed. Maximum reliance on immutable objects is widely accepted as a sound strategy for creating simple, reliable code. Immutable objects are particularly useful in concurrent applications. Since they cannot change state, they cannot be corrupted by thread interference or observed in an inconsistent state. Programmers are often reluctant to employ immutable objects, because they worry about the cost of creating a new object as opposed to updating an object in place. The impact of object creation is often overestimated, and can be offset by some of the efficiencies associated with immutable objects. These include decreased overhead due to garbage collection, and the elimination of code needed to protect mutable objects from corruption. The following subsections take a class whose instances are mutable and derives a class with immutable instances from it. In so doing, they give general rules for this kind of conversion and demonstrate some of the advantages of immutable objects.</p>
+<p>Immutable objects are simply objects whose state (the object's data) cannot change after construction. Examples of immutable objects from the JDK include String and Integer.</p>
+<p><strong>Immutable objects greatly simplify your program, since they:</strong></p>
+<ul>
+<li>are simple to construct, test, and use</li>
+<li>are automatically thread-safe and have no synchronization issues</li>
+<li>don't need a copy constructor</li>
+<li>don't need an implementation of clone</li>
+<li>allow hashCode to use lazy initialization, and to cache its return value</li>
+<li>don't need to be copied defensively when used as a field</li>
+<li>make good Map keys and Set elements (these objects must not change state while in the collection)</li>
+<li>have their class invariant established once upon construction, and it never needs to be checked again</li>
+<li>always have "failure atomicity" (a term used by Joshua Bloch): if an immutable object throws an exception, it's never left in an undesirable or indeterminate state</li>
+</ul>
+<p>Immutable objects have a very compelling list of positive qualities. Without question, they are among the simplest and most robust kinds of classes you can possibly build. When you create immutable classes, entire categories of problems simply disappear.</p>
+<p><strong>Make a class immutable by following these guidelines:</strong></p>
+<ul>
+<li>ensure the class cannot be overridden - make the class final, or use static factories and keep constructors private</li>
+<li>make fields private and final</li>
+<li>force callers to construct an object completely in a single step, instead of using a no-argument constructor combined with subsequent calls to setXXX methods (that is, avoid the Java Beans convention)</li>
+<li>do not provide any methods which can change the state of the object in any way - not just setXXX methods, but any method which can change state</li>
+<li>if the class has any mutable object fields, then they must be defensively copied when they pass between the class and its caller</li>
+</ul>
+<p>In Effective Java, Joshua Bloch makes this compelling recommendation :</p>
+<p>"Classes should be immutable unless there's a very good reason to make them mutable....If a class cannot be made immutable, limit its mutability as much as possible."</p>
+<p>It's interesting to note that BigDecimal is technically not immutable, since it's not final.</p>
+<h2>Example</h2>
+<pre><code>import java.util.Date;
 
 /**
 * Planet is an immutable class, since there is no way to change
@@ -203,21 +192,13 @@ public final class Planet {
   * created elsewhere.)
   */
   private final Date fDateOfDiscovery;
-}
-
-If immutable objects are good, why do people keep creating mutable objects?
-
-
-Both mutable and immutable objects have their own uses, pros and cons.
-
-Immutable objects do indeed make life simpler in many cases. They are especially applicable for value types, where objects don't have an identity so they can be easily replaced. And they can make concurrent programming way safer and cleaner (most of the notoriously hard to find concurrency bugs are ultimately caused by mutable state shared between threads). However, for large and/or complex objects, creating a new copy of the object for every single change can be very costly and/or tedious. And for objects with a distinct identity, changing an existing objects is much more simple and intuitive than creating a new, modified copy of it.
-
-Think about a game character. In games, speed is top priority, so representing your game characters with mutable objects will most likely make your game run significantly faster than an alternative implementation where a new copy of the game character is spawned for every little change.
-
-Moreover, our perception of the real world is inevitably based on mutable objects. When you fill up your car with fuel at the gas station, you perceive it as the same object all along (i.e. its identity is maintained while its state is changing) - not as if the old car with an empty tank got replaced with consecutive new car instances having their tank gradually more and more full. So whenever we are modeling some real-world domain in a program, it is usually more straightforward and easier to implement the domain model using mutable objects to represent real-world entities.
-
-Apart from all these legitimate reasons, alas, the most probable cause why people keep creating mutable objects is inertia of mind, a.k.a. resistance to change. Note that most developers of today have been trained well before immutability (and the containing paradigm, functional programming) became "trendy" in their sphere of influence, and don't keep their knowledge up to date about new tools and methods of our trade - in fact, many of us humans positively resist new ideas and processes. "I have been programming like this for nn years and I don't care about the latest stupid fads!"
-</pre>
+}</code></pre>
+<p>If immutable objects are good, why do people keep creating mutable objects?</p>
+<p>Both mutable and immutable objects have their own uses, pros and cons.</p>
+<p>Immutable objects do indeed make life simpler in many cases. They are especially applicable for value types, where objects don't have an identity so they can be easily replaced. And they can make concurrent programming way safer and cleaner (most of the notoriously hard to find concurrency bugs are ultimately caused by mutable state shared between threads). However, for large and/or complex objects, creating a new copy of the object for every single change can be very costly and/or tedious. And for objects with a distinct identity, changing an existing objects is much more simple and intuitive than creating a new, modified copy of it.</p>
+<p>Think about a game character. In games, speed is top priority, so representing your game characters with mutable objects will most likely make your game run significantly faster than an alternative implementation where a new copy of the game character is spawned for every little change.</p>
+<p>Moreover, our perception of the real world is inevitably based on mutable objects. When you fill up your car with fuel at the gas station, you perceive it as the same object all along (i.e. its identity is maintained while its state is changing) - not as if the old car with an empty tank got replaced with consecutive new car instances having their tank gradually more and more full. So whenever we are modeling some real-world domain in a program, it is usually more straightforward and easier to implement the domain model using mutable objects to represent real-world entities.</p>
+<p>Apart from all these legitimate reasons, alas, the most probable cause why people keep creating mutable objects is inertia of mind, a.k.a. resistance to change. Note that most developers of today have been trained well before immutability (and the containing paradigm, functional programming) became "trendy" in their sphere of influence, and don't keep their knowledge up to date about new tools and methods of our trade - in fact, many of us humans positively resist new ideas and processes. "I have been programming like this for nn years and I don't care about the latest stupid fads!"</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Immutable Objects">Share</button>

@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Java.lang.Thread.yield() Method</h1>
 
@@ -80,24 +80,18 @@
 
 <hr>
 
-<pre>Description
-The java.lang.Thread.yield() method causes the currently executing thread object to temporarily pause and allow other threads to execute.
-
-Declaration
-Following is the declaration for java.lang.Thread.yield() method
-
-public static void yield()
-Parameters
-NA
-
-Return Value
-This method does not return any value.
-
-Exception
-
-Example
-
-import java.lang.*;
+<h2>Description</h2>
+<p>The java.lang.Thread.yield() method causes the currently executing thread object to temporarily pause and allow other threads to execute.</p>
+<h2>Declaration</h2>
+<p>Following is the declaration for java.lang.Thread.yield() method</p>
+<pre><code>public static void yield()</code></pre>
+<h2>Parameters</h2>
+<p>NA</p>
+<h2>Return Value</h2>
+<p>This method does not return any value.</p>
+<h2>Exception</h2>
+<h2>Example</h2>
+<pre><code>import java.lang.*;
 
 public class ThreadDemo implements Runnable {
 
@@ -112,7 +106,7 @@ public class ThreadDemo implements Runnable {
 
    public void run() {
 
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i &lt; 5; i++) {
          // yields control to another thread every 5 iterations
          if ((i % 5) == 0) {
             System.out.println(Thread.currentThread().getName() + "
@@ -132,17 +126,14 @@ public class ThreadDemo implements Runnable {
       new ThreadDemo("Thread 2");
       new ThreadDemo("Thread 3");
    }
-}
-
-output--
-
-Thread 1 is yielding control...
+}</code></pre>
+<h2>Output</h2>
+<pre><code>Thread 1 is yielding control...
 Thread 2 is yielding control...
 Thread 3 is yielding control...
 Thread 1 has finished executing.
 Thread 2 has finished executing.
-Thread 3 has finished executing.
-</pre>
+Thread 3 has finished executing.</code></pre>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Java.lang.Thread.yield() Method">Share</button>

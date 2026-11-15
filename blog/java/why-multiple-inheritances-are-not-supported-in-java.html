@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Why multiple inheritances are not supported in Java ?</h1>
 
@@ -80,17 +80,12 @@
 
 <hr>
 
-<pre>The diamond problem
-A diamond class inheritance diagram.
-
-The "diamond problem" (sometimes referred to as the "deadly diamond of death"[4]) is an ambiguity that arises when two classes B and C inherit from A, and class D inherits from both B and C. If there is a method in A that B and C have overridden, and D does not override it, then which version of the method does D inherit: that of B, or that of C?
-
-For example, in the context of GUI software development, a class Button may inherit from both classes Rectangle (for appearance) and Clickable (for functionality/input handling), and classes Rectangle and Clickable both inherit from the Object class. Now if the equals method is called for a Button object and there is no such method in the Button class but there is an overridden equals method in Rectangle or Clickable (or both), which method should be eventually called?
-
-It is called the "diamond problem" because of the shape of the class inheritance diagram in this situation. In this case, class A is at the top, both B and C separately beneath it, and D joins the two together at the bottom to form a diamond shape.
-
-Java 8 introduces default methods on interfaces. If A,B,C are interfaces, B,C can each provide a different implementation to an abstract method of A, causing the diamond problem. Either class D must reimplement the method (the body of which can simply forward the call to one of the super implementations), or the ambiguity will be rejected as a compile error.[6] Prior to Java 8, Java was not subject to the Diamond problem risk, as Java does not support multiple inheritance.
-</pre>
+<h2>The diamond problem</h2>
+<p>A diamond class inheritance diagram.</p>
+<p>The "diamond problem" (sometimes referred to as the "deadly diamond of death"[4]) is an ambiguity that arises when two classes B and C inherit from A, and class D inherits from both B and C. If there is a method in A that B and C have overridden, and D does not override it, then which version of the method does D inherit: that of B, or that of C?</p>
+<p>For example, in the context of GUI software development, a class Button may inherit from both classes Rectangle (for appearance) and Clickable (for functionality/input handling), and classes Rectangle and Clickable both inherit from the Object class. Now if the equals method is called for a Button object and there is no such method in the Button class but there is an overridden equals method in Rectangle or Clickable (or both), which method should be eventually called?</p>
+<p>It is called the "diamond problem" because of the shape of the class inheritance diagram in this situation. In this case, class A is at the top, both B and C separately beneath it, and D joins the two together at the bottom to form a diamond shape.</p>
+<p>Java 8 introduces default methods on interfaces. If A,B,C are interfaces, B,C can each provide a different implementation to an abstract method of A, causing the diamond problem. Either class D must reimplement the method (the body of which can simply forward the call to one of the super implementations), or the ambiguity will be rejected as a compile error.[6] Prior to Java 8, Java was not subject to the Diamond problem risk, as Java does not support multiple inheritance.</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Why multiple inheritances are not supported in Java ?">Share</button>

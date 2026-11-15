@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>How can I sort a LinkedHashMap based on its values given that the LinkedHashMap contains of String and Integer. So I need to sort it based on the Values which are Integers.</h1>
 
@@ -80,10 +80,9 @@
 
 <hr>
 
-<pre>map.entrySet().stream()
+<pre><code>map.entrySet().stream()
     .sorted(Map.Entry.comparingByValue())
-    .forEach(entry -> ... );
-</pre>
+    .forEach(entry -&gt; ... );</code></pre>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="How can I sort a LinkedHashMap based on its values given that the LinkedHashMap contains of String and Integer. So I need to sort it based on the Values which are Integers.">Share</button>

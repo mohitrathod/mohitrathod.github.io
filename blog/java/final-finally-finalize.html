@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Difference between final, finally and finalize</h1>
 
@@ -80,16 +80,9 @@
 
 <hr>
 
-<pre>Final is used to apply restrictions on class, method and variable. Final class can't be inherited, final method can't be overridden and final variable value can't be changed.
-Finally is used to place important code, it will be executed whether exception is handled or not.
-Finalize is used to perform clean up processing just before object is garbage collected.
-
-Final is a keyword.
-Finally is a block.
-Finalize is a method.
-
-
-class FinalExample{
+<p>Final is used to apply restrictions on class, method and variable. Final class can't be inherited, final method can't be overridden and final variable value can't be changed. Finally is used to place important code, it will be executed whether exception is handled or not. Finalize is used to perform clean up processing just before object is garbage collected.</p>
+<p>Final is a keyword. Finally is a block. Finalize is a method.</p>
+<pre><code>class FinalExample{
 public static void main(String[] args){
 final int x=100;
 x=200;//Compile Time Error
@@ -111,8 +104,7 @@ FinalizeExample f2=new FinalizeExample();
 f1=null;
 f2=null;
 System.gc();
-}}
-</pre>
+}}</code></pre>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Difference between final, finally and finalize">Share</button>

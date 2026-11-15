@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Making Singleton thread safe</h1>
 
@@ -80,17 +80,14 @@
 
 <hr>
 
-<pre><h3>Thread Safety in Java Singleton Classes</h3>
-
-In general we follow below steps to create a singleton class:
-
-    1) Override the private constructor to avoid any new object creation with new operator.
-    2) Declare a private static instance of the same class
-    3) Provide a public static method that will return the singleton class instance variable. If the variable is not initialized then initialize it or else simply return the instance variable.
-
-<code>
-
-package com.journaldev.designpatterns;
+<h2>Thread Safety in Java Singleton Classes</h2>
+<p>In general we follow below steps to create a singleton class:</p>
+<ol>
+<li>Override the private constructor to avoid any new object creation with new operator.</li>
+<li>Declare a private static instance of the same class</li>
+<li>Provide a public static method that will return the singleton class instance variable. If the variable is not initialized then initialize it or else simply return the instance variable.</li>
+</ol>
+<pre><code>package com.journaldev.designpatterns;
 
 public class ASingleton {
 
@@ -106,51 +103,46 @@ public class ASingleton {
 		return instance;
 	}
 
-}
-
-</code>
-
-In the above code, getInstance() method is not thread safe. Multiple threads can access it at the same time and for the first few threads when the instance variable is not initialized, multiple threads can enters the if loop and create multiple instances and break our singleton implementation.
-
-There are three ways through which we can achieve thread safety.
-
-    <b>Create the instance variable at the time of class loading.</b>
-
-    Pros:
-        Thread safety without synchronization
-        Easy to implement
-
-    Cons:
-        Early creation of resource that might not be used in the application.
-        The client application can’t pass any argument, so we can’t reuse it. For example, having a generic singleton class for database connection where client application supplies database server properties.
-
-    <b>Synchronize the getInstance() method</b>
-
-    Pros:
-        Thread safety is guaranteed.
-        Client application can pass parameters
-        Lazy initialization achieved
-
-    Cons:
-        Slow performance because of locking overhead.
-        Unnecessary synchronization that is not required once the instance variable is initialized.
-
-    <b>Use synchronized block inside the if loop and volatile variable</b>
-
-    Pros:
-        Thread safety is guaranteed
-        Client application can pass arguments
-        Lazy initialization achieved
-        Synchronization overhead is minimal and applicable only for first few threads when the variable is null.
-
-    Cons:
-        Extra if condition
-
-Looking at all the three ways to achieve thread safety, I think third one is the best option and in that case the modified class will look like:
-
-<code>
-
-package com.journaldev.designpatterns;
+}</code></pre>
+<p>In the above code, getInstance() method is not thread safe. Multiple threads can access it at the same time and for the first few threads when the instance variable is not initialized, multiple threads can enters the if loop and create multiple instances and break our singleton implementation.</p>
+<p>There are three ways through which we can achieve thread safety.</p>
+<h3>Create the instance variable at the time of class loading.</h3>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Thread safety without synchronization</li>
+<li>Easy to implement</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Early creation of resource that might not be used in the application.</li>
+<li>The client application can’t pass any argument, so we can’t reuse it. For example, having a generic singleton class for database connection where client application supplies database server properties.</li>
+</ul>
+<h3>Synchronize the getInstance() method</h3>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Thread safety is guaranteed.</li>
+<li>Client application can pass parameters</li>
+<li>Lazy initialization achieved</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Slow performance because of locking overhead.</li>
+<li>Unnecessary synchronization that is not required once the instance variable is initialized.</li>
+</ul>
+<h3>Use synchronized block inside the if loop and volatile variable</h3>
+<p><strong>Pros:</strong></p>
+<ul>
+<li>Thread safety is guaranteed</li>
+<li>Client application can pass arguments</li>
+<li>Lazy initialization achieved</li>
+<li>Synchronization overhead is minimal and applicable only for first few threads when the variable is null.</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li>Extra if condition</li>
+</ul>
+<p>Looking at all the three ways to achieve thread safety, I think third one is the best option and in that case the modified class will look like:</p>
+<pre><code>package com.journaldev.designpatterns;
 
 public class ASingleton {
 
@@ -172,15 +164,9 @@ public static ASingleton getInstance() {
 	return result;
 }
 
-}
-
-
-</code>
-
-Local variable result seems unnecessary. But it’s there to improve performance of our code. In cases where instance is already initialized (most of the time), the volatile field is only accessed once (due to “return result;” instead of “return instance;”). This can improve the method’s overall performance by as much as 25 percent.
-
-If you think there are better ways to achieve this or the thread safety is compromised in the above implementation, please comment and share with all of us.
-</pre>
+}</code></pre>
+<p>Local variable result seems unnecessary. But it’s there to improve performance of our code. In cases where instance is already initialized (most of the time), the volatile field is only accessed once (due to “return result;” instead of “return instance;”). This can improve the method’s overall performance by as much as 25 percent.</p>
+<p>If you think there are better ways to achieve this or the thread safety is compromised in the above implementation, please comment and share with all of us.</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Making Singleton thread safe">Share</button>

@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Volatile Vs Atomic</h1>
 
@@ -80,12 +80,9 @@
 
 <hr>
 
-<pre>The effect of the volatile keyword is approximately that each individual read or write operation on that variable is atomic.
-
-Notably, however, an operation that requires more than one read/write -- such as i++, which is equivalent to i = i + 1, which does one read and one write -- is not atomic, since another thread may write to i between the read and the write.
-
-The Atomic classes, like AtomicInteger and AtomicReference, provide a wider variety of operations atomically, specifically including increment for AtomicInteger.
-</pre>
+<p>The effect of the volatile keyword is approximately that each individual read or write operation on that variable is atomic.</p>
+<p>Notably, however, an operation that requires more than one read/write -- such as i++, which is equivalent to i = i + 1, which does one read and one write -- is not atomic, since another thread may write to i between the read and the write.</p>
+<p>The Atomic classes, like AtomicInteger and AtomicReference, provide a wider variety of operations atomically, specifically including increment for AtomicInteger.</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Volatile Vs Atomic">Share</button>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>BM25 and Modern Search Algorithms: Inside Databases at Scale - S/W Theories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A practical deep dive into BM25, TF-IDF, inverted indexes, hybrid retrieval, and how databases from PostgreSQL and MySQL to Elasticsearch and SQLite implement search at scale.">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/custom.css" media="screen">
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/article-share.js"></script>
+        <!-- seo-meta -->
+  <link rel="canonical" href="https://mohitrathod.com/blog/software-theories/bm25-and-search-algorithms-at-scale.html">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Mohit Rathod">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Mohit Rathod">
+  <meta property="og:title" content="BM25 and Modern Search Algorithms: Inside Databases at Scale">
+  <meta property="og:description" content="A practical deep dive into BM25, TF-IDF, inverted indexes, hybrid retrieval, and how databases from PostgreSQL and MySQL to Elasticsearch and SQLite implement search at scale.">
+  <meta property="og:url" content="https://mohitrathod.com/blog/software-theories/bm25-and-search-algorithms-at-scale.html">
+  <meta property="article:published_time" content="2024-09-21">
+  <meta property="article:section" content="S/W Theories">
+  <meta property="article:author" content="Mohit Rathod">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="BM25 and Modern Search Algorithms: Inside Databases at Scale">
+  <meta name="twitter:description" content="A practical deep dive into BM25, TF-IDF, inverted indexes, hybrid retrieval, and how databases from PostgreSQL and MySQL to Elasticsearch and SQLite implement search at scale.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "BM25 and Modern Search Algorithms: Inside Databases at Scale",
+  "name": "BM25 and Modern Search Algorithms: Inside Databases at Scale",
+  "description": "A practical deep dive into BM25, TF-IDF, inverted indexes, hybrid retrieval, and how databases from PostgreSQL and MySQL to Elasticsearch and SQLite implement search at scale.",
+  "datePublished": "2024-09-21",
+  "dateModified": "2024-09-21",
+  "inLanguage": "en-US",
+  "articleSection": "S/W Theories",
+  "author": {
+    "@type": "Person",
+    "name": "Mohit Rathod",
+    "url": "https://mohitrathod.com/about"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Mohit Rathod"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://mohitrathod.com/blog/software-theories/bm25-and-search-algorithms-at-scale.html"
+  },
+  "url": "https://mohitrathod.com/blog/software-theories/bm25-and-search-algorithms-at-scale.html"
+}
+  </script>
+  <!-- /seo-meta -->
+  </head>
+
+  <script>
+    $(document).ready(function() {
+        $('#side-menu').load('/html/floating-menu.html');
+    });
+  </script>
+
+<body>
+
+<div id="side-menu"></div>
+
+<div class="scrollmenu">
+  <a href="/">Home</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/blog/software-theories.html">S/W Theories</a>
+</div>
+
+<div class="main-content">
+
+<h1>BM25 and Modern Search Algorithms: Inside Databases at Scale</h1>
+
+<p class="publish-date">Published: <time datetime="2024-09-21">September 21, 2024</time></p>
+
+<hr>
+
+<p>Every application eventually needs search. A product catalog, a log explorer, a documentation site, a support inbox, a code repository, or a retrieval-augmented generation (RAG) pipeline all reduce to the same question: given a query, which documents are relevant, and in what order?</p>
+
+<p>The surprising part is how much of the answer still comes down to one scoring function invented in the 1990s. BM25 (Best Matching 25) remains the default ranking algorithm in Lucene, Elasticsearch, OpenSearch, SQLite's FTS5, and many other systems. It is fast, interpretable, robust, and hard to beat as a baseline.</p>
+
+<p>This article is a practical tour of BM25 and the search algorithms around it, with a focus on how real databases implement search and what changes at scale. We will cover the inverted index, TF-IDF, BM25 and its variants, language models, dense retrieval and hybrid search, learning to rank, then walk through the major databases and the engineering tricks that make search work over billions of documents.</p>
+
+<nav aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ul>
+    <li><a href="#search-is-a-database-problem">1. Search is a database problem</a></li>
+    <li><a href="#inverted-index">2. The inverted index</a></li>
+    <li><a href="#boolean-retrieval-and-tf-idf">3. Boolean retrieval and TF-IDF</a></li>
+    <li><a href="#bm25">4. BM25: the workhorse</a></li>
+    <li><a href="#beyond-bm25">5. Beyond BM25</a></li>
+    <li><a href="#databases">6. How databases implement search</a></li>
+    <li><a href="#scale">7. Scale: a billion documents</a></li>
+    <li><a href="#time-and-space-complexity">8. Time and space complexity</a></li>
+    <li><a href="#industries">9. How industries use search</a></li>
+    <li><a href="#tuning-and-evaluation">10. Tuning and evaluation</a></li>
+    <li><a href="#decision-guide">11. A practical decision guide</a></li>
+    <li><a href="#key-takeaways">12. Key takeaways</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
+
+<h2 id="search-is-a-database-problem">1. Search is a database problem</h2>
+
+<p>It helps to separate three concerns that people often blur together:</p>
+
+<ul>
+  <li><strong>Retrieval:</strong> find a candidate set of documents that might be relevant.</li>
+  <li><strong>Ranking:</strong> order those candidates by predicted relevance.</li>
+  <li><strong>Presentation:</strong> filter, facet, highlight, paginate, and personalize.</li>
+</ul>
+
+<p>Databases own the data and the consistency guarantees. Search engines own the retrieval and ranking machinery. Modern systems increasingly blend the two: PostgreSQL ships full-text search, SQLite ships FTS5, MySQL and SQL Server ship FULLTEXT indexes, and search engines add aggregations, joins, and transactions.</p>
+
+<p>The core trade-off is straightforward:</p>
+
+<ul>
+  <li><strong>Database-first search</strong>
+    <ul>
+      <li>Pros: ACID, joins, permissions, one source of truth.</li>
+      <li>Pros: simpler operations for small and mid-sized corpora.</li>
+      <li>Cons: weaker relevance tooling and distributed scale.</li>
+    </ul>
+  </li>
+  <li><strong>Search-engine-first</strong>
+    <ul>
+      <li>Pros: excellent relevance, analyzers, facets, scale-out.</li>
+      <li>Pros: near-real-time indexing and a rich query DSL.</li>
+      <li>Cons: eventual consistency, duplication, operational overhead.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Most large companies end up with both: the database is the system of record, and a search engine (or a search extension inside the database) is a derived index fed by change data capture, triggers, or application writes.</p>
+
+<h2 id="inverted-index">2. The inverted index: the data structure behind everything</h2>
+
+<p>Almost every full-text system is built on an inverted index. Instead of scanning documents for query terms, it maps each term to the list of documents that contain it.</p>
+
+<p>A document goes through an analysis pipeline first:</p>
+
+<pre><code>raw text
+  -&gt; character filtering (HTML strip, Unicode normalization)
+  -&gt; tokenization (split into words)
+  -&gt; normalization (lowercase, accent folding)
+  -&gt; stop-word removal (optional)
+  -&gt; stemming or lemmatization (optional)
+  -&gt; synonyms and shingles (optional)</code></pre>
+
+<p>The result is a stream of terms. For each term the index stores a postings list:</p>
+
+<pre><code>term "bm25" -&gt; [ (doc 3,  tf 4, positions [12, 40, 88, 91]),
+                  (doc 9,  tf 1, positions [7]),
+                  (doc 17, tf 2, positions [3, 55]) ]</code></pre>
+
+<p>That single structure supports most of what users expect:</p>
+
+<ul>
+  <li>Boolean <code>AND</code>/<code>OR</code>/<code>NOT</code> via postings intersection and union.</li>
+  <li>Phrase queries ("exact phrase") via positional overlap.</li>
+  <li>Proximity queries (<code>bm25 NEAR ranking</code>) via position distance.</li>
+  <li>Ranked retrieval by scoring each posting and returning the top <code>k</code>.</li>
+  <li>Prefix and wildcard queries via sorted dictionaries, tries, or FSTs.</li>
+</ul>
+
+<p>Three more structures usually sit beside the postings:</p>
+
+<dl>
+  <dt>Dictionary (term &rarr; offset into postings)</dt>
+  <dd>Often a finite state transducer (FST), which is compact, ordered, and supports prefix and fuzzy traversal.</dd>
+  <dt>Postings (doc IDs, term frequencies, positions)</dt>
+  <dd>Compressed heavily because it dominates index size. Common encodings are delta + variable-byte, frame-of-reference, PForDelta, and Roaring bitmaps for filter-friendly fields.</dd>
+  <dt>Forward index / doc values (doc &rarr; terms or per-doc statistics)</dt>
+  <dd>Needed for scoring, sorting, faceting, highlighting, and machine-learned ranking features.</dd>
+</dl>
+
+<p>A useful mental model: the inverted index answers "which documents mention this term?", and the forward index answers "what is in this document?". Ranking is the process of combining many term-level answers into one score per document.</p>
+
+<h2 id="boolean-retrieval-and-tf-idf">3. Boolean retrieval and TF-IDF</h2>
+
+<p>Boolean retrieval is the oldest model. A query like:</p>
+
+<pre><code>bm25 AND (database OR search) NOT deprecated</code></pre>
+
+<p>is evaluated purely by set operations on postings. It is precise, explainable, and still valuable in legal, compliance, and security tools where missing a document is unacceptable. Its weakness is obvious: no ranking. A document that matches every term once looks the same as one that discusses the topic in depth.</p>
+
+<p>TF-IDF adds ranking with two intuitions:</p>
+
+<ul>
+  <li><strong>Term frequency (TF):</strong> the more often a term appears in a document, the more relevant that document probably is to the term.</li>
+  <li><strong>Inverse document frequency (IDF):</strong> rare terms are more informative than common ones. "The" appears everywhere; "BM25" does not.</li>
+</ul>
+
+<p>A classic formulation is:</p>
+
+<pre><code>score(D, Q) = sum over q in Q of  tf(q, D) * idf(q)
+
+idf(q) = log( N / df(q) )
+
+where N is the number of documents and df(q) is the number of documents
+containing q.</code></pre>
+
+<p>Variants normalize the term frequency (for example by dividing by document length) and use smoothed IDF. The vector space model treats each document and query as a vector of term weights and ranks by cosine similarity:</p>
+
+<pre><code>cos(q, d) = (q . d) / (||q|| * ||d||)</code></pre>
+
+<p>TF-IDF and cosine similarity powered the first generation of web search and are still useful for similarity, clustering, and lightweight semantic matching.</p>
+
+<p>But TF-IDF has two well-known problems:</p>
+
+<ol>
+  <li><strong>Unbounded term frequency.</strong> If a term appears 100 times, TF-IDF rewards it roughly 100 times more than a single occurrence. In practice, relevance saturates: the 100th occurrence adds almost nothing over the 5th.</li>
+  <li><strong>Crude length normalization.</strong> Long documents naturally contain more term occurrences. Dividing by raw length helps, but the relationship is not linear, and different fields (title vs body) deserve different treatment.</li>
+</ol>
+
+<p>BM25 was designed to fix exactly these issues.</p>
+
+<h2 id="bm25">4. BM25: the workhorse</h2>
+
+<p>BM25 is a probabilistic ranking function in the family of "Best Matching" models. The version used in production is usually the Okapi BM25 formula:</p>
+
+<pre><code>score(D, Q) = sum over q in Q of
+
+                   idf(q) * f(q, D) * (k1 + 1)
+    -------------------------------------------------------
+    f(q, D) + k1 * (1 - b + b * (|D| / avgdl))
+
+where:
+    f(q, D)  = term frequency of q in document D
+    |D|      = length of D in tokens
+    avgdl    = average document length in the collection
+    k1       = term-frequency saturation parameter (commonly 1.2 to 2.0)
+    b        = length-normalization parameter (commonly 0.75)</code></pre>
+
+<p>Lucene and most modern engines use a smoothed IDF that stays positive:</p>
+
+<pre><code>idf(q) = ln( 1 + (N - n(q) + 0.5) / (n(q) + 0.5) )
+
+where N is the total number of documents and n(q) is the number of documents
+containing q.</code></pre>
+
+<p>This <code>ln(1 + ...)</code> form avoids negative scores for terms that appear in more than half the collection, which the original Robertson-Sparck Jones IDF could produce.</p>
+
+<p>Intuition for the two knobs:</p>
+
+<dl>
+  <dt><code>k1</code> controls saturation.</dt>
+  <dd>As <code>f(q, D)</code> grows, the score approaches an asymptote instead of growing without bound. With <code>k1 = 1.2</code>, going from 1 to 2 occurrences adds a lot; going from 10 to 20 adds comparatively little. Smaller <code>k1</code> saturates sooner, larger <code>k1</code> rewards repetition more.</dd>
+  <dt><code>b</code> controls length normalization.</dt>
+  <dd><code>b = 0</code> disables it. <code>b = 1</code> applies full normalization by <code>|D| / avgdl</code>. <code>b = 0.75</code> is a strong default. Lower <code>b</code> for short, uniform fields such as titles; higher <code>b</code> for long, variable fields such as articles.</dd>
+</dl>
+
+<p>A useful way to read the formula is as a ratio:</p>
+
+<ul>
+  <li>The numerator rewards matches, weighted by IDF.</li>
+  <li>The denominator penalizes documents that are long relative to average, and prevents unbounded growth with repetition.</li>
+  <li>The <code>(k1 + 1)</code> factor keeps scores in a familiar range without changing ranking.</li>
+</ul>
+
+<p>BM25 is not magic. It simply encodes three things that tend to be true: rare terms matter more, repeated terms matter less and less, and long documents should not win just by being long.</p>
+
+<h3>Variants worth knowing</h3>
+
+<dl>
+  <dt>BM25+</dt>
+  <dd>Adds a positive lower bound so that even a single occurrence contributes meaningfully. Useful for short queries and short documents.</dd>
+  <dt>BM25L</dt>
+  <dd>Adjusts length normalization for long documents; sometimes helps on corpora with skewed length distributions.</dd>
+  <dt>BM25F (fields)</dt>
+  <dd>Handles multiple fields such as title, body, and anchor text. Field term frequencies are weighted and normalized, then combined before saturation:
+    <pre><code>tf'(q, D) = sum over fields f of
+                w_f * tf(q, D_f) / (1 - b_f + b_f * |D_f| / avgdl_f)
+
+score = idf(q) * tf'(q, D) * (k1 + 1) / (k1 + tf'(q, D))</code></pre>
+    This is why <code>title^3</code> and <code>body</code> style boosts work in Elasticsearch and why separate field lengths matter.
+  </dd>
+</dl>
+
+<p>Why BM25 endures:</p>
+
+<ul>
+  <li>It needs only term statistics already present in the inverted index.</li>
+  <li>It is cheap: one pass over matching postings per query term.</li>
+  <li>It is robust across domains with little tuning.</li>
+  <li>It is explainable, which matters for debugging and compliance.</li>
+  <li>It is a strong baseline that dense models still have to beat.</li>
+</ul>
+
+<h2 id="beyond-bm25">5. Beyond BM25: language models, vectors, and learning to rank</h2>
+
+<p>BM25 is not the only classical ranking model. Several alternatives are worth understanding because they appear in databases and search engines.</p>
+
+<h3>Query likelihood with language models</h3>
+
+<p>Treat each document as a language model and score the probability that it generated the query. A common smoothed form is Dirichlet smoothing:</p>
+
+<pre><code>score(D, Q) = sum over q in Q of
+                log( (tf(q, D) + mu * P(q | C)) / (|D| + mu) )</code></pre>
+
+<p>where <code>P(q | C)</code> is the collection language model and <code>mu</code> controls how much we trust the document versus the collection. This family is theoretically elegant and competitive with BM25, and it underlies systems such as Indri and Lemur. Many engines expose it as an alternative similarity.</p>
+
+<h3>Vector space and cosine similarity</h3>
+
+<p>Represent documents and queries as sparse TF-IDF vectors and rank by cosine. This is still common for similarity, deduplication, and recommendation, even when full-text search uses BM25.</p>
+
+<h3>Dense (semantic) retrieval</h3>
+
+<p>Neural encoders map queries and documents into a shared vector space. A bi-encoder embeds each document once and each query at search time, then an approximate nearest neighbor (ANN) index finds close vectors. Popular ANN structures include HNSW (a navigable small-world graph) and IVF with product quantization for memory efficiency.</p>
+
+<p>Dense retrieval shines when the query and document use different words: "cheap flights to Europe" can match "low-cost airfare to the EU". It is weaker on exact identifiers, rare tokens, product codes, and names, where lexical matching is precise.</p>
+
+<h3>Hybrid retrieval and reciprocal rank fusion</h3>
+
+<p>The industry default for serious search and RAG is hybrid: run BM25 and dense retrieval in parallel, then combine. Reciprocal Rank Fusion (RRF) is a simple, robust merger that uses ranks rather than raw scores:</p>
+
+<pre><code>score(d) = sum over retrievers r of  1 / (k + rank_r(d))</code></pre>
+
+<p>with <code>k</code> commonly set to 60. RRF avoids the score-calibration problem because BM25 scores and cosine similarities are not on the same scale.</p>
+
+<h3>Cross-encoder reranking</h3>
+
+<p>A cross-encoder reads the query and document together and produces a relevance score. It is far more accurate than a bi-encoder but too expensive to run over the whole corpus, so it is used on the top 50-200 candidates after retrieval. This retrieve-then-rerank pattern is standard in RAG.</p>
+
+<h3>Learning to rank (LTR)</h3>
+
+<p>Instead of hand-tuning a formula, collect features (BM25 per field, proximity, popularity, freshness, click signals) and train a model to order results. LambdaMART and related gradient-boosted trees are common. Elasticsearch, OpenSearch, Solr, and Vespa support LTR plugins. LTR usually sits on top of BM25 rather than replacing it: BM25 remains a strong retrieval feature.</p>
+
+<h3>Fuzzy, prefix, and n-gram matching</h3>
+
+<p>Typo tolerance uses edit distance (Levenshtein automata), often bounded to one or two edits. Prefix search uses sorted dictionaries, tries, or FSTs. N-gram indexes (character or token n-grams) support substring and CJK search at the cost of index size. Systems such as SQLite's trigram tokenizer, PostgreSQL's <code>pg_trgm</code>, and RediSearch's fuzzy matching all apply variations.</p>
+
+<h3>Query understanding</h3>
+
+<p>Spell correction, synonyms, stemming, query expansion (including pseudo-relevance feedback), intent classification, and entity recognition often improve results more than switching ranking formulas. Analysis choices are frequently higher-leverage than <code>k1</code> and <code>b</code>.</p>
+
+<h2 id="databases">6. How databases implement search</h2>
+
+<p>This is where theory meets operations. The same BM25 ideas show up with very different ergonomics, guarantees, and scaling models.</p>
+
+<h3>PostgreSQL</h3>
+
+<p>PostgreSQL has built-in full-text search using the <code>tsvector</code> and <code>tsquery</code> types. You convert text to a <code>tsvector</code>, build a GIN index (or GiST for specialized cases), and match with the <code>@@</code> operator.</p>
+
+<pre><code>ALTER TABLE docs ADD COLUMN search_vector tsvector
+  GENERATED ALWAYS AS (
+    setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
+    setweight(to_tsvector('english', coalesce(body,  '')), 'B')
+  ) STORED;
+
+CREATE INDEX docs_search_idx ON docs USING GIN (search_vector);
+
+SELECT id, title,
+       ts_rank_cd(search_vector, query) AS rank
+FROM docs, websearch_to_tsquery('english', 'bm25 search') query
+WHERE search_vector @@ query
+ORDER BY rank DESC
+LIMIT 20;</code></pre>
+
+<p>Important detail: <code>ts_rank</code> and <code>ts_rank_cd</code> are not BM25. They use term frequency and, for <code>ts_rank_cd</code>, cover density (proximity) with normalizing options. They are good enough for many applications but are not a drop-in BM25 implementation. For real BM25 inside Postgres, ParadeDB's <code>pg_search</code> extension (built on Tantivy) provides BM25 indexes.</p>
+
+<p>Other useful pieces:</p>
+
+<ul>
+  <li><code>websearch_to_tsquery</code> turns user-style input into a safe <code>tsquery</code>.</li>
+  <li><code>pg_trgm</code> adds trigram similarity for <code>LIKE</code>/<code>ILIKE</code> acceleration and fuzzy matching using GIN or GiST indexes.</li>
+  <li>The <code>rum</code> extension improves ranked scans and positional data.</li>
+  <li>GIN "fastupdate" buffers new entries in a pending list; tune or clean it for write-heavy workloads.</li>
+  <li>Store the <code>tsvector</code> as a generated column to avoid recomputing it.</li>
+</ul>
+
+<p>At scale, Postgres full-text is excellent for transactional applications and small-to-medium corpora. For very large corpora, heavy faceting, or complex relevance pipelines, teams often pair Postgres with an external search engine.</p>
+
+<h3>MySQL (InnoDB FULLTEXT)</h3>
+
+<p>MySQL provides FULLTEXT indexes on InnoDB (and MyISAM) tables:</p>
+
+<pre><code>ALTER TABLE docs ADD FULLTEXT INDEX ft_docs (title, body);
+
+SELECT id, title,
+       MATCH(title, body)
+         AGAINST ('bm25 search' IN NATURAL LANGUAGE MODE) AS score
+FROM docs
+WHERE MATCH(title, body)
+      AGAINST ('bm25 search' IN NATURAL LANGUAGE MODE)
+ORDER BY score DESC
+LIMIT 20;</code></pre>
+
+<p>Natural language mode returns a relevance score based on term frequency and document frequency, broadly TF-IDF-like rather than true BM25. Boolean mode supports operators such as <code>+</code> (required), <code>-</code> (excluded), <code>~</code> (negate rank), <code>"phrase"</code>, <code>*</code> (wildcard), and <code>@distance</code>, and is often the better choice for precise control.</p>
+
+<p>InnoDB implements full-text indexes with auxiliary tables (<code>FTS_DOC_ID</code> and <code>FTS_*_INDEX_*</code> tables) rather than a single opaque index. Defaults such as <code>innodb_ft_min_token_size</code> (usually 3) and the stopword list materially change results; plan for reindexing after changing them. For CJK languages, use the ngram parser. MySQL is single-node for this feature, so very large or high-QPS search usually moves to an external engine.</p>
+
+<h3>SQL Server</h3>
+
+<p>SQL Server uses full-text catalogs and predicates such as <code>CONTAINS</code> and <code>FREETEXT</code>, plus table-valued functions <code>CONTAINSTABLE</code> and <code>FREETEXTTABLE</code> that return a <code>RANK</code> column (0-1000). <code>CONTAINS</code> supports Boolean logic, phrases, proximity (<code>NEAR</code>), and <code>ISABOUT</code> with per-term weights. <code>FREETEXT</code> performs a broader meaning-based match. Language-specific word breakers, stemmers, stoplists, and thesauri are configurable.</p>
+
+<p>Full-text indexes are populated asynchronously and are often placed in a separate filegroup. The feature is mature and integrates well with .NET and enterprise stacks, but distributed relevance at web scale typically still uses a dedicated search engine.</p>
+
+<h3>Oracle Text</h3>
+
+<p>Oracle Text offers <code>CONTAINS</code> and <code>SCORE</code> (0-100) with index types tuned to different jobs: <code>CONTEXT</code> for large documents with linguistic and theme search, <code>CTXCAT</code> for small text columns combined with structured predicates, and <code>CTXRULE</code> for document classification. It supports stemming, fuzzy matching, thesaurus expansion, and <code>ABOUT</code> queries for themes. It is common in enterprise, legal, and records-management systems where the data already lives in Oracle.</p>
+
+<h3>SQLite FTS5</h3>
+
+<p>SQLite's FTS5 extension turns search into a virtual table and is one of the best embedded full-text options available anywhere:</p>
+
+<pre><code>CREATE VIRTUAL TABLE docs USING fts5(
+  title,
+  body,
+  tokenize = 'porter unicode61'
+);
+
+SELECT title, bm25(docs) AS rank
+FROM docs
+WHERE docs MATCH 'bm25 OR search'
+ORDER BY rank
+LIMIT 20;</code></pre>
+
+<p>FTS5 really does implement BM25 through the <code>bm25()</code> function, and its scores are ordered so that smaller (more negative) is better, which is why the query orders ascending. It also provides <code>highlight()</code> and <code>snippet()</code> for result presentation, prefix indexes, trigram tokenization for substring search, and external-content tables so the index can mirror a normal table.</p>
+
+<p>FTS5 is ideal for desktop, mobile, edge, and small-server applications. It is single-node, but it needs no separate service, which is a huge operational win for embedded products and local RAG.</p>
+
+<h3>Elasticsearch, OpenSearch, and Lucene</h3>
+
+<p>Lucene is the library underneath Elasticsearch, OpenSearch, and Solr, and it is the reference implementation of large-scale BM25. Lucene stores data in immutable segments. New documents are buffered, a refresh makes them searchable (one second by default), and background merges compact segments. Deletes are tombstones until a merge reclaims space.</p>
+
+<p>BM25 has been the default similarity since the Lucene 6 / Elasticsearch 5 era, replacing the older TF-IDF default. A typical query uses <code>multi_match</code> with field boosts:</p>
+
+<pre><code>GET /docs/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "bm25 search",
+      "fields": ["title^3", "body"],
+      "type": "best_fields"
+    }
+  }
+}</code></pre>
+
+<p>The analysis chain is where much of the real work happens: character filters, tokenizers, lowercase, stop words, stemmers, synonyms, and shingles. BM25 parameters are configurable per field via a similarity definition.</p>
+
+<p>Distributed relevance has a subtle wrinkle. By default, each shard computes IDF from its own documents, so the same document can score differently depending on shard layout. <code>dfs_query_then_fetch</code> performs a preliminary round trip to gather global term statistics; it improves consistency at the cost of latency. Many teams tune shard routing and accept minor drift instead.</p>
+
+<p>Scale features include dynamic pruning (WAND and Block-Max WAND), <code>search_after</code> for deep pagination, index sorting, aliases and rollover, index lifecycle management, tiered hot-warm-cold storage, and searchable snapshots. Shard sizing is a real design decision: too many small shards waste resources, while very large shards make recovery and rebalancing slow.</p>
+
+<h3>MongoDB Atlas Search</h3>
+
+<p>MongoDB's older <code>$text</code> indexes provide basic term matching, but Atlas Search is the modern option: an Apache Lucene-based engine exposed as the <code>$search</code> aggregation stage. It supports analyzers, text, phrase, autocomplete, and compound queries, returns a <code>searchScore</code>, and integrates with Atlas Vector Search for hybrid retrieval. You get Lucene-style relevance without running a separate cluster, at the cost of relying on the managed service.</p>
+
+<h3>RediSearch</h3>
+
+<p>RediSearch (bundled into recent Redis distributions) builds an in-memory inverted index and exposes <code>FT.CREATE</code> and <code>FT.SEARCH</code>. It supports BM25 and TF-IDF scoring via the <code>SCORER</code> option, plus vector fields (FLAT and HNSW) and hybrid queries. It is excellent for low-latency search over data that already fits in memory, such as autocomplete, session data, and caches. Memory cost and cluster sharding are the main constraints.</p>
+
+<h3>ClickHouse</h3>
+
+<p>ClickHouse approaches text from the analytics side. Token and n-gram bloom filter skip indexes (<code>tokenbf_v1</code>, <code>ngrambf_v1</code>) and functions such as <code>hasToken</code> accelerate filtering over huge datasets. Recent versions add experimental full-text indexing, but these are not a replacement for a BM25 relevance engine. The common pattern is to prefilter in ClickHouse and rank elsewhere, or to use ClickHouse for log analytics where time and attribute filters do most of the work.</p>
+
+<h3>Cloud warehouses: BigQuery, Snowflake, Databricks</h3>
+
+<p>Warehouse search features are optimized for filtering and exploration rather than relevance ranking. BigQuery provides the <code>SEARCH</code> operator and search indexes to accelerate token and phrase matching; Snowflake provides <code>CONTAINS</code> and managed Cortex Search, which blends keyword and vector retrieval for RAG. None of these exposes a tunable BM25 formula, and that is usually fine: analytics queries tend to be highly selective on structured columns, with text as an additional filter.</p>
+
+<h3>Cassandra and ScyllaDB</h3>
+
+<p>Wide-column stores generally do not implement BM25. Cassandra has secondary indexes and historically SASI, but these are not a relevance engine, and SASI is no longer recommended for new work. The standard pattern is to stream changes via CDC into Elasticsearch or OpenSearch and serve search there. ScyllaDB has been adding vector search, but full-text relevance still usually lives in a dedicated system.</p>
+
+<h3>Vector databases and hybrid engines</h3>
+
+<p><code>pgvector</code> adds HNSW and IVFFlat indexes to PostgreSQL, making it possible to keep relational data, full-text search, and embeddings in one database. Qdrant, Weaviate, and Milvus focus on ANN search and increasingly support sparse vectors (BM25-like or learned sparse representations) and hybrid fusion. Vespa goes further, combining BM25, dense retrieval, and multi-phase ranking expressions in one engine. The practical lesson: dense retrieval complements lexical search rather than replacing it, and hybrid is the default for production RAG.</p>
+
+<h3>Comparison at a glance</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Engine</th>
+      <th>Native full-text</th>
+      <th>BM25?</th>
+      <th>Best fit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>PostgreSQL</td><td><code>tsvector</code>/<code>tsquery</code></td><td>Not native; BM25 via ParadeDB</td><td>Transactional apps, small-medium corpora</td></tr>
+    <tr><td>MySQL InnoDB</td><td>FULLTEXT</td><td>TF-IDF-like</td><td>OLTP with light search</td></tr>
+    <tr><td>SQL Server</td><td>Full-text catalog</td><td>Proprietary rank</td><td>.NET / enterprise apps</td></tr>
+    <tr><td>Oracle</td><td>Oracle Text</td><td><code>SCORE</code> 0-100</td><td>Enterprise / legal</td></tr>
+    <tr><td>SQLite FTS5</td><td>FTS5 virtual table</td><td>Yes, <code>bm25()</code></td><td>Embedded / mobile / edge</td></tr>
+    <tr><td>Elasticsearch</td><td>Lucene</td><td>Yes, default</td><td>Search at scale, logs</td></tr>
+    <tr><td>OpenSearch</td><td>Lucene</td><td>Yes, default</td><td>Search at scale, logs</td></tr>
+    <tr><td>MongoDB Atlas</td><td>Lucene</td><td>Lucene scoring</td><td>App data plus search</td></tr>
+    <tr><td>RediSearch</td><td>In-memory index</td><td>Yes (<code>SCORER BM25</code>)</td><td>Low-latency / caching</td></tr>
+    <tr><td>ClickHouse</td><td>Skip indexes</td><td>No</td><td>Analytics plus filters</td></tr>
+    <tr><td>BigQuery</td><td><code>SEARCH</code> plus indexes</td><td>No</td><td>Warehouse filtering</td></tr>
+    <tr><td>Snowflake</td><td>Cortex Search</td><td>Managed hybrid</td><td>Warehouse plus RAG</td></tr>
+    <tr><td>Cassandra</td><td>Secondary indexes</td><td>No</td><td>Pair with external search</td></tr>
+  </tbody>
+</table>
+
+<h2 id="scale">7. Scale: what changes with a billion documents</h2>
+
+<p>At small scale, ranking quality dominates. At large scale, engineering dominates: index layout, memory, latency, and cost decide what is possible.</p>
+
+<h3>Sharding and replication</h3>
+
+<p>Documents are partitioned across primary shards, and each shard has replicas for availability and query throughput. The query fans out to all shards, each returns its top <code>k</code>, and a coordinating node merges the results. Replication scales reads; sharding scales corpus size and write throughput.</p>
+
+<h3>Local versus global IDF</h3>
+
+<p>Because each shard sees only its own documents, term statistics differ. A term that is rare globally can look common on one shard, flipping the ranking. Options include collecting global statistics (<code>dfs_query_then_fetch</code>), routing related documents together, or accepting the drift. The larger the corpus and the more skewed the sharding, the more this matters.</p>
+
+<h3>Segments, refreshes, and merges</h3>
+
+<p>Lucene-based engines write immutable segments. Indexing creates new segments, a refresh makes them searchable, and merges combine small segments into larger ones while removing deleted documents. Refresh interval is a direct latency-versus-throughput knob. Aggressive refreshes make data visible sooner but create many small segments and more merge work. Merging is background I/O that competes with queries, so bulk loads often use larger refresh intervals and then force a merge.</p>
+
+<h3>Postings compression and caching</h3>
+
+<p>Postings lists dominate index size. Delta encoding plus variable-byte or PForDelta compresses doc IDs and frequencies well. Roaring bitmaps speed up filter-heavy queries. The operating system page cache does a lot of the real work, which is why search nodes want plenty of RAM relative to the hot index working set. Query caches and filter caches help repeated traffic, not one-off long-tail queries.</p>
+
+<h3>Top-k pruning</h3>
+
+<p>Ranking every matching document is wasteful when only the top 10 or 100 are shown. Dynamic pruning algorithms such as WAND, Block-Max WAND, and MaxScore use upper bounds on term contributions to skip documents that cannot reach the current top-k threshold. These techniques are essential for long queries and large corpora. Search engines expose them indirectly through top-k and timeout settings; you rarely tune them directly, but you benefit from them constantly.</p>
+
+<h3>Deep pagination</h3>
+
+<p>Sorting a huge result set and returning page 10,000 is expensive. Many engines cap <code>from + size</code> (Elasticsearch defaults to 10,000). The scalable patterns are <code>search_after</code> with a stable sort, point-in-time snapshots, or cursor-based pagination. Product UIs rarely need deep pagination; they need better ranking so users never go that deep.</p>
+
+<h3>Write amplification and index maintenance</h3>
+
+<p>Every insert, update, and delete touches multiple structures. Full-text index maintenance can be much heavier than row storage. Bulk indexing, batching, and tuning refresh and translog durability are normal operational levers. Changing analyzers usually requires a full reindex, so treat the analysis configuration as a schema decision, not an afterthought.</p>
+
+<h3>Multi-tenancy and cost</h3>
+
+<p>Large systems often use one index per tenant or routing by tenant to keep queries local and relevance clean. Tiered storage moves older indices to cheaper hardware or searchable snapshots. The biggest cost lever is usually not the ranking algorithm but how much data you keep hot, how many replicas you run, and how large your shards are.</p>
+
+<h3>Latency budgets</h3>
+
+<p>A typical interactive search budget is 100-300 ms end to end. That budget is split across query parsing, fan-out, per-shard scoring, merging, reranking, and network. Cross-encoder reranking and LLM calls are usually asynchronous or limited to a small candidate set for this reason. Measure p95 and p99, not averages; tail latency is what users feel.</p>
+
+<h2 id="time-and-space-complexity">8. Time and space complexity</h2>
+
+<p>Search is fast because it avoids scanning the whole corpus, but the exact cost depends on how many postings a query touches, how many candidates survive pruning, and how much work happens after retrieval. The variables below appear throughout this section:</p>
+
+<ul>
+  <li><code>N</code> = number of documents</li>
+  <li><code>V</code> = vocabulary size (distinct terms)</li>
+  <li><code>T</code> = total number of tokens in the collection</li>
+  <li><code>L</code> = average document length in tokens</li>
+  <li><code>Q</code> = number of terms in the query</li>
+  <li><code>df(q)</code> = number of documents containing term <code>q</code></li>
+  <li><code>k</code> = number of results returned</li>
+  <li><code>d</code> = embedding dimension</li>
+  <li><code>C</code> = number of reranking candidates</li>
+  <li><code>S</code> = number of shards</li>
+  <li><code>F</code> = number of stored fields or per-document statistics</li>
+</ul>
+
+<h3>Indexing cost</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Operation</th>
+      <th>Complexity</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Analysis (tokenize, normalize, stem)</td><td><code>O(L)</code> time and space</td><td>Per document.</td></tr>
+    <tr><td>Build the inverted index</td><td><code>O(T + &Sigma; df log df)</code></td><td><code>O(T log T)</code> worst case; close to <code>O(T)</code> when postings arrive grouped.</td></tr>
+    <tr><td>Positional index</td><td><code>O(T)</code> positions</td><td>Plus per-position overhead.</td></tr>
+    <tr><td>Forward index / doc values</td><td><code>O(N * F)</code></td><td>Only for fields and statistics you store.</td></tr>
+    <tr><td>Dense vectors</td><td><code>O(N * d)</code></td><td>Commonly four bytes per value before quantization.</td></tr>
+  </tbody>
+</table>
+
+<h3>Query-time complexity</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Operation</th>
+      <th>Complexity</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Boolean AND (intersection)</td><td><code>O(df(p1) + df(p2))</code></td><td>Linear merge; roughly <code>O(min(df) * log(max(df) / min(df)))</code> with galloping and skip pointers.</td></tr>
+    <tr><td>Boolean OR (union)</td><td><code>O(&Sigma; df)</code></td><td>Sum over every query term.</td></tr>
+    <tr><td>Phrase / proximity</td><td><code>O(&Sigma; df) + O(matches)</code></td><td>Candidate gathering plus positional verification.</td></tr>
+    <tr><td>BM25 scoring</td><td><code>O(&Sigma; df(q))</code> worst case</td><td>Every matching posting may be scored; pruning reduces the practical cost but not the worst case.</td></tr>
+    <tr><td>TF-IDF / sparse cosine</td><td><code>O(&Sigma; df(q))</code></td><td>Or <code>O(|q| + |d|)</code> if you only visit nonzero entries.</td></tr>
+    <tr><td>Query likelihood</td><td><code>O(&Sigma; df(q))</code></td><td>Same posting traversal as BM25, with a log and smoothing term per posting.</td></tr>
+    <tr><td>Top-k selection</td><td><code>O(M log k)</code></td><td><code>O(M)</code> average with quickselect; full sort is <code>O(M log M)</code>.</td></tr>
+    <tr><td>Fuzzy / edit distance</td><td><code>O(|a| * |b|)</code></td><td>Levenshtein DP; <code>O(min(|a|, |b|))</code> space. Bounded automata are roughly <code>O(|q| * branching)</code> per dictionary step.</td></tr>
+    <tr><td>Prefix / wildcard</td><td><code>O(|prefix|) + O(output)</code></td><td>Trie or FST walk plus match enumeration.</td></tr>
+    <tr><td>Dense retrieval (exact)</td><td><code>O(N * d)</code></td><td>Fine for thousands of documents; too slow for millions.</td></tr>
+    <tr><td>Dense retrieval (HNSW)</td><td><code>O(log N)</code> expected</td><td>Graph hops per query; <code>O(N * d)</code> vectors plus <code>O(N * M)</code> edges.</td></tr>
+    <tr><td>Dense retrieval (IVF)</td><td><code>O(nprobe * (N / nlist) * d)</code></td><td><code>nprobe</code> controls the recall-versus-latency trade-off.</td></tr>
+    <tr><td>Cross-encoder reranking</td><td><code>O(C * L^2 * d)</code> per layer</td><td>Why <code>C</code> is kept to tens or low hundreds.</td></tr>
+    <tr><td>Learning to rank</td><td><code>O(C * F)</code></td><td>Feature extraction, especially text features, often dominates.</td></tr>
+    <tr><td>Distributed merge</td><td><code>O(S * k log k)</code></td><td>Plus <code>O(S * k)</code> network traffic; deep pagination makes this worse.</td></tr>
+    <tr><td>Hybrid fusion (RRF)</td><td><code>O(R * k log(R * k))</code></td><td>Or <code>O(R * k)</code> with a heap.</td></tr>
+  </tbody>
+</table>
+
+<h3>Space complexity at a glance</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Structure</th>
+      <th>Approximate space</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Inverted index (non-positional)</td><td><code>O(T)</code> postings, <code>O(V)</code> dictionary entries</td></tr>
+    <tr><td>Inverted index (positional)</td><td><code>O(T)</code> postings plus one entry per position</td></tr>
+    <tr><td>Forward index / doc values</td><td><code>O(N * F)</code></td></tr>
+    <tr><td>Dense vectors</td><td><code>O(N * d)</code>, reduced by quantization</td></tr>
+    <tr><td>HNSW graph</td><td><code>O(N * M)</code> edges for <code>M</code> links per node</td></tr>
+    <tr><td>Per-segment overhead</td><td><code>O(segments * V)</code> for segment dictionaries</td></tr>
+  </tbody>
+</table>
+
+<h3>Rules of thumb</h3>
+
+<ul>
+  <li>Query cost scales with the number of postings touched, not with <code>N</code>. That is the entire point of an inverted index.</li>
+  <li>Rare terms are cheap; very common terms are expensive. Removing or down-weighting stop words is both a relevance and a performance decision.</li>
+  <li>Top-k pruning turns many real queries from "score every match" into "score a small fraction of matches".</li>
+  <li>Reranking and LLM calls should run on tens to hundreds of candidates, not thousands.</li>
+  <li>ANN indexes trade recall and memory for speed. Measure <code>recall@k</code> alongside latency, or you may be optimizing the wrong thing.</li>
+</ul>
+
+<h2 id="industries">9. How industries use search</h2>
+
+<p>The same primitives recur across very different products. A few patterns are worth calling out.</p>
+
+<h3>E-commerce and marketplaces</h3>
+
+<p>Product search combines BM25 or BM25F over title, description, brand, and category with business signals: stock, margin, popularity, ratings, and personalization. Query understanding (spell correction, synonyms, unit and size normalization, intent detection) is critical. Facets and filters handle the structured side. Most systems use a fast lexical retriever plus a learning-to-rank or function-score layer for the final order.</p>
+
+<h3>Observability and logging</h3>
+
+<p>Tools such as Elasticsearch, OpenSearch, Loki, and Splunk are optimized for high ingest and time-bounded queries. Relevance is usually secondary to filters, aggregations, and fast scans. Index-per-day plus lifecycle policies keep costs manageable. BM25 still helps when engineers search free text in logs, but field filters and structured queries do most of the work.</p>
+
+<h3>Documentation and enterprise search</h3>
+
+<p>Hosted engines such as Algolia, Typesense, and Meilisearch focus on developer experience: typo tolerance, prefix search, faceting, and instant results. Enterprise suites emphasize permissions, connectors, and compliance. BM25-style lexical matching remains the backbone, often with semantic reranking for natural-language questions.</p>
+
+<h3>Code search</h3>
+
+<p>Code search is its own problem: symbol indexes, trigram indexes for regex and substring matching, and language-aware parsing matter more than BM25. GitHub, Sourcegraph, and similar tools combine structural indexes with text search. BM25 is useful for comments and documentation but is not the primary mechanism for matching identifiers.</p>
+
+<h3>RAG and AI assistants</h3>
+
+<p>Retrieval-augmented generation depends on retrieval quality. The standard architecture is hybrid: BM25 for exact terms, identifiers, and rare tokens; dense vectors for paraphrase and semantics; reciprocal rank fusion to merge; then a cross-encoder or LLM-based reranker on the top candidates. Chunking strategy, metadata filters, and freshness often matter more than the choice of embedding model. BM25 is the reliable floor that keeps RAG from missing exact matches.</p>
+
+<h3>Security and SIEM</h3>
+
+<p>Security search is precision-heavy and time-scoped. Boolean logic, indicators of compromise, and exact string matching dominate. Scale comes from event volume, not corpus diversity. Systems favor fast filtering and correlation over sophisticated relevance, though keyword scoring still helps analysts triage.</p>
+
+<h3>Legal and e-discovery</h3>
+
+<p>Recall and defensibility matter more than speed. Boolean and proximity queries, stemming control, and auditable ranking are important. Oracle Text and specialized e-discovery platforms are common. Explainability is a feature, not a nice-to-have.</p>
+
+<h2 id="tuning-and-evaluation">10. Tuning and evaluation</h2>
+
+<p>Search quality is an empirical discipline. A sensible workflow:</p>
+
+<ol>
+  <li><strong>Build an evaluation set.</strong> Collect 50-500 real queries with known relevant documents. Measure Precision@k, Recall@k, MRR, MAP, and nDCG@k. Public benchmarks such as BEIR, MS MARCO, and TREC Deep Learning are useful for sanity checks, but your own traffic is what matters.</li>
+  <li><strong>Start with BM25.</strong> It is fast, cheap, and a strong zero-shot baseline. BEIR famously showed that BM25 remains competitive across many out-of-domain tasks. Do not skip the baseline; you need it to prove that a more complex system is actually better.</li>
+  <li><strong>Tune analysis before parameters.</strong> Synonyms, stemming, stop words, language analyzers, and field boosts usually move quality more than small changes to <code>k1</code> and <code>b</code>. A title boost of 2-3x is a common starting point.</li>
+  <li><strong>Tune BM25 conservatively.</strong> <code>k1</code> around 1.2 and <code>b</code> around 0.75 are strong defaults. Lower <code>b</code> for short, uniform fields; raise it for long, variable fields. Change one thing at a time and re-measure.</li>
+  <li><strong>Add semantics with evidence.</strong> Add dense retrieval when queries and documents use different vocabulary. Use hybrid fusion rather than replacing lexical search. Add a reranker when the top-k ordering is the bottleneck and latency allows it.</li>
+  <li><strong>Evaluate online.</strong> Offline metrics do not capture user intent, freshness, or business value. Use click logs, A/B tests, and interleaving. Watch for position bias and feedback loops when training on clicks.</li>
+  <li><strong>Monitor production.</strong> Track latency percentiles, zero-result rate, click-through rate, and query distribution. Slow logs and query profiling reveal expensive patterns. Search quality regressions are often caused by data and analysis changes rather than ranking code.</li>
+</ol>
+
+<h2 id="decision-guide">11. A practical decision guide</h2>
+
+<ul>
+  <li><strong>Need ACID, joins, and moderate search in one system?</strong> Use PostgreSQL full-text search, add <code>pg_trgm</code> for fuzzy matching, and consider ParadeDB <code>pg_search</code> if you need true BM25.</li>
+  <li><strong>Building an embedded, desktop, mobile, or edge app?</strong> Use SQLite FTS5. It has real BM25, needs no server, and is extremely reliable.</li>
+  <li><strong>Need large-scale relevance, faceting, and log search?</strong> Use Elasticsearch or OpenSearch, size shards carefully, and lean on analysis, boosts, and hybrid retrieval.</li>
+  <li><strong>Need very low latency over in-memory data?</strong> Use RediSearch with BM25 scoring and vector fields.</li>
+  <li><strong>Already on MongoDB?</strong> Use Atlas Search for Lucene-based relevance and Atlas Vector Search for hybrid retrieval.</li>
+  <li><strong>Building RAG?</strong> Default to hybrid BM25 plus dense retrieval, fuse with RRF, then rerank the top candidates. Keep BM25 as the exact-match safety net.</li>
+  <li><strong>Doing analytics over huge text datasets?</strong> Prefilter in ClickHouse or a warehouse, then rank in a dedicated engine if relevance matters.</li>
+  <li><strong>Want a managed developer-friendly search experience?</strong> Consider Algolia, Typesense, Meilisearch, or a cloud search service.</li>
+</ul>
+
+<h2 id="key-takeaways">12. Key takeaways</h2>
+
+<ul>
+  <li>The inverted index is the foundation; analysis determines what is even searchable, and ranking determines what wins.</li>
+  <li>TF-IDF introduced the right intuitions but over-rewards repetition and handles length crudely.</li>
+  <li>BM25 fixes both with term-frequency saturation (<code>k1</code>) and length normalization (<code>b</code>), and remains the default for good reasons.</li>
+  <li>Databases increasingly ship full-text search. PostgreSQL, MySQL, SQL Server, Oracle, and SQLite each implement it differently; only some expose true BM25.</li>
+  <li>Lucene-based engines remain the reference for relevance at scale, with segment-based indexing, compressed postings, dynamic pruning, and mature distributed features.</li>
+  <li>Dense retrieval and hybrid search are now standard for semantic and RAG workloads, but lexical search is still the reliable baseline.</li>
+  <li>At scale, sharding, IDF locality, refresh and merge behavior, postings compression, top-k pruning, and cost management matter as much as the scoring formula.</li>
+  <li>Measure before optimizing. Start with BM25, build an evaluation set, tune analysis first, and add complexity only when the data proves it helps.</li>
+</ul>
+
+<p>Search has been "solved" many times and keeps being reinvented because the problem keeps growing. BM25 survived that churn not because it is perfect, but because it is a well-understood, efficient, and surprisingly strong foundation. Understanding it, and understanding how your database implements it, is one of the highest-leverage skills in modern application engineering.</p>
+
+<h2 id="references">References and further reading</h2>
+
+<ul>
+  <li>Manning, Raghavan, and Sch&uuml;tze. <em>Introduction to Information Retrieval</em>. Cambridge University Press, 2008.</li>
+  <li>Robertson and Zaragoza. <em>The Probabilistic Relevance Framework: BM25 and Beyond</em>. Foundations and Trends in Information Retrieval, 2009.</li>
+  <li>Thakur et al. <em>BEIR: A Heterogeneous Benchmark for Zero-shot Evaluation of Information Retrieval Models</em>. NeurIPS 2021. <a href="https://arxiv.org/abs/2104.08663">arxiv.org/abs/2104.08663</a></li>
+  <li>Cormack, Clarke, and Buettcher. <em>Reciprocal Rank Fusion Outperforms Condorcet and Individual Rank Learning Methods</em>. SIGIR 2009.</li>
+  <li>Broder et al. <em>Efficient Query Evaluation using a Two-Level Retrieval Process</em>. CIKM 2003. (WAND)</li>
+  <li>Ding and Suel. <em>Faster Top-k Document Retrieval Using Block-Max Indexes</em>. SIGIR 2011.</li>
+  <li>Lucene BM25Similarity documentation: <a href="https://lucene.apache.org/core/">lucene.apache.org/core</a></li>
+  <li>Elasticsearch reference: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html">elastic.co/guide</a></li>
+  <li>PostgreSQL full-text search: <a href="https://www.postgresql.org/docs/current/textsearch.html">postgresql.org/docs/current/textsearch.html</a></li>
+  <li>MySQL full-text search: <a href="https://dev.mysql.com/doc/refman/8.0/en/fulltext-search.html">dev.mysql.com/doc/refman/8.0/en/fulltext-search.html</a></li>
+  <li>SQLite FTS5: <a href="https://sqlite.org/fts5.html">sqlite.org/fts5.html</a></li>
+  <li>ParadeDB pg_search: <a href="https://github.com/paradedb/paradedb">github.com/paradedb/paradedb</a></li>
+  <li>pgvector: <a href="https://github.com/pgvector/pgvector">github.com/pgvector/pgvector</a></li>
+  <li>Microsoft MS MARCO: <a href="https://microsoft.github.io/msmarco/">microsoft.github.io/msmarco</a></li>
+</ul>
+
+<div class="article-actions">
+  <button type="button" class="share-button" data-share-title="BM25 and Modern Search Algorithms: Inside Databases at Scale">Share</button>
+  <a class="comment-button" href="https://docs.google.com/forms/d/e/1FAIpQLSdzyOM05glUrAKBQMwEJv2rJWa99mONm3qqCjolEpdayh8t-g/viewform" target="_blank" rel="noopener noreferrer">Comment</a>
+</div>
+
+</div>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-82393887-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+
+</body>
+
+</html>

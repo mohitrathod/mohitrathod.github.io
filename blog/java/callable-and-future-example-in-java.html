@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Callable and Future Example in Java</h1>
 
@@ -80,7 +80,7 @@
 
 <hr>
 
-<pre>import java.util.concurrent.Callable;
+<pre><code>import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -101,13 +101,13 @@ public class CallableAndFuture {
 
 
         System.out.println("submitted callable task to calculate factorial of 10");
-        Future<Long> result10 = es.submit(new FactorialCalculator(10l));
+        Future&lt;Long&gt; result10 = es.submit(new FactorialCalculator(10l));
 
         System.out.println("submitted callable task to calculate factorial of 15");
-        Future<Long> result15 = es.submit(new FactorialCalculator(15l));
+        Future&lt;Long&gt; result15 = es.submit(new FactorialCalculator(15l));
 
         System.out.println("submitted callable task to calculate factorial of 20");
-        Future<Long> result20 = es.submit(new FactorialCalculator(20l));
+        Future&lt;Long&gt; result20 = es.submit(new FactorialCalculator(20l));
 
         es.shutdown();
 
@@ -127,7 +127,7 @@ public class CallableAndFuture {
 
 }
 
-class FactorialCalculator implements Callable<Long> {
+class FactorialCalculator implements Callable&lt;Long&gt; {
 
     private Long number;
 
@@ -151,11 +151,9 @@ class FactorialCalculator implements Callable<Long> {
         return result;
     }
 
-}
-
-
-Output
-submitted callable task to calculate factorial of 10
+}</code></pre>
+<h2>Output</h2>
+<pre><code>submitted callable task to calculate factorial of 10
 submitted callable task to calculate factorial of 15
 submitted callable task to calculate factorial of 20
 Calling get method of Future to fetch result of factorial 10
@@ -163,21 +161,15 @@ factorial of 10 is : 3628800
 Calling get method of Future to get result of factorial 15
 factorial of 15 is : 1307674368000
 Calling get method of Future to get result of factorial 20
-factorial of 20 is : 2432902008176640000
-
-
-1) Callable is a SAM type interface, so it can be used in lambda expression.
-
-2) Callable has just one method call() which holds all the code needs to executed asynchronously.
-
-3) In Runnable interface, there was no way to return the result of computation or throw checked exception but with Callable you can both return a value and can throw checked exception.
-
-4) You can use get() method of Future to retrieve result once computation is done. You can check if computation is finished or not by using isDone() method.
-
-5) You can cancel the computation by using Future.cancel() method.
-
-6) get() is a blocking call and it blocks until computation is completed.
-</pre>
+factorial of 20 is : 2432902008176640000</code></pre>
+<ol>
+<li>Callable is a SAM type interface, so it can be used in lambda expression.</li>
+<li>Callable has just one method call() which holds all the code needs to executed asynchronously.</li>
+<li>In Runnable interface, there was no way to return the result of computation or throw checked exception but with Callable you can both return a value and can throw checked exception.</li>
+<li>You can use get() method of Future to retrieve result once computation is done. You can check if computation is finished or not by using isDone() method.</li>
+<li>You can cancel the computation by using Future.cancel() method.</li>
+<li>get() is a blocking call and it blocks until computation is completed.</li>
+</ol>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Callable and Future Example in Java">Share</button>

@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Java Fork and Join using ForkJoinPool</h1>
 
@@ -80,63 +80,34 @@
 
 <hr>
 
-<pre>The ForkJoinPool was added to Java in Java 7. The ForkJoinPool is similar to the Java ExecutorService but with one difference. The ForkJoinPool makes it easy for tasks to split their work up into smaller tasks which are then submitted to the ForkJoinPool too. Tasks can keep splitting their work into smaller subtasks for as long as it makes to split up the task. It may sound a bit abstract, so in this fork and join tutorial I will explain how the ForkJoinPool works, and how splitting tasks up work.
-
-<b>Fork and Join Explained</b>
-
-Before we look at the ForkJoinPool I want to explain how the fork and join principle works in general.
-
-The fork and join principle consists of two steps which are performed recursively. These two steps are the fork step and the join step.
-
-<b>Fork</b>
-
-A task that uses the fork and join principle can fork (split) itself into smaller subtasks which can be executed concurrently. This is illustrated in the diagram below:
-
+<p>The ForkJoinPool was added to Java in Java 7. The ForkJoinPool is similar to the Java ExecutorService but with one difference. The ForkJoinPool makes it easy for tasks to split their work up into smaller tasks which are then submitted to the ForkJoinPool too. Tasks can keep splitting their work into smaller subtasks for as long as it makes to split up the task. It may sound a bit abstract, so in this fork and join tutorial I will explain how the ForkJoinPool works, and how splitting tasks up work.</p>
+<h2>Fork and Join Explained</h2>
+<p>Before we look at the ForkJoinPool I want to explain how the fork and join principle works in general.</p>
+<p>The fork and join principle consists of two steps which are performed recursively. These two steps are the fork step and the join step.</p>
+<h2>Fork</h2>
+<p>A task that uses the fork and join principle can fork (split) itself into smaller subtasks which can be executed concurrently. This is illustrated in the diagram below:</p>
 <img src="/img/java-fork-and-join-1.png" />
-
-By splitting itself up into subtasks, each subtask can be executed in parallel by different CPUs, or different threads on the same CPU.
-
-A task only splits itself up into subtasks if the work the task was given is large enough for this to make sense. There is an overhead to splitting up a task into subtasks, so for small amounts of work this overhead may be greater than the speedup achieved by executing subtasks concurrently.
-
-The limit for when it makes sense to fork a task into subtasks is also called a threshold. It is up to each task to decide on a sensible threshold. It depends very much on the kind of work being done.
-
-
-<b>Join</b>
-
-When a task has split itself up into subtasks, the task waits until the subtasks have finished executing.
-
-Once the subtasks have finished executing, the task may join (merge) all the results into one result. This is illustrated in the diagram below:
-
+<p>By splitting itself up into subtasks, each subtask can be executed in parallel by different CPUs, or different threads on the same CPU.</p>
+<p>A task only splits itself up into subtasks if the work the task was given is large enough for this to make sense. There is an overhead to splitting up a task into subtasks, so for small amounts of work this overhead may be greater than the speedup achieved by executing subtasks concurrently.</p>
+<p>The limit for when it makes sense to fork a task into subtasks is also called a threshold. It is up to each task to decide on a sensible threshold. It depends very much on the kind of work being done.</p>
+<h2>Join</h2>
+<p>When a task has split itself up into subtasks, the task waits until the subtasks have finished executing.</p>
+<p>Once the subtasks have finished executing, the task may join (merge) all the results into one result. This is illustrated in the diagram below:</p>
 <img src="/img/java-fork-and-join-2.png" />
-
-Of course, not all types of tasks may return a result. If the tasks do not return a result then a task just waits for its subtasks to complete. No result merging takes place then.
-
-<b>The ForkJoinPool</b>
-
-The ForkJoinPool is a special thread pool which is designed to work well with fork-and-join task splitting. The ForkJoinPool located in the java.util.concurrent package, so the full class name is java.util.concurrent.ForkJoinPool.
-
-<b>Creating a ForkJoinPool</b>
-
-You create a ForkJoinPool using its constructor. As a parameter to the ForkJoinPool constructor you pass the indicated level of parallelism you desire. The parallelism level indicates how many threads or CPUs you want to work concurrently on on tasks passed to the ForkJoinPool. Here is a ForkJoinPool creation example:
-
-    ForkJoinPool forkJoinPool = new ForkJoinPool(4);
-
-This example creates a ForkJoinPool with a parallelism level of 4.
-
-<b>Submitting Tasks to the ForkJoinPool</b>
-
-You submit tasks to a ForkJoinPool similarly to how you submit tasks to an ExecutorService. You can submit two types of tasks. A task that does not return any result (an "action"), and a task which does return a result (a "task"). These two types of tasks are represented by the RecursiveAction and RecursiveTask classes. How to use both of these tasks and how to submit them will be covered in the following sections.
-
-<b>RecursiveAction</b>
-
-A RecursiveAction is a task which does not return any value. It just does some work, e.g. writing data to disk, and then exits.
-
-A RecursiveAction may still need to break up its work into smaller chunks which can be executed by independent threads or CPUs.
-
-You implement a RecursiveAction by subclassing it. Here is a RecursiveAction example:
-
-<code>
-import java.util.ArrayList;
+<p>Of course, not all types of tasks may return a result. If the tasks do not return a result then a task just waits for its subtasks to complete. No result merging takes place then.</p>
+<h2>The ForkJoinPool</h2>
+<p>The ForkJoinPool is a special thread pool which is designed to work well with fork-and-join task splitting. The ForkJoinPool located in the java.util.concurrent package, so the full class name is java.util.concurrent.ForkJoinPool.</p>
+<h2>Creating a ForkJoinPool</h2>
+<p>You create a ForkJoinPool using its constructor. As a parameter to the ForkJoinPool constructor you pass the indicated level of parallelism you desire. The parallelism level indicates how many threads or CPUs you want to work concurrently on on tasks passed to the ForkJoinPool. Here is a ForkJoinPool creation example:</p>
+<pre><code>    ForkJoinPool forkJoinPool = new ForkJoinPool(4);</code></pre>
+<p>This example creates a ForkJoinPool with a parallelism level of 4.</p>
+<h2>Submitting Tasks to the ForkJoinPool</h2>
+<p>You submit tasks to a ForkJoinPool similarly to how you submit tasks to an ExecutorService. You can submit two types of tasks. A task that does not return any result (an "action"), and a task which does return a result (a "task"). These two types of tasks are represented by the RecursiveAction and RecursiveTask classes. How to use both of these tasks and how to submit them will be covered in the following sections.</p>
+<h2>RecursiveAction</h2>
+<p>A RecursiveAction is a task which does not return any value. It just does some work, e.g. writing data to disk, and then exits.</p>
+<p>A RecursiveAction may still need to break up its work into smaller chunks which can be executed by independent threads or CPUs.</p>
+<p>You implement a RecursiveAction by subclassing it. Here is a RecursiveAction example:</p>
+<pre><code>import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
 
@@ -152,11 +123,11 @@ public class MyRecursiveAction extends RecursiveAction {
     protected void compute() {
 
         //if work is above threshold, break tasks up into smaller tasks
-        if(this.workLoad > 16) {
+        if(this.workLoad &gt; 16) {
             System.out.println("Splitting workLoad : " + this.workLoad);
 
-            List<MyRecursiveAction> subtasks =
-                new ArrayList<MyRecursiveAction>();
+            List&lt;MyRecursiveAction&gt; subtasks =
+                new ArrayList&lt;MyRecursiveAction&gt;();
 
             subtasks.addAll(createSubtasks());
 
@@ -169,9 +140,9 @@ public class MyRecursiveAction extends RecursiveAction {
         }
     }
 
-    private List<MyRecursiveAction> createSubtasks() {
-        List<MyRecursiveAction> subtasks =
-            new ArrayList<MyRecursiveAction>();
+    private List&lt;MyRecursiveAction&gt; createSubtasks() {
+        List&lt;MyRecursiveAction&gt; subtasks =
+            new ArrayList&lt;MyRecursiveAction&gt;();
 
         MyRecursiveAction subtask1 = new MyRecursiveAction(this.workLoad / 2);
         MyRecursiveAction subtask2 = new MyRecursiveAction(this.workLoad / 2);
@@ -201,11 +172,11 @@ public class MyRecursiveAction extends RecursiveAction {
     protected void compute() {
 
         //if work is above threshold, break tasks up into smaller tasks
-        if(this.workLoad > 16) {
+        if(this.workLoad &gt; 16) {
             System.out.println("Splitting workLoad : " + this.workLoad);
 
-            List<MyRecursiveAction> subtasks =
-                new ArrayList<MyRecursiveAction>();
+            List&lt;MyRecursiveAction&gt; subtasks =
+                new ArrayList&lt;MyRecursiveAction&gt;();
 
             subtasks.addAll(createSubtasks());
 
@@ -218,9 +189,9 @@ public class MyRecursiveAction extends RecursiveAction {
         }
     }
 
-    private List<MyRecursiveAction> createSubtasks() {
-        List<MyRecursiveAction> subtasks =
-            new ArrayList<MyRecursiveAction>();
+    private List&lt;MyRecursiveAction&gt; createSubtasks() {
+        List&lt;MyRecursiveAction&gt; subtasks =
+            new ArrayList&lt;MyRecursiveAction&gt;();
 
         MyRecursiveAction subtask1 = new MyRecursiveAction(this.workLoad / 2);
         MyRecursiveAction subtask2 = new MyRecursiveAction(this.workLoad / 2);
@@ -231,31 +202,20 @@ public class MyRecursiveAction extends RecursiveAction {
         return subtasks;
     }
 
-}
+}</code></pre>
+<pre><code>This example is very simplified. The MyRecursiveAction simply takes a fictive workLoad as parameter to its constructor. If the workLoad is above a certain threshold, the work is split into subtasks which are also scheduled for execution (via the .fork() method of the subtasks. If the workLoad is below a certain threshold then the work is carried out by the MyRecursiveAction itself.</code></pre>
+<p>You can schedule a MyRecursiveAction for execution like this:</p>
+<pre><code>    MyRecursiveAction myRecursiveAction = new MyRecursiveAction(24);
 
-</code>
-
-
-
-This example is very simplified. The MyRecursiveAction simply takes a fictive workLoad as parameter to its constructor. If the workLoad is above a certain threshold, the work is split into subtasks which are also scheduled for execution (via the .fork() method of the subtasks. If the workLoad is below a certain threshold then the work is carried out by the MyRecursiveAction itself.
-
-You can schedule a MyRecursiveAction for execution like this:
-
-    MyRecursiveAction myRecursiveAction = new MyRecursiveAction(24);
-
-    forkJoinPool.invoke(myRecursiveAction);
-
-
-<b>RecursiveTask</b>
-
-A RecursiveTask is a task that returns a result. It may split its work up into smaller tasks, and merge the result of these smaller tasks into a collective result. The splitting and merging may take place on several levels. Here is a RecursiveTask example:
-
-import java.util.ArrayList;
+    forkJoinPool.invoke(myRecursiveAction);</code></pre>
+<h2>RecursiveTask</h2>
+<p>A RecursiveTask is a task that returns a result. It may split its work up into smaller tasks, and merge the result of these smaller tasks into a collective result. The splitting and merging may take place on several levels. Here is a RecursiveTask example:</p>
+<pre><code>import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
 
 
-public class MyRecursiveTask extends RecursiveTask<Long> {
+public class MyRecursiveTask extends RecursiveTask&lt;Long&gt; {
 
     private long workLoad = 0;
 
@@ -266,11 +226,11 @@ public class MyRecursiveTask extends RecursiveTask<Long> {
     protected Long compute() {
 
         //if work is above threshold, break tasks up into smaller tasks
-        if(this.workLoad > 16) {
+        if(this.workLoad &gt; 16) {
             System.out.println("Splitting workLoad : " + this.workLoad);
 
-            List<MyRecursiveTask> subtasks =
-                new ArrayList<MyRecursiveTask>();
+            List&lt;MyRecursiveTask&gt; subtasks =
+                new ArrayList&lt;MyRecursiveTask&gt;();
             subtasks.addAll(createSubtasks());
 
             for(MyRecursiveTask subtask : subtasks){
@@ -289,9 +249,9 @@ public class MyRecursiveTask extends RecursiveTask<Long> {
         }
     }
 
-    private List<MyRecursiveTask> createSubtasks() {
-        List<MyRecursiveTask> subtasks =
-        new ArrayList<MyRecursiveTask>();
+    private List&lt;MyRecursiveTask&gt; createSubtasks() {
+        List&lt;MyRecursiveTask&gt; subtasks =
+        new ArrayList&lt;MyRecursiveTask&gt;();
 
         MyRecursiveTask subtask1 = new MyRecursiveTask(this.workLoad / 2);
         MyRecursiveTask subtask2 = new MyRecursiveTask(this.workLoad / 2);
@@ -301,32 +261,21 @@ public class MyRecursiveTask extends RecursiveTask<Long> {
 
         return subtasks;
     }
-}
-
-This example is similar to the RecursiveAction example except it returns a result. The class MyRecursiveTask extends RecursiveTask<Long> which means that the result returned from the task is a Long .
-
-The MyRecursiveTask example also breaks the work down into subtasks, and schedules these subtasks for execution using their fork() method.
-
-Additionally, this example then receives the result returned by each subtask by calling the join() method of each subtask. The subtask results are merged into a bigger result which is then returned. This kind of joining / mergining of subtask results may occur recursively for several levels of recursion.
-
-You can schedule a RecursiveTask like this:
-
-    MyRecursiveTask myRecursiveTask = new MyRecursiveTask(128);
+}</code></pre>
+<p>This example is similar to the RecursiveAction example except it returns a result. The class MyRecursiveTask extends RecursiveTask&lt;Long&gt; which means that the result returned from the task is a Long .</p>
+<p>The MyRecursiveTask example also breaks the work down into subtasks, and schedules these subtasks for execution using their fork() method.</p>
+<p>Additionally, this example then receives the result returned by each subtask by calling the join() method of each subtask. The subtask results are merged into a bigger result which is then returned. This kind of joining / mergining of subtask results may occur recursively for several levels of recursion.</p>
+<p><strong>You can schedule a RecursiveTask like this:</strong></p>
+<pre><code>    MyRecursiveTask myRecursiveTask = new MyRecursiveTask(128);
 
     long mergedResult = forkJoinPool.invoke(myRecursiveTask);
 
-    System.out.println("mergedResult = " + mergedResult);
-
-Notice how you get the final result out from the ForkJoinPool.invoke() method call.
-
-<b>ForkJoinPool Critique</b>
-
-It seems not everyone is equally happy with the new ForkJoinPool in Java 7. While searching for experiences with, and opinions about, the ForkJoinPool, there are some critique:
-
-    <a href='http://coopsoft.com/ar/CalamityArticle.html'> A Java Fork-Join Calamity </a>
-
-It is well worth a read before you plan to use the ForkJoinPool in your own projects.
-</pre>
+    System.out.println("mergedResult = " + mergedResult);</code></pre>
+<p>Notice how you get the final result out from the ForkJoinPool.invoke() method call.</p>
+<h2>ForkJoinPool Critique</h2>
+<p>It seems not everyone is equally happy with the new ForkJoinPool in Java 7. While searching for experiences with, and opinions about, the ForkJoinPool, there are some critique:</p>
+<p><a href='http://coopsoft.com/ar/CalamityArticle.html'> A Java Fork-Join Calamity </a></p>
+<p>It is well worth a read before you plan to use the ForkJoinPool in your own projects.</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Java Fork and Join using ForkJoinPool">Share</button>

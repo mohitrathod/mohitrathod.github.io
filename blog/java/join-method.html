@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Java.lang.Thread.join() Method</h1>
 
@@ -80,26 +80,19 @@
 
 <hr>
 
-<pre>Description
-The java.lang.Thread.join() method waits for this thread to die.
-
-Declaration
-Following is the declaration for java.lang.Thread.join() method
-
-public final void join() throws InterruptedException
-
-Parameters
-NA
-
-Return Value
-This method does not return any value.
-
-Exception
-InterruptedException − if any thread has interrupted the current thread. The interrupted status of the current thread is cleared when this exception is thrown.
-
-Example
-
-import java.lang.*;
+<h2>Description</h2>
+<p>The java.lang.Thread.join() method waits for this thread to die.</p>
+<h2>Declaration</h2>
+<p>Following is the declaration for java.lang.Thread.join() method</p>
+<pre><code>public final void join() throws InterruptedException</code></pre>
+<h2>Parameters</h2>
+<p>NA</p>
+<h2>Return Value</h2>
+<p>This method does not return any value.</p>
+<h2>Exception</h2>
+<p>InterruptedException − if any thread has interrupted the current thread. The interrupted status of the current thread is cleared when this exception is thrown.</p>
+<h2>Example</h2>
+<pre><code>import java.lang.*;
 
 public class ThreadDemo implements Runnable {
 
@@ -126,16 +119,12 @@ public class ThreadDemo implements Runnable {
       //checks if this thread is alive
       System.out.println(", status = " + t.isAlive());
    }
-}
-
-Output -
-
-Thread-0, status = true
-Thread-0, status = false
-
-join method with time arguments
-
-    /**
+}</code></pre>
+<h2>Output</h2>
+<pre><code>Thread-0, status = true
+Thread-0, status = false</code></pre>
+<h2>join method with time arguments</h2>
+<pre><code>    /**
      * Waits at most {@code millis} milliseconds for this thread to
      * die. A timeout of {@code 0} means to wait forever.
      *
@@ -156,8 +145,7 @@ join method with time arguments
      *          <i>interrupted status</i> of the current thread is
      *          cleared when this exception is thrown.
      */
-    public final synchronized void join(long millis)
-</pre>
+    public final synchronized void join(long millis)</code></pre>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Java.lang.Thread.join() Method">Share</button>

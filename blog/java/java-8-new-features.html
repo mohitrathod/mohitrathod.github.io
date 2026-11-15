@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Java 8 New Features</h1>
 
@@ -80,23 +80,23 @@
 
 <hr>
 
-<pre>New Features
-There are dozens of features added to Java 8, the most significant ones are mentioned below −
-
-    Lambda expression − Adds functional processing capability to Java.
-    Method references − Referencing functions by their names instead of invoking them directly. Using functions as parameter.
-    Default method − Interface to have default method implementation.
-    New tools − New compiler tools and utilities are added like ‘jdeps’ to figure out dependencies.
-    Stream API − New stream API to facilitate pipeline processing.
-    Date Time API − Improved date time API.
-    Optional − Emphasis on best practices to handle null values properly.
-    Nashorn, JavaScript Engine − A Java-based engine to execute JavaScript code.
-
-Along with these new featuers, lots of feature enhancements are done under-the-hood, at both compiler and JVM level.
-
-- sample for java 8
-
-import java.util.Collections;
+<h2>New Features</h2>
+<p>There are dozens of features added to Java 8, the most significant ones are mentioned below −</p>
+<ul>
+<li>Lambda expression − Adds functional processing capability to Java.</li>
+<li>Method references − Referencing functions by their names instead of invoking them directly. Using functions as parameter.</li>
+<li>Default method − Interface to have default method implementation.</li>
+<li>New tools − New compiler tools and utilities are added like ‘jdeps’ to figure out dependencies.</li>
+<li>Stream API − New stream API to facilitate pipeline processing.</li>
+<li>Date Time API − Improved date time API.</li>
+<li>Optional − Emphasis on best practices to handle null values properly.</li>
+<li>Nashorn, JavaScript Engine − A Java-based engine to execute JavaScript code.</li>
+</ul>
+<p>Along with these new featuers, lots of feature enhancements are done under-the-hood, at both compiler and JVM level.</p>
+<ul>
+<li>sample for java 8</li>
+</ul>
+<pre><code>import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -104,14 +104,14 @@ import java.util.Comparator;
 public class Java8Tester {
    public static void main(String args[]){
 
-      List<String> names1 = new ArrayList<String>();
+      List&lt;String&gt; names1 = new ArrayList&lt;String&gt;();
       names1.add("Mahesh ");
       names1.add("Suresh ");
       names1.add("Ramesh ");
       names1.add("Naresh ");
       names1.add("Kalpesh ");
 
-      List<String> names2 = new ArrayList<String>();
+      List&lt;String&gt; names2 = new ArrayList&lt;String&gt;();
       names2.add("Mahesh ");
       names2.add("Suresh ");
       names2.add("Ramesh ");
@@ -130,8 +130,8 @@ public class Java8Tester {
    }
 
    //sort using java 7
-   private void sortUsingJava7(List<String> names){
-      Collections.sort(names, new Comparator<String>() {
+   private void sortUsingJava7(List&lt;String&gt; names){
+      Collections.sort(names, new Comparator&lt;String&gt;() {
          @Override
          public int compare(String s1, String s2) {
             return s1.compareTo(s2);
@@ -140,46 +140,35 @@ public class Java8Tester {
    }
 
    //sort using java 8
-   private void sortUsingJava8(List<String> names){
-      Collections.sort(names, (s1, s2) -> s1.compareTo(s2));
+   private void sortUsingJava8(List&lt;String&gt; names){
+      Collections.sort(names, (s1, s2) -&gt; s1.compareTo(s2));
    }
-}
-
-
-
-
-Lambda expression facilitates functional programming, and simplifies the development a lot.
-
-
-A lambda expression is characterized by the following syntax −
-
-parameter -> expression body
-
-Following are the important characteristics of a lambda expression −
-
-    Optional type declaration − No need to declare the type of a parameter. The compiler can inference the same from the value of the parameter.
-    Optional parenthesis around parameter − No need to declare a single parameter in parenthesis. For multiple parameters, parentheses are required.
-    Optional curly braces − No need to use curly braces in expression body if the body contains a single statement.
-
-Optional return keyword − The compiler automatically returns the value if the body has a single expression to return the value. Curly braces are required to indicate that expression returns a value.
-
-
-
-public class Java8Tester {
+}</code></pre>
+<p>Lambda expression facilitates functional programming, and simplifies the development a lot.</p>
+<h2>A lambda expression is characterized by the following syntax −</h2>
+<pre><code>parameter -&gt; expression body</code></pre>
+<h2>Following are the important characteristics of a lambda expression −</h2>
+<ul>
+<li>Optional type declaration − No need to declare the type of a parameter. The compiler can inference the same from the value of the parameter.</li>
+<li>Optional parenthesis around parameter − No need to declare a single parameter in parenthesis. For multiple parameters, parentheses are required.</li>
+<li>Optional curly braces − No need to use curly braces in expression body if the body contains a single statement.</li>
+</ul>
+<p>Optional return keyword − The compiler automatically returns the value if the body has a single expression to return the value. Curly braces are required to indicate that expression returns a value.</p>
+<pre><code>public class Java8Tester {
    public static void main(String args[]){
       Java8Tester tester = new Java8Tester();
 
       //with type declaration
-      MathOperation addition = (int a, int b) -> a + b;
+      MathOperation addition = (int a, int b) -&gt; a + b;
 
       //with out type declaration
-      MathOperation subtraction = (a, b) -> a - b;
+      MathOperation subtraction = (a, b) -&gt; a - b;
 
       //with return statement along with curly braces
-      MathOperation multiplication = (int a, int b) -> { return a * b; };
+      MathOperation multiplication = (int a, int b) -&gt; { return a * b; };
 
       //without return statement and without curly braces
-      MathOperation division = (int a, int b) -> a / b;
+      MathOperation division = (int a, int b) -&gt; a / b;
 
       System.out.println("10 + 5 = " + tester.operate(10, 5, addition));
       System.out.println("10 - 5 = " + tester.operate(10, 5, subtraction));
@@ -187,11 +176,11 @@ public class Java8Tester {
       System.out.println("10 / 5 = " + tester.operate(10, 5, division));
 
       //with parenthesis
-      GreetingService greetService1 = message ->
+      GreetingService greetService1 = message -&gt;
       System.out.println("Hello " + message);
 
       //without parenthesis
-      GreetingService greetService2 = (message) ->
+      GreetingService greetService2 = (message) -&gt;
       System.out.println("Hello " + message);
 
       greetService1.sayMessage("Mahesh");
@@ -209,26 +198,18 @@ public class Java8Tester {
    private int operate(int a, int b, MathOperation mathOperation){
       return mathOperation.operation(a, b);
    }
-}
-
-
-Lambda expressions are used primarily to define inline implementation of a functional interface, i.e., an interface with a single method only. In the above example, we've used various types of lambda expressions to define the operation method of MathOperation interface. Then we have defined the implementation of sayMessage of GreetingService.
-
-Lambda expression eliminates the need of anonymous class and gives a very simple yet powerful functional programming capability to Java.
-
-Method references help to point to methods by their names. A method reference is described using :: (double colon) symbol. A method reference can be used to point the following types of methods −
-
-    Static methods
-    Instance methods
-    Constructors using new operator (TreeSet::new)
-
-
-
-Method Reference Example
-
-Let's look into an example of method referencing to get a more clear picture. Write the following program in an code editor and match the results.
-
-import java.util.List;
+}</code></pre>
+<p>Lambda expressions are used primarily to define inline implementation of a functional interface, i.e., an interface with a single method only. In the above example, we've used various types of lambda expressions to define the operation method of MathOperation interface. Then we have defined the implementation of sayMessage of GreetingService.</p>
+<p>Lambda expression eliminates the need of anonymous class and gives a very simple yet powerful functional programming capability to Java.</p>
+<p>Method references help to point to methods by their names. A method reference is described using :: (double colon) symbol. A method reference can be used to point the following types of methods −</p>
+<ul>
+<li>Static methods</li>
+<li>Instance methods</li>
+<li>Constructors using new operator (TreeSet::new)</li>
+</ul>
+<h2>Method Reference Example</h2>
+<p>Let's look into an example of method referencing to get a more clear picture. Write the following program in an code editor and match the results.</p>
+<pre><code>import java.util.List;
 import java.util.ArrayList;
 
 public class Java8Tester {
@@ -243,56 +224,30 @@ public class Java8Tester {
 
       names.forEach(System.out::println);
    }
-}
-
-
-
-
-
-Vector or ArrayList -- which is better?
-
-Sometimes Vector is better; sometimes ArrayList is better; sometimes you don't want to use either. I hope you weren't looking for an easy answer because the answer depends upon what you are doing. There are four factors to consider:
-
-API
-Synchronization
-Data growth
-Usage patterns
-Let's explore each in turn.
-
-API
-
-In The Java Programming Language (Addison-Wesley, June 2000) Ken Arnold, James Gosling, and David Holmes describe the Vector as an analog to the ArrayList. So, from an API perspective, the two classes are very similar. However, there are still some major differences between the two classes.
-
-Synchronization
-
-Vectors are synchronized. Any method that touches the Vector's contents is thread safe. ArrayList, on the other hand, is unsynchronized, making them, therefore, not thread safe. With that difference in mind, using synchronization will incur a performance hit. So if you don't need a thread-safe collection, use the ArrayList. Why pay the price of synchronization unnecessarily?
-
-Data growth
-
-Internally, both the ArrayList and Vector hold onto their contents using an Array. You need to keep this fact in mind while using either in your programs. When you insert an element into an ArrayList or a Vector, the object will need to expand its internal array if it runs out of room. A Vector defaults to doubling the size of its array, while the ArrayList increases its array size by 50 percent. Depending on how you use these classes, you could end up taking a large performance hit while adding new elements. It's always best to set the object's initial capacity to the largest capacity that your program will need. By carefully setting the capacity, you can avoid paying the penalty needed to resize the internal array later. If you don't know how much data you'll have, but you do know the rate at which it grows, Vector does possess a slight advantage since you can set the increment value.
-
-Usage patterns
-
-Both the ArrayList and Vector are good for retrieving elements from a specific position in the container or for adding and removing elements from the end of the container. All of these operations can be performed in constant time -- O(1). However, adding and removing elements from any other position proves more expensive -- linear to be exact: O(n-i), where n is the number of elements and i is the index of the element added or removed. These operations are more expensive because you have to shift all elements at index i and higher over by one element. So what does this all mean?
-
-It means that if you want to index elements or add and remove elements at the end of the array, use either a Vector or an ArrayList. If you want to do anything else to the contents, go find yourself another container class. For example, the LinkedList can add or remove an element at any position in constant time -- O(1). However, indexing an element is a bit slower -- O(i) where i is the index of the element. Traversing an ArrayList is also easier since you can simply use an index instead of having to create an iterator. The LinkedList also creates an internal object for each element inserted. So you have to be aware of the extra garbage being created.
-
-Finally, in "PRAXIS 41" from Practical Java (Addison-Wesley, Feb. 2000) Peter Haggar suggests that you use a plain old array in place of either Vector or ArrayList -- especially for performance-critical code. By using an array you can avoid synchronization, extra method calls, and suboptimal resizing. You just pay the cost of extra development time.
-
-
-
-
-
-What to do when your eclipse maven project shows errors in eclipse and compiled successfully !!!!
-
-When your Maven eclipse project shows errors in eclipse editor and it can compile with eclipse or console at that time there must be project configuration issue with eclipse happened, when you open close multiple projects its happens sometime with eclipse.
-
-do
-
-mvn eclipse : eclipse
-
-from your command line by closing eclipse and open eclipse again and refresh projects, error will go away!
-</pre>
+}</code></pre>
+<h2>Vector or ArrayList -- which is better?</h2>
+<p>Sometimes Vector is better; sometimes ArrayList is better; sometimes you don't want to use either. I hope you weren't looking for an easy answer because the answer depends upon what you are doing. There are four factors to consider:</p>
+<ul>
+<li>API</li>
+<li>Synchronization</li>
+<li>Data growth</li>
+<li>Usage patterns</li>
+</ul>
+<p>Let's explore each in turn.</p>
+<h3>API</h3>
+<p>In The Java Programming Language (Addison-Wesley, June 2000) Ken Arnold, James Gosling, and David Holmes describe the Vector as an analog to the ArrayList. So, from an API perspective, the two classes are very similar. However, there are still some major differences between the two classes.</p>
+<h3>Synchronization</h3>
+<p>Vectors are synchronized. Any method that touches the Vector's contents is thread safe. ArrayList, on the other hand, is unsynchronized, making them, therefore, not thread safe. With that difference in mind, using synchronization will incur a performance hit. So if you don't need a thread-safe collection, use the ArrayList. Why pay the price of synchronization unnecessarily?</p>
+<h3>Data growth</h3>
+<p>Internally, both the ArrayList and Vector hold onto their contents using an Array. You need to keep this fact in mind while using either in your programs. When you insert an element into an ArrayList or a Vector, the object will need to expand its internal array if it runs out of room. A Vector defaults to doubling the size of its array, while the ArrayList increases its array size by 50 percent. Depending on how you use these classes, you could end up taking a large performance hit while adding new elements. It's always best to set the object's initial capacity to the largest capacity that your program will need. By carefully setting the capacity, you can avoid paying the penalty needed to resize the internal array later. If you don't know how much data you'll have, but you do know the rate at which it grows, Vector does possess a slight advantage since you can set the increment value.</p>
+<h3>Usage patterns</h3>
+<p>Both the ArrayList and Vector are good for retrieving elements from a specific position in the container or for adding and removing elements from the end of the container. All of these operations can be performed in constant time -- O(1). However, adding and removing elements from any other position proves more expensive -- linear to be exact: O(n-i), where n is the number of elements and i is the index of the element added or removed. These operations are more expensive because you have to shift all elements at index i and higher over by one element. So what does this all mean?</p>
+<p>It means that if you want to index elements or add and remove elements at the end of the array, use either a Vector or an ArrayList. If you want to do anything else to the contents, go find yourself another container class. For example, the LinkedList can add or remove an element at any position in constant time -- O(1). However, indexing an element is a bit slower -- O(i) where i is the index of the element. Traversing an ArrayList is also easier since you can simply use an index instead of having to create an iterator. The LinkedList also creates an internal object for each element inserted. So you have to be aware of the extra garbage being created.</p>
+<p>Finally, in "PRAXIS 41" from Practical Java (Addison-Wesley, Feb. 2000) Peter Haggar suggests that you use a plain old array in place of either Vector or ArrayList -- especially for performance-critical code. By using an array you can avoid synchronization, extra method calls, and suboptimal resizing. You just pay the cost of extra development time.</p>
+<h2>What to do when your eclipse maven project shows errors in eclipse and compiled successfully !!!!</h2>
+<p>When your Maven eclipse project shows errors in eclipse editor and it can compile with eclipse or console at that time there must be project configuration issue with eclipse happened, when you open close multiple projects its happens sometime with eclipse.</p>
+<pre><code>mvn eclipse:eclipse</code></pre>
+<p>from your command line by closing eclipse and open eclipse again and refresh projects, error will go away!</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Java 8 New Features">Share</button>

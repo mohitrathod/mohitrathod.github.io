@@ -408,7 +408,7 @@
   </url>
   <url>
     <loc>https://mohitrathod.com/blog/software-theories.html</loc>
-    <lastmod>2018-02-18</lastmod>
+    <lastmod>2024-09-21</lastmod>
   </url>
   <url>
     <loc>https://mohitrathod.com/blog/software-theories/a-b-testing.html</loc>
@@ -465,6 +465,10 @@
   <url>
     <loc>https://mohitrathod.com/blog/software-theories/bit-manipulation.html</loc>
     <lastmod>2018-02-18</lastmod>
+  </url>
+  <url>
+    <loc>https://mohitrathod.com/blog/software-theories/bm25-and-search-algorithms-at-scale.html</loc>
+    <lastmod>2024-09-21</lastmod>
   </url>
   <url>
     <loc>https://mohitrathod.com/blog/sql.html</loc>

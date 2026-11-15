@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>What is java.lang.OutOfMemoryError in Java ?</h1>
 
@@ -80,33 +80,26 @@
 
 <hr>
 
-<pre>OutOfMemoryError in Java is a subclass of java.lang.VirtualMachineError and JVM throws java.lang.OutOfMemoryError when it ran out of memory in the heap. OutOfMemoryError in Java can come anytime in heap mostly while you try to create an object and there is not enough space on the heap to allocate that object. Javadoc of OutOfMemoryError is not very informative about this, though.
-
-I have seen mainly two types of OutOfMemoryError in Java:
-
-1) The java.lang.OutOfMemoryError: Java heap space
-2) The java.lang.OutOfMemoryError: PermGen space
-
-Though both of them occur because JVM ran out of memory they are quite different to each other and their solutions are independent of each other.
-
-
-Since in most of JVM default size of Perm Space is around "64MB" you can easily run out of memory if you have too many classes or a huge number of Strings in your project.
-
-How to solve java.lang.OutOfMemoryError: Java heap space
-
-1) An easy way to solve OutOfMemoryError in java is to increase the maximum heap size by using JVM options "-Xmx512M", this will immediately solve your OutOfMemoryError. This is my preferred solution when I get OutOfMemoryError in Eclipse, Maven or ANT while building project because based upon size of project you can easily run out of Memory.here is an example of increasing maximum heap size of JVM, Also its better to keep -Xmx to -Xms ration either 1:1 or 1:1.5 if you are setting heap size in your java application
-
-export JVM_ARGS="-Xms1024m -Xmx1024m"
-
-2) The second way to resolve OutOfMemoryError in Java is rather hard and  comes when you don't have much memory and even after increase maximum heap size you are still getting java.lang.OutOfMemoryError, in this case, you probably want to profile your application and look for any memory leak. You can use Eclipse Memory Analyzer to examine your heap dump or you can use any profiler like Netbeans or JProbe. This is tough solution and requires some time to analyze and find memory leaks.
-
-How to solve java.lang.OutOfMemoryError: PermGen space
-As explained in above paragraph this OutOfMemory error in java comes when Permanent generation of heap filled up. To fix this OutOfMemoryError in Java, you need to increase heap size of Perm space by using JVM option   "-XX: MaxPermSize". You can also specify initial size of Perm space by using    "-XX: PermSize" and keeping both initial and maximum Perm Space you can prevent some full garbage collection which may occur when Perm Space gets re-sized. Here is how you can specify initial and maximum Perm size in Java:
-
-export JVM_ARGS="-XX:PermSize=64M -XX:MaxPermSize=256m"
-
-Some time java.lang.OutOfMemoryError  in Java gets tricky and on those cases profiling remains ultimate solution.Though you have the freedom to increase heap size in java, it’s recommended that to follow memory management practices while coding and setting null to any unused references.
-</pre>
+<p>OutOfMemoryError in Java is a subclass of java.lang.VirtualMachineError and JVM throws java.lang.OutOfMemoryError when it ran out of memory in the heap. OutOfMemoryError in Java can come anytime in heap mostly while you try to create an object and there is not enough space on the heap to allocate that object. Javadoc of OutOfMemoryError is not very informative about this, though.</p>
+<p><strong>I have seen mainly two types of OutOfMemoryError in Java:</strong></p>
+<ol>
+<li>The java.lang.OutOfMemoryError: Java heap space</li>
+<li>The java.lang.OutOfMemoryError: PermGen space</li>
+</ol>
+<p>Though both of them occur because JVM ran out of memory they are quite different to each other and their solutions are independent of each other.</p>
+<p>Since in most of JVM default size of Perm Space is around "64MB" you can easily run out of memory if you have too many classes or a huge number of Strings in your project.</p>
+<h2>How to solve java.lang.OutOfMemoryError: Java heap space</h2>
+<ol>
+<li>An easy way to solve OutOfMemoryError in java is to increase the maximum heap size by using JVM options "-Xmx512M", this will immediately solve your OutOfMemoryError. This is my preferred solution when I get OutOfMemoryError in Eclipse, Maven or ANT while building project because based upon size of project you can easily run out of Memory.here is an example of increasing maximum heap size of JVM, Also its better to keep -Xmx to -Xms ration either 1:1 or 1:1.5 if you are setting heap size in your java application</li>
+</ol>
+<pre><code>export JVM_ARGS="-Xms1024m -Xmx1024m"</code></pre>
+<ol start="2">
+<li>The second way to resolve OutOfMemoryError in Java is rather hard and  comes when you don't have much memory and even after increase maximum heap size you are still getting java.lang.OutOfMemoryError, in this case, you probably want to profile your application and look for any memory leak. You can use Eclipse Memory Analyzer to examine your heap dump or you can use any profiler like Netbeans or JProbe. This is tough solution and requires some time to analyze and find memory leaks.</li>
+</ol>
+<h2>How to solve java.lang.OutOfMemoryError: PermGen space</h2>
+<p>As explained in above paragraph this OutOfMemory error in java comes when Permanent generation of heap filled up. To fix this OutOfMemoryError in Java, you need to increase heap size of Perm space by using JVM option   "-XX: MaxPermSize". You can also specify initial size of Perm space by using    "-XX: PermSize" and keeping both initial and maximum Perm Space you can prevent some full garbage collection which may occur when Perm Space gets re-sized. Here is how you can specify initial and maximum Perm size in Java:</p>
+<pre><code>export JVM_ARGS="-XX:PermSize=64M -XX:MaxPermSize=256m"</code></pre>
+<p>Some time java.lang.OutOfMemoryError  in Java gets tricky and on those cases profiling remains ultimate solution.Though you have the freedom to increase heap size in java, it’s recommended that to follow memory management practices while coding and setting null to any unused references.</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="What is java.lang.OutOfMemoryError in Java ?">Share</button>

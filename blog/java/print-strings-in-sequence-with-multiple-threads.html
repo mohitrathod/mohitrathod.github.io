@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Print strings in sequence with multiple threads</h1>
 
@@ -80,13 +80,13 @@
 
 <hr>
 
-<pre>public class MTest {
+<pre><code>public class MTest {
 
 	public static void main(String[] args) throws InterruptedException {
 
 		Thread t1 = new Thread(new Runnable() {
 			public void run() {
-				for (int i = 0; i < 1000; i ++) {
+				for (int i = 0; i &lt; 1000; i ++) {
 					System.out.println("hello " +  i);
 				}
 			}
@@ -112,8 +112,7 @@
 
 	}
 
-}
-</pre>
+}</code></pre>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Print strings in sequence with multiple threads">Share</button>

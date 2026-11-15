@@ -72,7 +72,7 @@
   <a href="/blog/java.html">Java Notes</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Java PriorityQueue Example</h1>
 
@@ -80,7 +80,7 @@
 
 <hr>
 
-<pre>class Book implements Comparable<Book>{
+<pre><code>class Book implements Comparable&lt;Book&gt;{
     int id;
     String name,author,publisher;
     int quantity;
@@ -92,9 +92,9 @@
         this.quantity = quantity;
     }
     public int compareTo(Book b) {
-        if(id>b.id){
+        if(id&gt;b.id){
             return 1;
-        }else if(id<b.id){
+        }else if(id&lt;b.id){
             return -1;
         }else{
             return 0;
@@ -108,11 +108,11 @@ import java.util.Queue;
 public class PriorityQueueExample {
 
     public static void main(String[] args) {
-        Queue<Book> queue = new PriorityQueue<Book>();
+        Queue&lt;Book&gt; queue = new PriorityQueue&lt;Book&gt;();
         //Creating Books
         Book b1 = new Book(121, "Let us C", "Yashwant Kanetkar", "BPB", 8);
         Book b2 = new Book(233, "Operating System", "Galvin", "Wiley", 6);
-        Book b3 = new Book(101, "Data Communications & Networking", "Forouzan", "Mc Graw Hill", 4);
+        Book b3 = new Book(101, "Data Communications &amp; Networking", "Forouzan", "Mc Graw Hill", 4);
         Book b4 = new Book(121, "Operating System 2", "Galvin", "Wiley", 6);
         //Adding Books to the queue
         queue.add(b1);
@@ -133,18 +133,17 @@ public class PriorityQueueExample {
 
     }
 
-}
---Output
-Traversing the queue elements:
-101 Data Communications & Networking Forouzan Mc Graw Hill 4
+}</code></pre>
+<h2>Output</h2>
+<pre><code>Traversing the queue elements:
+101 Data Communications &amp; Networking Forouzan Mc Graw Hill 4
 121 Operating System 2 Galvin Wiley 6
 121 Let us C Yashwant Kanetkar BPB 8
 233 Operating System Galvin Wiley 6
 After removing one book record:
 121 Operating System 2 Galvin Wiley 6
 233 Operating System Galvin Wiley 6
-121 Let us C Yashwant Kanetkar BPB 8
-</pre>
+121 Let us C Yashwant Kanetkar BPB 8</code></pre>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Java PriorityQueue Example">Share</button>
