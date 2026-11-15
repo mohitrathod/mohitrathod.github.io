@@ -63,38 +63,101 @@
 
 <ul class="java-toc">
       <li>
-        <a name="java-fork-and-join-using-fork-join-pool" class="java-article" href="/blog/java/java-fork-and-join-using-fork-join-pool.html">
-          <span class="java-article-title">Java Fork and Join using ForkJoinPool</span>
-          <time class="java-article-date" datetime="2016-12-10">December 10, 2016</time>
-          <span class="java-article-excerpt">The ForkJoinPool was added to Java in Java 7. The ForkJoinPool is similar to the Java ExecutorService but with one difference. The ForkJoinPool makes it easy for tasks to split their work up into…</span>
+        <a name="linkedlist-vs-arraylist" class="java-article" href="/blog/java/linkedlist-vs-arraylist.html">
+          <span class="java-article-title">Linkedlist vs Arraylist</span>
+          <time class="java-article-date" datetime="2018-07-09">July 9, 2018</time>
+          <span class="java-article-excerpt">Linkedlist vs Arraylist added at 8 July, 2018 LinkedList and ArrayList are two different implementations of the List interface. LinkedList implements it with a doubly-linked list. ArrayList…</span>
         </a>
       </li>
       <li>
-        <a name="java-8-new-features" class="java-article" href="/blog/java/java-8-new-features.html">
-          <span class="java-article-title">Java 8 New Features</span>
-          <time class="java-article-date" datetime="2016-11-11">November 11, 2016</time>
-          <span class="java-article-excerpt">New Features There are dozens of features added to Java 8, the most significant ones are mentioned below − Lambda expression − Adds functional processing capability to Java. Method references −…</span>
+        <a name="making-singleton-thread-safe" class="java-article" href="/blog/java/making-singleton-thread-safe.html">
+          <span class="java-article-title">Making Singleton thread safe</span>
+          <time class="java-article-date" datetime="2018-07-08">July 8, 2018</time>
+          <span class="java-article-excerpt">Thread Safety in Java Singleton Classes In general we follow below steps to create a singleton class: 1) Override the private constructor to avoid any new object creation with new operator. 2)…</span>
         </a>
       </li>
       <li>
-        <a name="java-7-new-features" class="java-article" href="/blog/java/java-7-new-features.html">
-          <span class="java-article-title">Java 7's new Features</span>
-          <time class="java-article-date" datetime="2016-11-13">November 13, 2016</time>
-          <span class="java-article-excerpt">There are a number of features in Java 7 that will please developers. Things such as strings in switch statements, multi-catch exception handling, try-with-resource statements, the new File System…</span>
+        <a name="what-gcs-were-introduced-in-java-7-8" class="java-article" href="/blog/java/what-gcs-were-introduced-in-java-7-8.html">
+          <span class="java-article-title">What GCs were introduced in java 7,8?</span>
+          <time class="java-article-date" datetime="2018-07-06">July 6, 2018</time>
+          <span class="java-article-excerpt">Garbage Collection in Earlier versions Java 1.5 The major enhancements in Java 1.5 Garbage Collector (GC) has changed from the previous serial collector (-XX:+UseSerialGC) to a parallel collector…</span>
         </a>
       </li>
       <li>
-        <a name="java-lang-out-of-memory-error" class="java-article" href="/blog/java/java-lang-out-of-memory-error.html">
-          <span class="java-article-title">What is java.lang.OutOfMemoryError in Java ?</span>
-          <time class="java-article-date" datetime="2016-11-13">November 13, 2016</time>
-          <span class="java-article-excerpt">OutOfMemoryError in Java is a subclass of java.lang.VirtualMachineError and JVM throws java.lang.OutOfMemoryError when it ran out of memory in the heap. OutOfMemoryError in Java can come anytime in…</span>
+        <a name="callable-and-future-example-in-java" class="java-article" href="/blog/java/callable-and-future-example-in-java.html">
+          <span class="java-article-title">Callable and Future Example in Java</span>
+          <time class="java-article-date" datetime="2017-07-22">July 22, 2017</time>
+          <span class="java-article-excerpt">import java.util.concurrent.Callable; import java.util.concurrent.ExecutionException; import java.util.concurrent.ExecutorService; import java.util.concurrent.Executors; import…</span>
         </a>
       </li>
       <li>
-        <a name="print-strings-in-sequence-with-multiple-threads" class="java-article" href="/blog/java/print-strings-in-sequence-with-multiple-threads.html">
-          <span class="java-article-title">Print strings in sequence with multiple threads</span>
-          <time class="java-article-date" datetime="2017-06-16">June 16, 2017</time>
-          <span class="java-article-excerpt">public class MTest { public static void main(String[] args) throws InterruptedException { Thread t1 = new Thread(new Runnable() { public void run() { for (int i = 0; i</span>
+        <a name="java-priority-queue-example" class="java-article" href="/blog/java/java-priority-queue-example.html">
+          <span class="java-article-title">Java PriorityQueue Example</span>
+          <time class="java-article-date" datetime="2017-07-22">July 22, 2017</time>
+          <span class="java-article-excerpt">class Book implements Comparable { int id; String name,author,publisher; int quantity; public Book(int id, String name, String author, String publisher, int quantity) { this.id = id; this.name =…</span>
+        </a>
+      </li>
+      <li>
+        <a name="final-finally-finalize" class="java-article" href="/blog/java/final-finally-finalize.html">
+          <span class="java-article-title">Difference between final, finally and finalize</span>
+          <time class="java-article-date" datetime="2017-07-19">July 19, 2017</time>
+          <span class="java-article-excerpt">Final is used to apply restrictions on class, method and variable. Final class can&#x27;t be inherited, final method can&#x27;t be overridden and final variable value can&#x27;t be changed. Finally is used to place…</span>
+        </a>
+      </li>
+      <li>
+        <a name="volatile-vs-atomic" class="java-article" href="/blog/java/volatile-vs-atomic.html">
+          <span class="java-article-title">Volatile Vs Atomic</span>
+          <time class="java-article-date" datetime="2017-07-18">July 18, 2017</time>
+          <span class="java-article-excerpt">The effect of the volatile keyword is approximately that each individual read or write operation on that variable is atomic. Notably, however, an operation that requires more than one read/write --…</span>
+        </a>
+      </li>
+      <li>
+        <a name="immutable-objects" class="java-article" href="/blog/java/immutable-objects.html">
+          <span class="java-article-title">Immutable Objects</span>
+          <time class="java-article-date" datetime="2017-07-18">July 18, 2017</time>
+          <span class="java-article-excerpt">An object is considered immutable if its state cannot change after it is constructed. Maximum reliance on immutable objects is widely accepted as a sound strategy for creating simple, reliable code.…</span>
+        </a>
+      </li>
+      <li>
+        <a name="linked-hash-map-sort-by-value" class="java-article" href="/blog/java/linked-hash-map-sort-by-value.html">
+          <span class="java-article-title">How can I sort a LinkedHashMap based on its values given that the LinkedHashMap contains of String and Integer. So I need to sort it based on the Values which are Integers.</span>
+          <time class="java-article-date" datetime="2017-07-17">July 17, 2017</time>
+          <span class="java-article-excerpt">map.entrySet().stream() .sorted(Map.Entry.comparingByValue()) .forEach(entry -&gt; ... );</span>
+        </a>
+      </li>
+      <li>
+        <a name="what-is-inheritance-in-java" class="java-article" href="/blog/java/what-is-inheritance-in-java.html">
+          <span class="java-article-title">What is Inheritance in Java ?</span>
+          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
+          <span class="java-article-excerpt">Inheritance in Java or OOPS (Object oriented programming) is a feature which allows coding reusability. In other words, Inheritance self-implies inheriting or we can say acquiring something from…</span>
+        </a>
+      </li>
+      <li>
+        <a name="inheritance-in-java-things-to-remember" class="java-article" href="/blog/java/inheritance-in-java-things-to-remember.html">
+          <span class="java-article-title">Inheritance in Java- Things to remember</span>
+          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
+          <span class="java-article-excerpt">Here are some important points about Inheritance in Java which is worth remembering: One subclass can extend only one super class in Java but it can implement the multiple interfaces. A private…</span>
+        </a>
+      </li>
+      <li>
+        <a name="why-multiple-inheritances-are-not-supported-in-java" class="java-article" href="/blog/java/why-multiple-inheritances-are-not-supported-in-java.html">
+          <span class="java-article-title">Why multiple inheritances are not supported in Java ?</span>
+          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
+          <span class="java-article-excerpt">The diamond problem A diamond class inheritance diagram. The &quot;diamond problem&quot; (sometimes referred to as the &quot;deadly diamond of death&quot;[4]) is an ambiguity that arises when two classes B and C inherit…</span>
+        </a>
+      </li>
+      <li>
+        <a name="how-hash-map-works-in-java" class="java-article" href="/blog/java/how-hash-map-works-in-java.html">
+          <span class="java-article-title">How hashmap works in java ?</span>
+          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
+          <span class="java-article-excerpt">Single statement answer If anybody asks me to describe “How HashMap works?“, I simply answer: “On principle of Hashing“. As simple as it is. Now before answering it, one must be very sure to know at…</span>
+        </a>
+      </li>
+      <li>
+        <a name="hash-code-and-equals" class="java-article" href="/blog/java/hash-code-and-equals.html">
+          <span class="java-article-title">Working with hashCode and equals methods in java</span>
+          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
+          <span class="java-article-excerpt">The general contract of hashCode is: Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer,…</span>
         </a>
       </li>
       <li>
@@ -140,101 +203,38 @@
         </a>
       </li>
       <li>
-        <a name="what-is-inheritance-in-java" class="java-article" href="/blog/java/what-is-inheritance-in-java.html">
-          <span class="java-article-title">What is Inheritance in Java ?</span>
-          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
-          <span class="java-article-excerpt">Inheritance in Java or OOPS (Object oriented programming) is a feature which allows coding reusability. In other words, Inheritance self-implies inheriting or we can say acquiring something from…</span>
+        <a name="print-strings-in-sequence-with-multiple-threads" class="java-article" href="/blog/java/print-strings-in-sequence-with-multiple-threads.html">
+          <span class="java-article-title">Print strings in sequence with multiple threads</span>
+          <time class="java-article-date" datetime="2017-06-16">June 16, 2017</time>
+          <span class="java-article-excerpt">public class MTest { public static void main(String[] args) throws InterruptedException { Thread t1 = new Thread(new Runnable() { public void run() { for (int i = 0; i</span>
         </a>
       </li>
       <li>
-        <a name="inheritance-in-java-things-to-remember" class="java-article" href="/blog/java/inheritance-in-java-things-to-remember.html">
-          <span class="java-article-title">Inheritance in Java- Things to remember</span>
-          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
-          <span class="java-article-excerpt">Here are some important points about Inheritance in Java which is worth remembering: One subclass can extend only one super class in Java but it can implement the multiple interfaces. A private…</span>
+        <a name="java-fork-and-join-using-fork-join-pool" class="java-article" href="/blog/java/java-fork-and-join-using-fork-join-pool.html">
+          <span class="java-article-title">Java Fork and Join using ForkJoinPool</span>
+          <time class="java-article-date" datetime="2016-12-10">December 10, 2016</time>
+          <span class="java-article-excerpt">The ForkJoinPool was added to Java in Java 7. The ForkJoinPool is similar to the Java ExecutorService but with one difference. The ForkJoinPool makes it easy for tasks to split their work up into…</span>
         </a>
       </li>
       <li>
-        <a name="why-multiple-inheritances-are-not-supported-in-java" class="java-article" href="/blog/java/why-multiple-inheritances-are-not-supported-in-java.html">
-          <span class="java-article-title">Why multiple inheritances are not supported in Java ?</span>
-          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
-          <span class="java-article-excerpt">The diamond problem A diamond class inheritance diagram. The &quot;diamond problem&quot; (sometimes referred to as the &quot;deadly diamond of death&quot;[4]) is an ambiguity that arises when two classes B and C inherit…</span>
+        <a name="java-7-new-features" class="java-article" href="/blog/java/java-7-new-features.html">
+          <span class="java-article-title">Java 7's new Features</span>
+          <time class="java-article-date" datetime="2016-11-13">November 13, 2016</time>
+          <span class="java-article-excerpt">There are a number of features in Java 7 that will please developers. Things such as strings in switch statements, multi-catch exception handling, try-with-resource statements, the new File System…</span>
         </a>
       </li>
       <li>
-        <a name="how-hash-map-works-in-java" class="java-article" href="/blog/java/how-hash-map-works-in-java.html">
-          <span class="java-article-title">How hashmap works in java ?</span>
-          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
-          <span class="java-article-excerpt">Single statement answer If anybody asks me to describe “How HashMap works?“, I simply answer: “On principle of Hashing“. As simple as it is. Now before answering it, one must be very sure to know at…</span>
+        <a name="java-lang-out-of-memory-error" class="java-article" href="/blog/java/java-lang-out-of-memory-error.html">
+          <span class="java-article-title">What is java.lang.OutOfMemoryError in Java ?</span>
+          <time class="java-article-date" datetime="2016-11-13">November 13, 2016</time>
+          <span class="java-article-excerpt">OutOfMemoryError in Java is a subclass of java.lang.VirtualMachineError and JVM throws java.lang.OutOfMemoryError when it ran out of memory in the heap. OutOfMemoryError in Java can come anytime in…</span>
         </a>
       </li>
       <li>
-        <a name="hash-code-and-equals" class="java-article" href="/blog/java/hash-code-and-equals.html">
-          <span class="java-article-title">Working with hashCode and equals methods in java</span>
-          <time class="java-article-date" datetime="2017-07-14">July 14, 2017</time>
-          <span class="java-article-excerpt">The general contract of hashCode is: Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer,…</span>
-        </a>
-      </li>
-      <li>
-        <a name="volatile-vs-atomic" class="java-article" href="/blog/java/volatile-vs-atomic.html">
-          <span class="java-article-title">Volatile Vs Atomic</span>
-          <time class="java-article-date" datetime="2017-07-18">July 18, 2017</time>
-          <span class="java-article-excerpt">The effect of the volatile keyword is approximately that each individual read or write operation on that variable is atomic. Notably, however, an operation that requires more than one read/write --…</span>
-        </a>
-      </li>
-      <li>
-        <a name="linked-hash-map-sort-by-value" class="java-article" href="/blog/java/linked-hash-map-sort-by-value.html">
-          <span class="java-article-title">How can I sort a LinkedHashMap based on its values given that the LinkedHashMap contains of String and Integer. So I need to sort it based on the Values which are Integers.</span>
-          <time class="java-article-date" datetime="2017-07-17">July 17, 2017</time>
-          <span class="java-article-excerpt">map.entrySet().stream() .sorted(Map.Entry.comparingByValue()) .forEach(entry -&gt; ... );</span>
-        </a>
-      </li>
-      <li>
-        <a name="immutable-objects" class="java-article" href="/blog/java/immutable-objects.html">
-          <span class="java-article-title">Immutable Objects</span>
-          <time class="java-article-date" datetime="2017-07-18">July 18, 2017</time>
-          <span class="java-article-excerpt">An object is considered immutable if its state cannot change after it is constructed. Maximum reliance on immutable objects is widely accepted as a sound strategy for creating simple, reliable code.…</span>
-        </a>
-      </li>
-      <li>
-        <a name="final-finally-finalize" class="java-article" href="/blog/java/final-finally-finalize.html">
-          <span class="java-article-title">Difference between final, finally and finalize</span>
-          <time class="java-article-date" datetime="2017-07-19">July 19, 2017</time>
-          <span class="java-article-excerpt">Final is used to apply restrictions on class, method and variable. Final class can&#x27;t be inherited, final method can&#x27;t be overridden and final variable value can&#x27;t be changed. Finally is used to place…</span>
-        </a>
-      </li>
-      <li>
-        <a name="callable-and-future-example-in-java" class="java-article" href="/blog/java/callable-and-future-example-in-java.html">
-          <span class="java-article-title">Callable and Future Example in Java</span>
-          <time class="java-article-date" datetime="2017-07-22">July 22, 2017</time>
-          <span class="java-article-excerpt">import java.util.concurrent.Callable; import java.util.concurrent.ExecutionException; import java.util.concurrent.ExecutorService; import java.util.concurrent.Executors; import…</span>
-        </a>
-      </li>
-      <li>
-        <a name="java-priority-queue-example" class="java-article" href="/blog/java/java-priority-queue-example.html">
-          <span class="java-article-title">Java PriorityQueue Example</span>
-          <time class="java-article-date" datetime="2017-07-22">July 22, 2017</time>
-          <span class="java-article-excerpt">class Book implements Comparable { int id; String name,author,publisher; int quantity; public Book(int id, String name, String author, String publisher, int quantity) { this.id = id; this.name =…</span>
-        </a>
-      </li>
-      <li>
-        <a name="what-gcs-were-introduced-in-java-7-8" class="java-article" href="/blog/java/what-gcs-were-introduced-in-java-7-8.html">
-          <span class="java-article-title">What GCs were introduced in java 7,8?</span>
-          <time class="java-article-date" datetime="2018-07-06">July 6, 2018</time>
-          <span class="java-article-excerpt">Garbage Collection in Earlier versions Java 1.5 The major enhancements in Java 1.5 Garbage Collector (GC) has changed from the previous serial collector (-XX:+UseSerialGC) to a parallel collector…</span>
-        </a>
-      </li>
-      <li>
-        <a name="making-singleton-thread-safe" class="java-article" href="/blog/java/making-singleton-thread-safe.html">
-          <span class="java-article-title">Making Singleton thread safe</span>
-          <time class="java-article-date" datetime="2018-07-08">July 8, 2018</time>
-          <span class="java-article-excerpt">Thread Safety in Java Singleton Classes In general we follow below steps to create a singleton class: 1) Override the private constructor to avoid any new object creation with new operator. 2)…</span>
-        </a>
-      </li>
-      <li>
-        <a name="linkedlist-vs-arraylist" class="java-article" href="/blog/java/linkedlist-vs-arraylist.html">
-          <span class="java-article-title">Linkedlist vs Arraylist</span>
-          <time class="java-article-date" datetime="2018-07-09">July 9, 2018</time>
-          <span class="java-article-excerpt">Linkedlist vs Arraylist added at 8 July, 2018 LinkedList and ArrayList are two different implementations of the List interface. LinkedList implements it with a doubly-linked list. ArrayList…</span>
+        <a name="java-8-new-features" class="java-article" href="/blog/java/java-8-new-features.html">
+          <span class="java-article-title">Java 8 New Features</span>
+          <time class="java-article-date" datetime="2016-11-11">November 11, 2016</time>
+          <span class="java-article-excerpt">New Features There are dozens of features added to Java 8, the most significant ones are mentioned below − Lambda expression − Adds functional processing capability to Java. Method references −…</span>
         </a>
       </li>
 </ul>
