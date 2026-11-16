@@ -72,7 +72,7 @@
   <a href="/blog/machine-learning-and-ai.html">Machine Learning and AI</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>Mini Models: The Big Shift Toward Small Language Models</h1>
 
@@ -80,282 +80,219 @@
 
 <hr>
 
-<pre>For a few years, the story of AI was simple: bigger models won. Each generation
-added parameters, data, and compute, and the best results went to whoever could
-afford the largest cluster.
-
-That story is changing. Mini models, also called small language models (SLMs),
-are quietly becoming the practical default for a huge range of real work. They
-run on laptops, phones, and small servers. They answer in milliseconds. They
-keep sensitive data on the device. And in 2026 they are good enough that many
-teams no longer need a frontier model for everyday tasks.
-
-This is a positive shift. Smaller models make AI cheaper, faster, more private,
-and more accessible. They also push the industry toward better engineering:
-cleaner data, smarter training, and a sharper focus on the task at hand.
-
-What are mini models?
-
-A mini model is a language model with a small parameter count, usually somewhere
-between a few hundred million and roughly 10 billion parameters. The label is
-not strict. Some people include models up to about 15B, and hosted providers use
-"mini" as a product tier rather than a technical definition.
-
-There are two broad groups:
-
-1. Open-weight small models
-   You can download the weights and run them yourself. Examples include the
-   small Qwen, Gemma, Llama, Phi, Ministral, Granite, SmolLM, MiniCPM, and
-   Liquid AI families.
-
-2. Hosted mini tiers
-   Providers offer cheaper, faster versions of their flagship models behind an
-   API. These are convenient and well managed, but closed and priced per token.
-
-Both groups share the same appeal: much lower cost and latency than a frontier
-model, with enough capability for a well-scoped job.
-
-Why mini models are having their moment
-
-Several improvements arrived at the same time:
-
-- Better training data. Carefully curated, textbook-quality data lets a small
-  model learn more from fewer parameters.
-- Distillation. A small model can learn from a larger teacher, capturing much of
-  its behavior in a fraction of the size.
-- Synthetic data. Curated synthetic examples help small models master specific
-  skills such as tool calling, structured output, and reasoning.
-- Quantization. Four-bit formats cut memory use dramatically with quality loss
-  that is often hard to notice in practice.
-- Efficient architectures. Mixture-of-experts and hybrid designs activate only
-  part of the model at a time, giving more capability per byte.
-- Better runtimes. Ollama, llama.cpp, MLX, vLLM, and ONNX Runtime make local
-  deployment almost boring, which is exactly what production needs.
-- On-device hardware. Modern phones and laptops ship with neural accelerators
-  that make local inference genuinely fast.
-
-The result is a category that improved faster than most people expected. The
-best small models today handle tasks that required much larger models only a few
-years ago.
-
-Why teams choose them
-
-Cost
-Small models are cheaper to run, whether you self-host or pay per token. For
-high-volume tasks such as classification, extraction, and routing, the savings
-can be dramatic.
-
-Latency
-Fewer parameters usually mean faster responses. That matters for autocomplete,
-chat, voice interfaces, and anything that needs to feel instant.
-
-Privacy
-On-device inference keeps sensitive data local. Regulated teams can process
-documents, messages, and records without sending them to a third party.
-
-Offline operation
-A local model keeps working without a network connection. That is valuable for
-field tools, mobile apps, and environments with unreliable connectivity.
-
-Customization
-Open weights can be fine-tuned on your own data with techniques such as LoRA.
-A small model trained for one job often beats a general model many times its
-size.
-
-Sustainability
-Less compute per request means less energy and a smaller footprint. At scale,
-efficiency is a feature, not a compromise.
-
-Where small models fall short
-
-Honesty matters here. Mini models are not magic, and they are not a drop-in
-replacement for a frontier model in every situation.
-
-- Broad knowledge. They know less about the long tail of the world.
-- Deep reasoning. Multi-step planning and hard math still favor larger models.
-- Long context. Many small models now support long inputs, but quality can drop
-  as context grows.
-- Multilingual coverage. Performance varies widely across languages.
-- Tool use. Reliability improves every year, but complex agent workflows still
-  need guardrails.
-- High-stakes decisions. Small models make different mistakes, and they should
-  not be trusted with consequential decisions without human review.
-
-The practical lesson is simple: match the model to the task. A small model with a
-tight prompt and a constrained output format can outperform a much larger model
-asked an open-ended question.
-
-Where mini models shine
-
-Classification and routing
-Sentiment, intent, spam detection, language identification, and deciding which
-model or tool should handle a request. These tasks have a fixed label space, and
-small models handle them well.
-
-Data extraction
-Turning receipts, emails, forms, and documents into structured JSON against a
-schema. This is one of the highest-value uses of small models.
-
-Retrieval-augmented generation
-Small models work well when the answer is in the retrieved context rather than
-in the model's memory.
-
-Summarization
-Short support threads, meeting notes, reviews, and articles are a natural fit.
-
-Coding assistance
-Autocomplete, inline suggestions, commit messages, and small refactors are
-increasingly handled by compact code models running locally.
-
-On-device assistants
-Phones, laptops, and edge devices can now run useful assistants without sending
-data to the cloud.
-
-Agent guardrails
-A small model can validate outputs, check tool calls, and route work before a
-larger model or a human gets involved.
-
-The 2026 landscape
-
-The small-model space is crowded in the best way. A few families illustrate the
-direction of travel:
-
-- Qwen small models. Alibaba's compact Qwen series spans roughly 0.8B to 9B
-  parameters, with multimodal input, long context, and a permissive licence.
-- Gemma E models. Google's on-device Gemma variants are designed for phones,
-  laptops, and edge boards, with text, image, and audio input.
-- Phi. Microsoft's small models showed the industry how far careful data
-  curation can go, with strong reasoning per gigabyte.
-- Llama small models. Meta's 1B and 3B models remain popular because of their
-  broad ecosystem and tooling support.
-- Ministral. Mistral's compact models target on-device use, privacy, and
-  intermittent connectivity.
-- Granite. IBM's small enterprise models emphasize tool calling, long context,
-  and a clean licence.
-- SmolLM. Hugging Face's family is notable for publishing open training data and
-  recipes, which makes it a great choice for learning and research.
-- MiniCPM and LFM. Smaller labs continue to push efficiency and on-device
-  performance in the sub-3B range.
-
-Benchmarks move quickly and vendors test under different settings, so treat
-published scores as a direction rather than a verdict. The only benchmark that
-really matters is your own evaluation set.
-
-How to choose a mini model
-
-Start with the task, not the leaderboard.
-
-1. Write down the job
-   Be specific. "Extract invoice fields" is a task. "Do finance" is not.
-
-2. Build a small evaluation set
-   Collect 50 to 100 realistic examples with expected outputs. This is the most
-   valuable hour you will spend.
-
-3. Test two or three candidates
-   Include one very small model and one larger small model. Measure accuracy,
-   latency, and memory.
-
-4. Measure cost per successful task
-   A cheaper model that fails often is not cheaper. Track retries and human
-   corrections.
-
-5. Check the boring requirements
-   Licence, context length, tool-calling support, structured output, language
-   coverage, and hardware compatibility.
-
-6. Prefer the simplest deployment
-   If a local runtime meets your latency and privacy needs, use it. Add
-   complexity only when it earns its place.
-
-A practical starter recipe
-
-If you want to experiment this weekend, keep it small:
-
-    # Run a small model locally
-    ollama run qwen3.5:4b
-
-    # Or a tiny model for classification and extraction
-    ollama run gemma4:e2b
-
-Then:
-
-1. Pick one narrow task, such as classifying support tickets.
-2. Create 50 labeled examples.
-3. Compare two models with the same prompt and a strict output schema.
-4. Try a four-bit quantized version and check whether quality holds.
-5. Measure p95 latency and cost per 1,000 requests.
-6. Only then consider fine-tuning with LoRA.
-
-Most teams discover that a well-prompted 2B to 4B model is enough for the first
-version, and that the biggest gains come from better data and clearer
-instructions rather than a bigger model.
-
-Optimization techniques worth knowing
-
-- Quantization reduces memory and speeds up inference. Four-bit is a common
-  default; test before assuming quality is unaffected.
-- Distillation trains a small model to imitate a larger one on your data.
-- LoRA fine-tuning adapts a small model cheaply for one domain or style.
-- Constrained decoding forces valid JSON or a fixed label set.
-- Cascades and routing send easy requests to a small model and escalate only the
-  hard ones to a larger model.
-- Speculative decoding uses a small draft model to speed up a larger one.
-
-Limitations and responsible use
-
-Small models are useful, but they are still models. They can hallucinate, repeat
-biases in their training data, and be fooled by prompt injection. When you deploy
-one:
-
-- Keep a human in the loop for consequential decisions.
-- Validate structured output before acting on it.
-- Treat model output as untrusted input when it feeds tools or databases.
-- Test for bias and language coverage on your own data.
-- Be clear with users about what the system can and cannot do.
-- Monitor quality after deployment, because real traffic drifts.
-
-A positive outlook
-
-The rise of mini models is good news for almost everyone. It lowers the cost of
-building with AI, keeps more data private, reduces energy use, and lets students,
-hobbyists, and small teams run capable models on hardware they already own.
-
-It also changes how we design systems. Instead of sending every request to one
-enormous model, good teams will use a portfolio: a tiny model for routing, a
-small model for extraction, a mid-sized model for reasoning, and a frontier
-model only when the task truly needs it.
-
-That is a healthier, more sustainable architecture. Big models will keep pushing
-the frontier, and small models will keep bringing that progress into everyday
-products. The future of AI is not one model to rule them all. It is the right
-model, in the right place, at the right cost.
-
-And that is a genuinely exciting place to be.
-
-References
-
-Ollama - run and manage local models:
-&lt;https://ollama.com/&gt;
-
-llama.cpp - efficient local inference:
-&lt;https://github.com/ggml-org/llama.cpp&gt;
-
-Gemma documentation:
-&lt;https://ai.google.dev/gemma/docs&gt;
-
-Qwen models and research:
-&lt;https://qwen.ai/blog&gt;
-
-Microsoft Phi models:
-&lt;https://azure.microsoft.com/en-us/blog/phi-4-mini/&gt;
-
-Hugging Face SmolLM3:
-&lt;https://huggingface.co/blog/smollm3&gt;
-
-Artificial Analysis - model comparisons:
-&lt;https://artificialanalysis.ai/&gt;
-</pre>
+<p>For a few years, the story of AI was simple: bigger models won. Each generation added parameters, data, and compute, and the best results went to whoever could afford the largest cluster.</p>
+
+<p>That story is changing. Mini models, also called small language models (SLMs), are quietly becoming the practical default for a huge range of real work. They run on laptops, phones, and small servers. They answer in milliseconds. They keep sensitive data on the device. And in 2026 they are good enough that many teams no longer need a frontier model for everyday tasks.</p>
+
+<p>This is a positive shift. Smaller models make AI cheaper, faster, more private, and more accessible. They also push the industry toward better engineering: cleaner data, smarter training, and a sharper focus on the task at hand.</p>
+
+<nav aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ul>
+    <li><a href="#what-are-mini-models">1. What are mini models?</a></li>
+    <li><a href="#why-the-moment">2. Why mini models are having their moment</a></li>
+    <li><a href="#why-teams-choose-them">3. Why teams choose them</a></li>
+    <li><a href="#where-they-fall-short">4. Where small models fall short</a></li>
+    <li><a href="#where-they-shine">5. Where mini models shine</a></li>
+    <li><a href="#landscape">6. The 2026 landscape</a></li>
+    <li><a href="#how-to-choose">7. How to choose a mini model</a></li>
+    <li><a href="#starter-recipe">8. A practical starter recipe</a></li>
+    <li><a href="#optimization">9. Optimization techniques worth knowing</a></li>
+    <li><a href="#responsible-use">10. Limitations and responsible use</a></li>
+    <li><a href="#key-takeaways">11. Key takeaways</a></li>
+    <li><a href="#references">References</a></li>
+    <li><a href="#positive-outlook">A positive outlook</a></li>
+  </ul>
+</nav>
+
+<h2 id="what-are-mini-models">1. What are mini models?</h2>
+
+<p>A mini model is a language model with a small parameter count, usually somewhere between a few hundred million and roughly 10 billion parameters. The label is not strict. Some people include models up to about 15B, and hosted providers use "mini" as a product tier rather than a technical definition.</p>
+
+<p>There are two broad groups:</p>
+
+<ol>
+  <li><strong>Open-weight small models.</strong> You can download the weights and run them yourself. Examples include the small Qwen, Gemma, Llama, Phi, Ministral, Granite, SmolLM, MiniCPM, and Liquid AI families.</li>
+  <li><strong>Hosted mini tiers.</strong> Providers offer cheaper, faster versions of their flagship models behind an API. These are convenient and well managed, but closed and priced per token.</li>
+</ol>
+
+<p>Both groups share the same appeal: much lower cost and latency than a frontier model, with enough capability for a well-scoped job.</p>
+
+<h2 id="why-the-moment">2. Why mini models are having their moment</h2>
+
+<p>Several improvements arrived at the same time:</p>
+
+<ul>
+  <li><strong>Better training data.</strong> Carefully curated, textbook-quality data lets a small model learn more from fewer parameters.</li>
+  <li><strong>Distillation.</strong> A small model can learn from a larger teacher, capturing much of its behavior in a fraction of the size.</li>
+  <li><strong>Synthetic data.</strong> Curated synthetic examples help small models master specific skills such as tool calling, structured output, and reasoning.</li>
+  <li><strong>Quantization.</strong> Four-bit formats cut memory use dramatically with quality loss that is often hard to notice in practice.</li>
+  <li><strong>Efficient architectures.</strong> Mixture-of-experts and hybrid designs activate only part of the model at a time, giving more capability per byte.</li>
+  <li><strong>Better runtimes.</strong> Ollama, llama.cpp, MLX, vLLM, and ONNX Runtime make local deployment almost boring, which is exactly what production needs.</li>
+  <li><strong>On-device hardware.</strong> Modern phones and laptops ship with neural accelerators that make local inference genuinely fast.</li>
+</ul>
+
+<p>The result is a category that improved faster than most people expected. The best small models today handle tasks that required much larger models only a few years ago.</p>
+
+<h2 id="why-teams-choose-them">3. Why teams choose them</h2>
+
+<dl>
+  <dt>Cost</dt>
+  <dd>Small models are cheaper to run, whether you self-host or pay per token. For high-volume tasks such as classification, extraction, and routing, the savings can be dramatic.</dd>
+  <dt>Latency</dt>
+  <dd>Fewer parameters usually mean faster responses. That matters for autocomplete, chat, voice interfaces, and anything that needs to feel instant.</dd>
+  <dt>Privacy</dt>
+  <dd>On-device inference keeps sensitive data local. Regulated teams can process documents, messages, and records without sending them to a third party.</dd>
+  <dt>Offline operation</dt>
+  <dd>A local model keeps working without a network connection. That is valuable for field tools, mobile apps, and environments with unreliable connectivity.</dd>
+  <dt>Customization</dt>
+  <dd>Open weights can be fine-tuned on your own data with techniques such as LoRA. A small model trained for one job often beats a general model many times its size.</dd>
+  <dt>Sustainability</dt>
+  <dd>Less compute per request means less energy and a smaller footprint. At scale, efficiency is a feature, not a compromise.</dd>
+</dl>
+
+<h2 id="where-they-fall-short">4. Where small models fall short</h2>
+
+<p>Honesty matters here. Mini models are not magic, and they are not a drop-in replacement for a frontier model in every situation.</p>
+
+<ul>
+  <li><strong>Broad knowledge.</strong> They know less about the long tail of the world.</li>
+  <li><strong>Deep reasoning.</strong> Multi-step planning and hard math still favor larger models.</li>
+  <li><strong>Long context.</strong> Many small models now support long inputs, but quality can drop as context grows.</li>
+  <li><strong>Multilingual coverage.</strong> Performance varies widely across languages.</li>
+  <li><strong>Tool use.</strong> Reliability improves every year, but complex agent workflows still need guardrails.</li>
+  <li><strong>High-stakes decisions.</strong> Small models make different mistakes, and they should not be trusted with consequential decisions without human review.</li>
+</ul>
+
+<p>The practical lesson is simple: match the model to the task. A small model with a tight prompt and a constrained output format can outperform a much larger model asked an open-ended question.</p>
+
+<h2 id="where-they-shine">5. Where mini models shine</h2>
+
+<dl>
+  <dt>Classification and routing</dt>
+  <dd>Sentiment, intent, spam detection, language identification, and deciding which model or tool should handle a request. These tasks have a fixed label space, and small models handle them well.</dd>
+  <dt>Data extraction</dt>
+  <dd>Turning receipts, emails, forms, and documents into structured JSON against a schema. This is one of the highest-value uses of small models.</dd>
+  <dt>Retrieval-augmented generation</dt>
+  <dd>Small models work well when the answer is in the retrieved context rather than in the model's memory.</dd>
+  <dt>Summarization</dt>
+  <dd>Short support threads, meeting notes, reviews, and articles are a natural fit.</dd>
+  <dt>Coding assistance</dt>
+  <dd>Autocomplete, inline suggestions, commit messages, and small refactors are increasingly handled by compact code models running locally.</dd>
+  <dt>On-device assistants</dt>
+  <dd>Phones, laptops, and edge devices can now run useful assistants without sending data to the cloud.</dd>
+  <dt>Agent guardrails</dt>
+  <dd>A small model can validate outputs, check tool calls, and route work before a larger model or a human gets involved.</dd>
+</dl>
+
+<h2 id="landscape">6. The 2026 landscape</h2>
+
+<p>The small-model space is crowded in the best way. A few families illustrate the direction of travel:</p>
+
+<ul>
+  <li><strong>Qwen small models.</strong> Alibaba's compact Qwen series spans roughly 0.8B to 9B parameters, with multimodal input, long context, and a permissive licence.</li>
+  <li><strong>Gemma E models.</strong> Google's on-device Gemma variants are designed for phones, laptops, and edge boards, with text, image, and audio input.</li>
+  <li><strong>Phi.</strong> Microsoft's small models showed the industry how far careful data curation can go, with strong reasoning per gigabyte.</li>
+  <li><strong>Llama small models.</strong> Meta's 1B and 3B models remain popular because of their broad ecosystem and tooling support.</li>
+  <li><strong>Ministral.</strong> Mistral's compact models target on-device use, privacy, and intermittent connectivity.</li>
+  <li><strong>Granite.</strong> IBM's small enterprise models emphasize tool calling, long context, and a clean licence.</li>
+  <li><strong>SmolLM.</strong> Hugging Face's family is notable for publishing open training data and recipes, which makes it a great choice for learning and research.</li>
+  <li><strong>MiniCPM and LFM.</strong> Smaller labs continue to push efficiency and on-device performance in the sub-3B range.</li>
+</ul>
+
+<p>Benchmarks move quickly and vendors test under different settings, so treat published scores as a direction rather than a verdict. The only benchmark that really matters is your own evaluation set.</p>
+
+<h2 id="how-to-choose">7. How to choose a mini model</h2>
+
+<p>Start with the task, not the leaderboard.</p>
+
+<ol>
+  <li><strong>Write down the job.</strong> Be specific. "Extract invoice fields" is a task. "Do finance" is not.</li>
+  <li><strong>Build a small evaluation set.</strong> Collect 50 to 100 realistic examples with expected outputs. This is the most valuable hour you will spend.</li>
+  <li><strong>Test two or three candidates.</strong> Include one very small model and one larger small model. Measure accuracy, latency, and memory.</li>
+  <li><strong>Measure cost per successful task.</strong> A cheaper model that fails often is not cheaper. Track retries and human corrections.</li>
+  <li><strong>Check the boring requirements.</strong> Licence, context length, tool-calling support, structured output, language coverage, and hardware compatibility.</li>
+  <li><strong>Prefer the simplest deployment.</strong> If a local runtime meets your latency and privacy needs, use it. Add complexity only when it earns its place.</li>
+</ol>
+
+<h2 id="starter-recipe">8. A practical starter recipe</h2>
+
+<p>If you want to experiment this weekend, keep it small:</p>
+
+<pre><code># Run a small model locally
+ollama run qwen3.5:4b
+
+# Or a tiny model for classification and extraction
+ollama run gemma4:e2b</code></pre>
+
+<p>Then:</p>
+
+<ol>
+  <li>Pick one narrow task, such as classifying support tickets.</li>
+  <li>Create 50 labeled examples.</li>
+  <li>Compare two models with the same prompt and a strict output schema.</li>
+  <li>Try a four-bit quantized version and check whether quality holds.</li>
+  <li>Measure p95 latency and cost per 1,000 requests.</li>
+  <li>Only then consider fine-tuning with LoRA.</li>
+</ol>
+
+<p>Most teams discover that a well-prompted 2B to 4B model is enough for the first version, and that the biggest gains come from better data and clearer instructions rather than a bigger model.</p>
+
+<h2 id="optimization">9. Optimization techniques worth knowing</h2>
+
+<ul>
+  <li><strong>Quantization</strong> reduces memory and speeds up inference. Four-bit is a common default; test before assuming quality is unaffected.</li>
+  <li><strong>Distillation</strong> trains a small model to imitate a larger one on your data.</li>
+  <li><strong>LoRA fine-tuning</strong> adapts a small model cheaply for one domain or style.</li>
+  <li><strong>Constrained decoding</strong> forces valid JSON or a fixed label set.</li>
+  <li><strong>Cascades and routing</strong> send easy requests to a small model and escalate only the hard ones to a larger model.</li>
+  <li><strong>Speculative decoding</strong> uses a small draft model to speed up a larger one.</li>
+</ul>
+
+<h2 id="responsible-use">10. Limitations and responsible use</h2>
+
+<p>Small models are useful, but they are still models. They can hallucinate, repeat biases in their training data, and be fooled by prompt injection. When you deploy one:</p>
+
+<ul>
+  <li>Keep a human in the loop for consequential decisions.</li>
+  <li>Validate structured output before acting on it.</li>
+  <li>Treat model output as untrusted input when it feeds tools or databases.</li>
+  <li>Test for bias and language coverage on your own data.</li>
+  <li>Be clear with users about what the system can and cannot do.</li>
+  <li>Monitor quality after deployment, because real traffic drifts.</li>
+</ul>
+
+<h2 id="key-takeaways">11. Key takeaways</h2>
+
+<ul>
+  <li>Mini models (roughly sub-10B parameters) are now capable enough for many everyday tasks: classification, extraction, summarization, RAG, and on-device assistance.</li>
+  <li>Their advantages are cost, latency, privacy, offline operation, customization, and efficiency &mdash; not raw frontier-level breadth or deep reasoning.</li>
+  <li>Better data, distillation, quantization, and runtimes drove the recent leap in small-model quality.</li>
+  <li>Choose by task and evaluation set, not leaderboard position. A well-scoped small model often beats a larger general one.</li>
+  <li>A healthy architecture uses a portfolio of models and escalates to larger ones only when the task truly needs it.</li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li>Ollama - run and manage local models: <a href="https://ollama.com/">ollama.com</a></li>
+  <li>llama.cpp - efficient local inference: <a href="https://github.com/ggml-org/llama.cpp">github.com/ggml-org/llama.cpp</a></li>
+  <li>Gemma documentation: <a href="https://ai.google.dev/gemma/docs">ai.google.dev/gemma/docs</a></li>
+  <li>Qwen models and research: <a href="https://qwen.ai/blog">qwen.ai/blog</a></li>
+  <li>Microsoft Phi models: <a href="https://azure.microsoft.com/en-us/blog/phi-4-mini/">azure.microsoft.com/en-us/blog/phi-4-mini</a></li>
+  <li>Hugging Face SmolLM3: <a href="https://huggingface.co/blog/smollm3">huggingface.co/blog/smollm3</a></li>
+  <li>Artificial Analysis - model comparisons: <a href="https://artificialanalysis.ai/">artificialanalysis.ai</a></li>
+</ul>
+
+<h2 id="positive-outlook">A positive outlook</h2>
+
+<p>The rise of mini models is good news for almost everyone. It lowers the cost of building with AI, keeps more data private, reduces energy use, and lets students, hobbyists, and small teams run capable models on hardware they already own.</p>
+
+<p>It also changes how we design systems. Instead of sending every request to one enormous model, good teams will use a portfolio: a tiny model for routing, a small model for extraction, a mid-sized model for reasoning, and a frontier model only when the task truly needs it.</p>
+
+<p>That is a healthier, more sustainable architecture. Big models will keep pushing the frontier, and small models will keep bringing that progress into everyday products. The future of AI is not one model to rule them all. It is the right model, in the right place, at the right cost.</p>
+
+<p>And that is a genuinely exciting place to be.</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="Mini Models: The Big Shift Toward Small Language Models">Share</button>

@@ -72,7 +72,7 @@
   <a href="/blog/cyber-security.html">Cyber Security</a>
 </div>
 
-<div style="padding-left: 2%; padding-right: 2%;">
+<div class="main-content">
 
 <h1>AI Coding Assistant Supply Chain Attacks</h1>
 
@@ -80,270 +80,197 @@
 
 <hr>
 
-<pre>AI coding assistants, LLM proxy packages, model SDKs, and MCP (Model Context
-Protocol) servers are transforming how software is built. They also run inside
-developer machines and CI runners with access to source code, environment
-variables, cloud credentials, package registry tokens, and deployment pipelines.
-That combination of trust and access makes them a high-value supply chain
-target, and it makes securing them one of the highest-leverage investments a
-team can make.
+<p>AI coding assistants, LLM proxy packages, model SDKs, and MCP (Model Context Protocol) servers are transforming how software is built. They also run inside developer machines and CI runners with access to source code, environment variables, cloud credentials, package registry tokens, and deployment pipelines. That combination of trust and access makes them a high-value supply chain target, and it makes securing them one of the highest-leverage investments a team can make.</p>
 
-The encouraging news is that the defenses are well understood, increasingly
-built into the tooling, and within reach of teams of every size. This article
-explains why AI developer tools are targeted, how the attacks work, and how to
-build a practical, resilient defense and response plan.
+<p>The encouraging news is that the defenses are well understood, increasingly built into the tooling, and within reach of teams of every size. This article explains why AI developer tools are targeted, how the attacks work, and how to build a practical, resilient defense and response plan.</p>
 
-Why AI developer tools are a high-value target
+<nav aria-label="Table of contents">
+  <h2>Contents</h2>
+  <ul>
+    <li><a href="#why-targeted">1. Why AI developer tools are a high-value target</a></li>
+    <li><a href="#recent-incidents">2. Recent incidents</a></li>
+    <li><a href="#attack-anatomy">3. Anatomy of an AI supply chain attack</a></li>
+    <li><a href="#traditional-controls">4. Why traditional controls miss it</a></li>
+    <li><a href="#defenders-gaining-ground">5. Defenders are gaining ground</a></li>
+    <li><a href="#defenses">6. Defenses</a></li>
+    <li><a href="#incident-response">7. Incident response checklist</a></li>
+    <li><a href="#quick-reference">8. Quick reference</a></li>
+    <li><a href="#key-takeaways">9. Key takeaways</a></li>
+    <li><a href="#references">References</a></li>
+    <li><a href="#positive-outlook">A positive outlook</a></li>
+  </ul>
+</nav>
 
-1. They run with developer privileges.
-   An AI assistant or CLI usually has the same filesystem, shell, and network
-   access as the person running it. That often includes SSH keys, cloud CLI
-   sessions, source code, and local configuration files.
+<h2 id="why-targeted">1. Why AI developer tools are a high-value target</h2>
 
-2. They are trusted by design.
-   Package installers, editor extensions, and MCP servers are expected to run
-   code automatically, so malicious behavior blends into normal operation.
+<ol>
+  <li><strong>They run with developer privileges.</strong> An AI assistant or CLI usually has the same filesystem, shell, and network access as the person running it. That often includes SSH keys, cloud CLI sessions, source code, and local configuration files.</li>
+  <li><strong>They are trusted by design.</strong> Package installers, editor extensions, and MCP servers are expected to run code automatically, so malicious behavior blends into normal operation.</li>
+  <li><strong>They hold long-lived credentials.</strong> Registry tokens, GitHub tokens, cloud access keys, and model API keys are frequently stored in environment variables, <code>.env</code> files, <code>~/.npmrc</code>, and <code>~/.aws/credentials</code> on the same machine.</li>
+  <li><strong>They have transitive reach.</strong> A popular package or proxy sits between many projects and many models. One compromised version can harvest credentials from every environment that installs it.</li>
+  <li><strong>The ecosystem is young.</strong> MCP servers, agent frameworks, and AI-specific packages are often published by small teams with limited security review and take on privileged roles quickly.</li>
+</ol>
 
-3. They hold long-lived credentials.
-   Registry tokens, GitHub tokens, cloud access keys, and model API keys are
-   frequently stored in environment variables, .env files, ~/.npmrc, and
-   ~/.aws/credentials on the same machine.
+<h2 id="recent-incidents">2. Recent incidents</h2>
 
-4. They have transitive reach.
-   A popular package or proxy sits between many projects and many models. One
-   compromised version can harvest credentials from every environment that
-   installs it.
+<p>The 2025 Shai-Hulud npm worm stole npm tokens and used them to publish malicious versions of other packages, spreading through the ecosystem. A 2026 wave expanded this technique to AI coding tools, using them to establish persistence and move across developer environments.</p>
 
-5. The ecosystem is young.
-   MCP servers, agent frameworks, and AI-specific packages are often published
-   by small teams with limited security review and take on privileged roles
-   quickly.
+<p>In February 2026, attackers compromised a popular AI proxy package used to connect applications to multiple LLM providers. The malicious update added credential theft, lateral movement, and a backdoor.</p>
 
-Recent incidents
+<p>In April 2026, several AI tool packages were compromised to deliver malware that harvested credentials, exfiltrated data, and accessed cryptocurrency wallets.</p>
 
-The 2025 Shai-Hulud npm worm stole npm tokens and used them to publish
-malicious versions of other packages, spreading through the ecosystem. A 2026
-wave expanded this technique to AI coding tools, using them to establish
-persistence and move across developer environments.
+<p>Attackers also spoof the landing pages of well-known AI developer tools, standing up fake utility and download pages that deliver wallet drainers or credential stealers.</p>
 
-In February 2026, attackers compromised a popular AI proxy package used to
-connect applications to multiple LLM providers. The malicious update added
-credential theft, lateral movement, and a backdoor.
+<p>Third-party risk is now mainstream. Industry reporting indicates that a large majority of organizations experienced a material third-party security incident during 2025. AI tooling adds a new, highly privileged third party to that list.</p>
 
-In April 2026, several AI tool packages were compromised to deliver malware
-that harvested credentials, exfiltrated data, and accessed cryptocurrency
-wallets.
+<p>Each of these incidents also showed the ecosystem at its best. Researchers published advisories quickly, registry teams removed malicious releases, and maintainers rotated credentials and added stronger controls. The same connectivity that helps attacks spread also helps defenders detect, share, and contain them faster than ever.</p>
 
-Attackers also spoof the landing pages of well-known AI developer tools,
-standing up fake utility and download pages that deliver wallet drainers or
-credential stealers.
+<h2 id="attack-anatomy">3. Anatomy of an AI supply chain attack</h2>
 
-Third-party risk is now mainstream. Industry reporting indicates that a large
-majority of organizations experienced a material third-party security incident
-during 2025. AI tooling adds a new, highly privileged third party to that list.
+<ol>
+  <li><strong>Initial access.</strong> Typosquatting, dependency confusion, a compromised maintainer account, a leaked publish token, or a malicious pull request that gets merged.</li>
+  <li><strong>Execution.</strong> A preinstall, install, or postinstall script runs automatically, or malicious code ships inside a package that developers already trust.</li>
+  <li><strong>Credential harvesting.</strong> The payload reads environment variables and common credential locations: <code>AWS_*</code>, <code>GITHUB_TOKEN</code>, <code>NPM_TOKEN</code>, <code>OPENAI_API_KEY</code>, <code>ANTHROPIC_API_KEY</code>, <code>~/.npmrc</code>, <code>~/.aws/credentials</code>, <code>~/.ssh</code>, <code>~/.kube/config</code>, <code>.env</code>, and CI secret files.</li>
+  <li><strong>Exfiltration.</strong> Data is sent out over HTTPS or DNS to attacker-controlled infrastructure, often disguised as telemetry or model API traffic.</li>
+  <li><strong>Propagation.</strong> Stolen publish tokens are used to push malicious versions of other packages, turning the compromise into a worm.</li>
+  <li><strong>Persistence.</strong> Modified shell profiles, git hooks, editor tasks, and MCP configuration keep the attacker present after the initial package is removed.</li>
+</ol>
 
-Each of these incidents also showed the ecosystem at its best. Researchers
-published advisories quickly, registry teams removed malicious releases, and
-maintainers rotated credentials and added stronger controls. The same
-connectivity that helps attacks spread also helps defenders detect, share, and
-contain them faster than ever.
+<p>A related risk is <strong>slopsquatting</strong>. An AI assistant can suggest a package name that does not exist. An attacker registers that name with malicious code, and a developer installs it while trusting the suggestion.</p>
 
-Anatomy of an AI supply chain attack
+<h2 id="traditional-controls">4. Why traditional controls miss it</h2>
 
-1. Initial access
-   Typosquatting, dependency confusion, a compromised maintainer account, a
-   leaked publish token, or a malicious pull request that gets merged.
+<ul>
+  <li>Installs happen on developer laptops and CI runners, outside centralized change management.</li>
+  <li>Lifecycle scripts are normal, expected behavior in the npm ecosystem.</li>
+  <li>Trusted publisher badges and package popularity do not guarantee safety; established accounts get compromised.</li>
+  <li>AI assistants generate confident-looking dependency suggestions that are rarely verified before install.</li>
+  <li>MCP servers and editor extensions often have no formal review process, yet receive broad filesystem and network permissions.</li>
+</ul>
 
-2. Execution
-   A preinstall, install, or postinstall script runs automatically, or malicious
-   code ships inside a package that developers already trust.
+<p>These gaps are closing. Trusted publishing, provenance attestations, install-script controls, and agent sandboxing are moving from optional hardening to default practice across the ecosystem.</p>
 
-3. Credential harvesting
-   The payload reads environment variables and common credential locations:
-   AWS_*, GITHUB_TOKEN, NPM_TOKEN, OPENAI_API_KEY, ANTHROPIC_API_KEY, ~/.npmrc,
-   ~/.aws/credentials, ~/.ssh, ~/.kube/config, .env, and CI secret files.
+<h2 id="defenders-gaining-ground">5. Defenders are gaining ground</h2>
 
-4. Exfiltration
-   Data is sent out over HTTPS or DNS to attacker-controlled infrastructure,
-   often disguised as telemetry or model API traffic.
+<p>The direction of travel is genuinely positive:</p>
 
-5. Propagation
-   Stolen publish tokens are used to push malicious versions of other packages,
-   turning the compromise into a worm.
+<ul>
+  <li>Registry signatures and provenance attestations make tampering easier to spot before code reaches a developer machine.</li>
+  <li>Trusted publishing with short-lived OIDC tokens removes the long-lived credentials that worms need in order to spread.</li>
+  <li>Modern AI tools are adding sandboxing, permission prompts, and scoped tool access by default.</li>
+  <li>Security teams now detect suspicious install behavior in minutes instead of weeks, and indicators of compromise spread across the community at machine speed.</li>
+  <li>Open standards such as SBOM and SLSA give teams a shared language for verifying what they ship and what they consume.</li>
+</ul>
 
-6. Persistence
-   Modified shell profiles, git hooks, editor tasks, and MCP configuration keep
-   the attacker present after the initial package is removed.
+<p>A prepared team can stop these attacks at several points in the chain. That is a much better position than the industry had only a few years ago.</p>
 
-A related risk is "slopsquatting". An AI assistant can suggest a package name
-that does not exist. An attacker registers that name with malicious code, and a
-developer installs it while trusting the suggestion.
+<h2 id="defenses">6. Defenses</h2>
 
-Why traditional controls miss it
+<h3>Dependency hygiene</h3>
 
-- Installs happen on developer laptops and CI runners, outside centralized
-  change management.
-- Lifecycle scripts are normal, expected behavior in the npm ecosystem.
-- Trusted publisher badges and package popularity do not guarantee safety;
-  established accounts get compromised.
-- AI assistants generate confident-looking dependency suggestions that are
-  rarely verified before install.
-- MCP servers and editor extensions often have no formal review process, yet
-  receive broad filesystem and network permissions.
+<ul>
+  <li>Commit and enforce lockfiles. Install with <code>npm ci</code> rather than <code>npm install</code> in CI.</li>
+  <li>Disable lifecycle scripts by default and allowlist packages that genuinely need them:</li>
+</ul>
 
-These gaps are closing. Trusted publishing, provenance attestations,
-install-script controls, and agent sandboxing are moving from optional hardening
-to default practice across the ecosystem.
+<pre><code>npm config set ignore-scripts true
+npm ci --ignore-scripts
+pnpm install --ignore-scripts
+yarn install --ignore-scripts</code></pre>
 
-Defenders are gaining ground
+<ul>
+  <li>Pin exact versions and delay upgrades of newly published releases until they have had time for review.</li>
+  <li>Use a private registry proxy or an allowlist of approved packages.</li>
+  <li>Verify registry signatures and provenance where available:</li>
+</ul>
 
-The direction of travel is genuinely positive:
+<pre><code>npm audit signatures</code></pre>
 
-- Registry signatures and provenance attestations make tampering easier to spot
-  before code reaches a developer machine.
-- Trusted publishing with short-lived OIDC tokens removes the long-lived
-  credentials that worms need in order to spread.
-- Modern AI tools are adding sandboxing, permission prompts, and scoped tool
-  access by default.
-- Security teams now detect suspicious install behavior in minutes instead of
-  weeks, and indicators of compromise spread across the community at machine
-  speed.
-- Open standards such as SBOM and SLSA give teams a shared language for
-  verifying what they ship and what they consume.
+<ul>
+  <li>Generate an SBOM and track every AI SDK, proxy, and MCP server in use.</li>
+  <li>Add a human review step for any dependency suggested by an AI assistant, especially names you have not used before.</li>
+</ul>
 
-A prepared team can stop these attacks at several points in the chain. That is a
-much better position than the industry had only a few years ago.
+<h3>Credential and token hygiene</h3>
 
-Defenses
+<ul>
+  <li>Replace long-lived registry and cloud keys with short-lived, scoped tokens and OIDC-based trusted publishing.</li>
+  <li>Keep secrets in a CI secret manager, not in <code>.env</code> files on developer machines.</li>
+  <li>Give AI tools their own least-privilege identity. Do not reuse personal admin credentials.</li>
+  <li>Never expose production cloud credentials to a developer environment or an autonomous agent.</li>
+  <li>Rotate all tokens after any suspected compromise.</li>
+</ul>
 
-Dependency hygiene
+<h3>AI assistant and agent controls</h3>
 
-- Commit and enforce lockfiles. Install with "npm ci" rather than "npm install"
-  in CI.
-- Disable lifecycle scripts by default and allowlist packages that genuinely
-  need them:
+<ul>
+  <li>Maintain an allowlist of approved MCP servers and review their source, tool scopes, and network access before enabling them.</li>
+  <li>Run assistants and agents in a sandbox or container with restricted filesystem and network access.</li>
+  <li>Use deny-by-default tool permissions and require approval for shell commands, outbound network calls, and write operations.</li>
+  <li>Do not grant repo-wide write access, package publish rights, or production credentials to an autonomous agent.</li>
+  <li>Review the dependency changes an assistant proposes as carefully as code it writes.</li>
+</ul>
 
-    npm config set ignore-scripts true
-    npm ci --ignore-scripts
-    pnpm install --ignore-scripts
-    yarn install --ignore-scripts
+<h3>Network and monitoring controls</h3>
 
-- Pin exact versions and delay upgrades of newly published releases until they
-  have had time for review.
-- Use a private registry proxy or an allowlist of approved packages.
-- Verify registry signatures and provenance where available:
+<ul>
+  <li>Apply egress filtering and monitor DNS for unexpected destinations from developer machines and CI.</li>
+  <li>Alert on new package publishes from your organization's accounts.</li>
+  <li>Flag installs of brand-new packages and packages that make network calls during install.</li>
+  <li>Watch for suspicious child processes such as <code>curl</code>, <code>wget</code>, or <code>node</code> spawning an unexpected shell inside <code>node_modules</code>.</li>
+  <li>Keep CI runners ephemeral and rebuild from clean images after any incident.</li>
+</ul>
 
-    npm audit signatures
+<h2 id="incident-response">7. Incident response checklist</h2>
 
-- Generate an SBOM and track every AI SDK, proxy, and MCP server in use.
-- Add a human review step for any dependency suggested by an AI assistant,
-  especially names you have not used before.
+<ol>
+  <li>Isolate the affected developer machine or CI runner from the network.</li>
+  <li>Revoke npm, GitHub, cloud, and model API tokens. Rotate every secret that was present in the environment.</li>
+  <li>Audit recent publishes from your accounts and unpublish or deprecate malicious versions.</li>
+  <li>Inspect <code>node_modules</code>, lockfiles, git hooks, shell profiles, and MCP configuration for persistence.</li>
+  <li>Review CI logs and outbound connections for exfiltration.</li>
+  <li>Rebuild affected systems from clean images instead of cleaning in place.</li>
+  <li>If you published a compromised package, notify downstream consumers and the registry.</li>
+</ol>
 
-Credential and token hygiene
+<h2 id="quick-reference">8. Quick reference</h2>
 
-- Replace long-lived registry and cloud keys with short-lived, scoped tokens and
-  OIDC-based trusted publishing.
-- Keep secrets in a CI secret manager, not in .env files on developer machines.
-- Give AI tools their own least-privilege identity. Do not reuse personal admin
-  credentials.
-- Never expose production cloud credentials to a developer environment or an
-  autonomous agent.
-- Rotate all tokens after any suspected compromise.
+<pre><code># Install without running lifecycle scripts
+npm ci --ignore-scripts
 
-AI assistant and agent controls
+# Check registry signatures where supported
+npm audit signatures
 
-- Maintain an allowlist of approved MCP servers and review their source, tool
-  scopes, and network access before enabling them.
-- Run assistants and agents in a sandbox or container with restricted
-  filesystem and network access.
-- Use deny-by-default tool permissions and require approval for shell commands,
-  outbound network calls, and write operations.
-- Do not grant repo-wide write access, package publish rights, or production
-  credentials to an autonomous agent.
-- Review the dependency changes an assistant proposes as carefully as code it
-  writes.
+# Inspect a package before adopting it
+npm view &lt;package&gt; time
+npm view &lt;package&gt; scripts</code></pre>
 
-Network and monitoring controls
+<h2 id="key-takeaways">9. Key takeaways</h2>
 
-- Apply egress filtering and monitor DNS for unexpected destinations from
-  developer machines and CI.
-- Alert on new package publishes from your organization's accounts.
-- Flag installs of brand-new packages and packages that make network calls
-  during install.
-- Watch for suspicious child processes such as curl, wget, or node spawning an
-  unexpected shell inside node_modules.
-- Keep CI runners ephemeral and rebuild from clean images after any incident.
+<ul>
+  <li>AI developer tools deserve security attention because they are trusted and privileged, and that same centrality makes them a powerful place to invest.</li>
+  <li>The core defenses are mature and practical: lockfiles, install-script controls, short-lived tokens, sandboxing, and monitoring.</li>
+  <li>Most attacks reuse familiar techniques, which means familiar controls still work when they are applied consistently.</li>
+  <li>Small improvements compound quickly. Every team can start this week.</li>
+  <li>Teams that combine good tooling, clear ownership, and a culture of verification are already reducing both the likelihood and the impact of these attacks.</li>
+</ul>
 
-Incident response checklist
+<h2 id="references">References</h2>
 
-1. Isolate the affected developer machine or CI runner from the network.
-2. Revoke npm, GitHub, cloud, and model API tokens. Rotate every secret that was
-   present in the environment.
-3. Audit recent publishes from your accounts and unpublish or deprecate
-   malicious versions.
-4. Inspect node_modules, lockfiles, git hooks, shell profiles, and MCP
-   configuration for persistence.
-5. Review CI logs and outbound connections for exfiltration.
-6. Rebuild affected systems from clean images instead of cleaning in place.
-7. If you published a compromised package, notify downstream consumers and the
-   registry.
+<ul>
+  <li>Recorded Future - AI cyber threat trends 2026: <a href="https://www.recordedfuture.com/research/ai-cyber-threat-trends-2026">recordedfuture.com/research/ai-cyber-threat-trends-2026</a></li>
+  <li>World Economic Forum - Global Cybersecurity Outlook 2026: <a href="https://www.weforum.org/publications/global-cybersecurity-outlook-2026/in-full/3-the-trends-reshaping-cybersecurity/">weforum.org/publications/global-cybersecurity-outlook-2026</a></li>
+  <li>Fortinet - Cybersecurity trends 2026: <a href="https://www.fortinet.com/resources/cyberglossary/cybersecurity-trends-2026">fortinet.com/resources/cyberglossary/cybersecurity-trends-2026</a></li>
+  <li>npm - ignore-scripts configuration: <a href="https://docs.npmjs.com/cli/v10/using-npm/config#ignore-scripts">docs.npmjs.com/cli/v10/using-npm/config#ignore-scripts</a></li>
+</ul>
 
-Quick reference
+<h2 id="positive-outlook">A positive outlook</h2>
 
-    # Install without running lifecycle scripts
-    npm ci --ignore-scripts
+<p>AI is making software development faster and more accessible, and it can make security stronger in the process. The same automation that attackers abuse can enforce least privilege, verify every package, and flag anomalies in seconds. Supply chain security is no longer a specialist concern; it is becoming a default part of how good teams build.</p>
 
-    # Check registry signatures where supported
-    npm audit signatures
+<p>The advantage belongs to defenders who prepare. Start with one improvement this week: disable install scripts, add provenance checks, or review the MCP servers you trust. Each step compounds, and each one makes the ecosystem safer for everyone who builds on it.</p>
 
-    # Inspect a package before adopting it
-    npm view &lt;package&gt; time
-    npm view &lt;package&gt; scripts
-
-Key takeaways
-
-- AI developer tools deserve security attention because they are trusted and
-  privileged, and that same centrality makes them a powerful place to invest.
-- The core defenses are mature and practical: lockfiles, install-script
-  controls, short-lived tokens, sandboxing, and monitoring.
-- Most attacks reuse familiar techniques, which means familiar controls still
-  work when they are applied consistently.
-- Small improvements compound quickly. Every team can start this week.
-- Teams that combine good tooling, clear ownership, and a culture of
-  verification are already reducing both the likelihood and the impact of these
-  attacks.
-
-References
-
-Recorded Future - AI cyber threat trends 2026:
-&lt;https://www.recordedfuture.com/research/ai-cyber-threat-trends-2026&gt;
-
-World Economic Forum - Global Cybersecurity Outlook 2026:
-&lt;https://www.weforum.org/publications/global-cybersecurity-outlook-2026/in-full/3-the-trends-reshaping-cybersecurity/&gt;
-
-Fortinet - Cybersecurity trends 2026:
-&lt;https://www.fortinet.com/resources/cyberglossary/cybersecurity-trends-2026&gt;
-
-npm - ignore-scripts configuration:
-&lt;https://docs.npmjs.com/cli/v10/using-npm/config#ignore-scripts&gt;
-
-A positive outlook
-
-AI is making software development faster and more accessible, and it can make
-security stronger in the process. The same automation that attackers abuse can
-enforce least privilege, verify every package, and flag anomalies in seconds.
-Supply chain security is no longer a specialist concern; it is becoming a
-default part of how good teams build.
-
-The advantage belongs to defenders who prepare. Start with one improvement this
-week: disable install scripts, add provenance checks, or review the MCP servers
-you trust. Each step compounds, and each one makes the ecosystem safer for
-everyone who builds on it.
-
-With thoughtful tooling, clear ownership, and a habit of verification, teams can
-adopt AI development tools with confidence and keep the advantage on the
-defender's side.
-</pre>
+<p>With thoughtful tooling, clear ownership, and a habit of verification, teams can adopt AI development tools with confidence and keep the advantage on the defender's side.</p>
 
 <div class="article-actions">
   <button type="button" class="share-button" data-share-title="AI Coding Assistant Supply Chain Attacks">Share</button>
