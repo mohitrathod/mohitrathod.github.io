@@ -964,6 +964,7 @@
                     return;
                 }
                 setTimeout(function () {
+                    currentU = null;
                     synth.cancel();
                     buildChunks();
                     if (!totalWords) return;
@@ -996,36 +997,29 @@
 
             backBtn.addEventListener('click', function () {
                 if (!chunks.length) return;
-                setStatus('Moving back');
-                setTimeout(function () {
-                    var rate = parseFloat(rateEl.value);
-                    var wordsPerSec = 2.5 * rate;              // ~150 wpm baseline, scaled by rate
-                    var currentWord = chunkWordStarts[chunkIndex] + chunkWordOffset;
-                    var target = Math.max(0, currentWord - Math.round(10 * wordsPerSec));
-                    startSpeaking(totalWords ? target / totalWords : 0);
-                }, 10);
+                updateProgressBar();
+                var wordsPerSec = 2.5 * (parseFloat(rateEl.value) || 1);
+                var currentWord = Math.round(lastFrac * totalWords);
+                var target = Math.max(0, currentWord - Math.round(10 * wordsPerSec));
+                startSpeaking(totalWords ? target / totalWords : 0);
             });
 
             pauseBtn.addEventListener('click', function () {
                 setStatus('Pausing');
-                setTimeout(function () {
-                    pausedAt = performance.now();
-                    synth.pause();
-                    setControls('paused');
-                    updateProgressBar();
-                    setStatus('Paused');
-                }, 10);
+                pausedAt = performance.now();
+                synth.pause();
+                setControls('paused');
+                updateProgressBar();
+                setStatus('Paused');
             });
 
             resumeBtn.addEventListener('click', function () {
                 setStatus('Resuming');
-                setTimeout(function () {
-                    totalPausedMs += performance.now() - pausedAt;
-                    synth.resume();
-                    setControls('speaking');
-                    updateProgressBar();
-                    setStatus('Speaking');
-                }, 10);
+                totalPausedMs += performance.now() - pausedAt;
+                synth.resume();
+                setControls('speaking');
+                updateProgressBar();
+                setStatus('Speaking');
             });
 
             /* Chrome keeps speaking after tab blur glitches; re-sync on focus */
