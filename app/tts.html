@@ -96,6 +96,37 @@
             resize: vertical;
         }
 
+        #tts-reader {
+            width: 100%;
+            min-height: 260px;
+            max-height: 60vh;
+            box-sizing: border-box;
+            overflow-y: auto;
+            padding: 10px;
+            font-family: 'menlo regular webfont', Inconsolata, monospace;
+            font-size: 0.95em;
+            line-height: normal;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        #tts-reader[hidden] {
+            display: none;
+        }
+
+        .tts-reader-active-word {
+            background: #ffe066;
+            color: #222;
+        }
+
+        .tts-file-dragging {
+            outline: 2px dashed #4CAF50;
+            outline-offset: 2px;
+        }
+
         .btn {
             display: inline-block;
             padding: 8px 18px;
@@ -318,7 +349,8 @@
         </div>
         <div class="tts-time" id="tts-time">0:00 / 0:00</div>
 
-        <textarea id="tts-text" style="margin-top: 12px;" placeholder="Type or paste text here, upload a .txt file, or use the Paste button above. Then click Speak."></textarea>
+        <textarea id="tts-text" style="margin-top: 12px;" placeholder="Type or paste text here, upload or drop a .txt or .md file, or use the Paste button above. Then click Speak."></textarea>
+        <div id="tts-reader" style="margin-top: 12px;" aria-live="off" hidden></div>
         <div class="tts-counts" id="tts-counts">0 characters, 0 words</div>
 
     </div>
@@ -329,6 +361,7 @@
 
             var synth = window.speechSynthesis;
             var textEl = document.getElementById('tts-text');
+            var readerEl = document.getElementById('tts-reader');
             var voiceEl = document.getElementById('tts-voice');
             var rateEl = document.getElementById('tts-rate');
             var pitchEl = document.getElementById('tts-pitch');
@@ -350,6 +383,9 @@
 
             var chunks = [];
             var chunkWordStarts = [];
+            var chunkStartOffsets = [];
+            var readerWordSpans = [];
+            var activeReaderWord = null;
             var chunkIndex = 0;
             var chunkWordOffset = 0;
             var totalWords = 0;
@@ -561,13 +597,63 @@
                 }
             }
 
+            function renderReader(text) {
+                readerEl.textContent = '';
+                readerWordSpans = [];
+                activeReaderWord = null;
+                var tokens = text.match(/\S+|\s+/g) || [];
+                var offset = 0;
+                tokens.forEach(function (token) {
+                    if (/^\s+$/.test(token)) {
+                        readerEl.appendChild(document.createTextNode(token));
+                    } else {
+                        var span = document.createElement('span');
+                        span.textContent = token;
+                        readerEl.appendChild(span);
+                        readerWordSpans.push({
+                            start: offset,
+                            end: offset + token.length,
+                            element: span
+                        });
+                    }
+                    offset += token.length;
+                });
+            }
+
+            function highlightReaderWord(start, end) {
+                var low = 0;
+                var high = readerWordSpans.length;
+                while (low < high) {
+                    var mid = Math.floor((low + high) / 2);
+                    if (readerWordSpans[mid].end <= start) low = mid + 1;
+                    else high = mid;
+                }
+                var word = readerWordSpans[low];
+                if (!word || word.start >= end || word === activeReaderWord) return;
+                if (activeReaderWord) activeReaderWord.element.classList.remove('tts-reader-active-word');
+                activeReaderWord = word;
+                word.element.classList.add('tts-reader-active-word');
+                var readerRect = readerEl.getBoundingClientRect();
+                var wordRect = word.element.getBoundingClientRect();
+                readerEl.scrollTop += wordRect.top - readerRect.top - readerEl.clientTop -
+                    (readerEl.clientHeight - wordRect.height) / 2;
+            }
+
             function buildChunks() {
-                chunks = splitIntoChunks(textEl.value);
+                var text = textEl.value;
+                var speechText = text.replace(/\n/g, ' ');
+                chunks = splitIntoChunks(speechText);
                 chunkWordStarts = [];
+                chunkStartOffsets = [];
+                renderReader(text);
                 var w = 0;
+                var searchFrom = 0;
                 chunks.forEach(function (c) {
                     chunkWordStarts.push(w);
                     w += c.trim().split(/\s+/).length;
+                    var start = speechText.indexOf(c, searchFrom);
+                    chunkStartOffsets.push(start);
+                    searchFrom = start + c.length;
                 });
                 totalWords = w;
             }
@@ -657,9 +743,17 @@
 
             /* ---------- file upload ---------- */
 
-            fileEl.addEventListener('change', function () {
-                var f = fileEl.files[0];
-                if (!f) return;
+            function loadTextFile(f) {
+                var nameIsSupported = /\.(txt|md|text)$/i.test(f.name);
+                var type = (f.type || '').toLowerCase();
+                if (!nameIsSupported && type !== 'text/plain' && type !== 'text/markdown') {
+                    setStatus('Please choose a .txt, .md, or .text file.');
+                    return;
+                }
+                if (speaking || paused) {
+                    setStatus('Stop playback before loading a file.');
+                    return;
+                }
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     textEl.value = e.target.result;
@@ -670,7 +764,42 @@
                     setStatus('Could not read the selected file.');
                 };
                 reader.readAsText(f);
+            }
+
+            function bindFileDrop(target) {
+                target.addEventListener('dragover', function (e) {
+                    var dataTransfer = e.dataTransfer;
+                    if (!dataTransfer || (!dataTransfer.files.length &&
+                        Array.prototype.indexOf.call(dataTransfer.types, 'Files') === -1)) return;
+                    e.preventDefault();
+                    dataTransfer.dropEffect = 'copy';
+                    target.classList.add('tts-file-dragging');
+                });
+                target.addEventListener('dragleave', function (e) {
+                    if (!e.relatedTarget || !target.contains(e.relatedTarget)) {
+                        target.classList.remove('tts-file-dragging');
+                    }
+                });
+                target.addEventListener('drop', function (e) {
+                    var dataTransfer = e.dataTransfer;
+                    if (!dataTransfer || (!dataTransfer.files.length &&
+                        Array.prototype.indexOf.call(dataTransfer.types, 'Files') === -1)) return;
+                    e.preventDefault();
+                    target.classList.remove('tts-file-dragging');
+                    if (dataTransfer.files.length > 1) {
+                        setStatus('Drop one text file at a time.');
+                        return;
+                    }
+                    if (dataTransfer.files[0]) loadTextFile(dataTransfer.files[0]);
+                });
+            }
+
+            fileEl.addEventListener('change', function () {
+                var f = fileEl.files[0];
+                if (f) loadTextFile(f);
             });
+            bindFileDrop(textEl);
+            bindFileDrop(readerEl);
 
             clearBtn.addEventListener('click', function () {
                 stopSpeaking();
@@ -753,6 +882,12 @@
                 resumeBtn.disabled = state !== 'paused';
                 stopBtn.disabled = state === 'idle';
                 voiceEl.disabled = state !== 'idle';
+                var reading = speaking || paused;
+                textEl.hidden = reading;
+                readerEl.hidden = !reading;
+                if (state === 'speaking') {
+                    readerEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 if (speaking) startProgressLoop(); else stopProgressLoop();
             }
 
@@ -771,8 +906,15 @@
                     return;
                 }
                 var text = chunks[chunkIndex];
+                var wordStartOffset = 0;
                 if (chunkWordOffset > 0) {
-                    text = text.split(/\s+/).slice(chunkWordOffset).join(' ');
+                    var wordPattern = /\S+/g;
+                    var word;
+                    for (var i = 0; i <= chunkWordOffset; i++) {
+                        word = wordPattern.exec(text);
+                    }
+                    wordStartOffset = word ? word.index : 0;
+                    text = text.slice(wordStartOffset);
                 }
                 var u = new SpeechSynthesisUtterance(text);
                 currentU = u;
@@ -784,6 +926,18 @@
                 u.rate = parseFloat(rateEl.value);
                 u.pitch = parseFloat(pitchEl.value);
                 u.volume = parseFloat(volumeEl.value);
+                u.onboundary = function (e) {
+                    if (u !== currentU || typeof e.charIndex !== 'number') return;
+                    var start = chunkStartOffsets[chunkIndex] + wordStartOffset + e.charIndex;
+                    var end = start + (e.charLength || 0);
+                    if (!e.charLength) {
+                        var currentWord = /^\S+/.exec(text.slice(e.charIndex));
+                        if (currentWord) end = start + currentWord[0].length;
+                    }
+                    start = Math.max(0, Math.min(start, textEl.value.length));
+                    end = Math.max(start, Math.min(end, textEl.value.length));
+                    if (end > start) highlightReaderWord(start, end);
+                };
                 u.onend = function () {
                     if (u !== currentU) return;
                     chunkIndex++;
